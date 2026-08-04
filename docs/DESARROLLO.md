@@ -55,7 +55,7 @@ No hace falta construir las 18 actividades, pero sí evaluarlas y cerrarlas: una
 completada, descartada con motivo o aceptada como deuda. Las dependencias estrictas son pocas:
 Contexto → Instrucciones; Herramientas → Seguridad; Plataforma → Coste de comprobar; Resultados →
 Flujos; Instrucciones + Coste de comprobar → Casos de éxito → Revisor; y Registro → Alcance. El
-resto puede trabajarse por lotes en la misma ejecución.
+resto no tiene orden obligado, aunque cada actividad se recorra por separado.
 
 El suelo declarado consta de las siete piezas marcadas como «Siempre aplica»:
 

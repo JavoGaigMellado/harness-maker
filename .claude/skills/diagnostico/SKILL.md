@@ -8,15 +8,20 @@ disable-model-invocation: true
 # Diagnóstico de Harness-Maker
 
 1. Leer por completo `taller/prompts/00_diagnostico.md` y ejecutar su flujo.
-2. Inspeccionar primero el repositorio y mostrar un **Estado actual** breve con hechos observados,
-   inferencias, desconocidos y la ruta donde se guardará el diagnóstico.
-3. Contar todos los desconocidos y anunciar `Preguntas: N · ventanas: M`. Formularlos mediante
+2. El proyecto que se diagnostica es el que declara `mi-harness/diagnostico.json`, que `harness-lab
+   init --repo` ya fijó; por defecto, este repositorio. Observar solo dentro de esa ruta. **No
+   inventariar carpetas ajenas ni proponer como proyecto ninguna que la persona no haya nombrado**,
+   aunque el entorno dé acceso a otras rutas: cuál es su proyecto lo dice ella, no un hallazgo del
+   sistema de archivos. Si la ruta declarada no es la suya, preguntar cuál es y pedirla escrita.
+3. Mostrar un **Estado actual** breve con hechos observados, inferencias, desconocidos y la ruta
+   donde se guardará el diagnóstico.
+4. Contar todos los desconocidos y anunciar `Preguntas: N · ventanas: M`. Formularlos mediante
    llamadas consecutivas a `AskUserQuestion`, con hasta cuatro preguntas por ventana y sin máximo
    total dentro de esta ejecución. Usar `multiSelect` cuando corresponda, ofrecer entre dos y cuatro
    opciones concretas por pregunta y permitir escribir mediante la fila `Other`.
-4. Tras recibir todas las ventanas, registrar conjuntamente lo confirmado en el diagnóstico
+5. Tras recibir todas las ventanas, registrar conjuntamente lo confirmado en el diagnóstico
    sin inventar los valores restantes.
-5. Cuando el diagnóstico sea suficiente, generar y validar `mi-harness/estado.json`, confirmar las
+6. Cuando el diagnóstico sea suficiente, generar y validar `mi-harness/estado.json`, confirmar las
    rutas creadas y señalar la primera actividad de la ruta con la estructura de explicación indicada.
 
 No hacer preguntas en texto normal ni preguntar información observable.
@@ -63,7 +68,7 @@ Cerrar siempre con esta estructura y en este orden:
 4. **Qué cambia para ti** — consecuencia práctica al usar el harness.
 5. **Tu harness ahora puede** — una sola frase acumulativa y comprensible.
 6. **Qué queda** — número de actividades resueltas y abiertas, y siguiente actividad explicada en
-   lenguaje normal. En `/lote`, añadir cuántas se intentaron y cuántas se cerraron realmente.
+   lenguaje normal.
 7. **Impacto en otras partes** — decir `Ninguno` o nombrarlas con una frase práctica por cada una.
 8. **Detalles técnicos** — solo si el perfil es técnico, la persona los pide o necesita actuar ante
    un fallo. Resumir rutas, pruebas y riesgos; no narrar refactorizaciones ni decir que «las pruebas

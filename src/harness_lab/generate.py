@@ -414,7 +414,7 @@ Cerrar siempre con esta estructura y en este orden:
 4. **Qué cambia para ti** — consecuencia práctica al usar el harness.
 5. **Tu harness ahora puede** — una sola frase acumulativa y comprensible.
 6. **Qué queda** — número de actividades resueltas y abiertas, y siguiente actividad explicada en
-   lenguaje normal. En `/lote`, añadir cuántas se intentaron y cuántas se cerraron realmente.
+   lenguaje normal.
 7. **Impacto en otras partes** — decir `Ninguno` o nombrarlas con una frase práctica por cada una.
 8. **Detalles técnicos** — solo si el perfil es técnico, la persona los pide o necesita actuar ante
    un fallo. Resumir rutas, pruebas y riesgos; no narrar refactorizaciones ni decir que «las pruebas
@@ -512,6 +512,11 @@ Mostrarlo bajo `Falta decidir`, nunca bajo `Ya definido`.
   actualizar otra actividad cuando una afirmación confirmada cambie directamente su definición.
 - Sin una acción preparada por el prompt y aceptada expresamente en el cuestionario, limitar las
   escrituras al estado, `cobertura.json`, el Markdown de la actividad y sus derivados generados.
+- Observar solo este repositorio y la ruta del proyecto que declare el diagnóstico. Aunque el entorno
+  dé acceso a otras carpetas —un `additionalDirectories` de la configuración de usuario las abre en
+  todos los proyectos—, no inventariarlas ni traer datos de ellas ni proponerlas: cuál es el proyecto
+  lo dice la persona. Un dato que aparece sin que ella lo haya nombrado se le pregunta antes de
+  usarlo, y si no lo confirma no entra.
 - Si al hacer la actividad se ve que el taller mismo debería cambiar —los prompts de
   `taller/prompts/`, las skills, el generador o `diagramas/diagrama_taller.html`—, mirar antes de qué
   copia se trata. En la copia de desarrollo, la que tiene `proyectos/harness-lab/`, cambiarlo en el
@@ -533,7 +538,18 @@ Mostrarlo bajo `Falta decidir`, nunca bajo `Ya definido`.
    rechaza su premisa, tratarla como corrección del diagnóstico: no convertirla en una elección ni
    cerrar el punto. Reinspeccionar la necesidad y explicar el nuevo encuadre.
 2. Mantener las decisiones como `Etiqueta — contenido` y sustituir la etiqueta existente en vez de
-   acumular definiciones contradictorias.
+   acumular definiciones contradictorias. El separador es ` — ` con espacios: sin él, la vista no
+   puede enseñarlas como definiciones con título y valor y las degrada a una lista plana.
+   Y el contenido dice **qué es**, con los valores concretos:
+   - No describir la estructura del harness ni que algo exista, esté declarado, separado u
+     organizado. Eso ya lo dice la doctrina y no informa de nada: `Las memorias están separadas por
+     tipo y hay un índice que permite recuperarlas` no le dice a nadie qué se recuerda.
+   - Escribir lo que contiene, con nombres, rutas y valores reales: `Se recuerdan cuatro cosas: el
+     patrón de conexión al lago, el SLA de las 08:00, que no hay equipo y dónde se reportan las
+     incidencias; el estado de los sistemas se vuelve a leer en vivo`.
+   - El criterio es que quien lo lea dentro de tres meses pueda actuar sin abrir nada más. Si el
+     contenido es una lista larga, dar el criterio, cuántos son y dónde vive la lista completa;
+     nunca solo el criterio.
 3. Revisar cada respuesta completa contra las 18 actividades, no solo contra la actividad abierta.
    Informar siempre `Impacto en el resto: ninguno` o enumerar las actividades afectadas y el motivo.
    Aplicar las rondas de impacto anteriores antes de persistir. Una posible relación todavía no
@@ -562,62 +578,6 @@ No marcar la actividad como completada hasta satisfacer todos los criterios del 
 """
 
 
-def render_claude_batch_skill() -> str:
-    """Orquesta varias actividades listas sin duplicar sus criterios canónicos."""
-    return f"""---
-name: lote
-description: Resuelve varias actividades abiertas de Harness-Maker en una sola ejecución, pregunta todo lo necesario en ventanas consecutivas, respeta dependencias y muestra cuántas intentará y cuántas quedarán. Invocar manualmente con /lote.
-disable-model-invocation: true
----
-
-<!-- GENERADO por `harness-lab generate`. NO EDITAR A MANO. -->
-# Avance por lote
-
-1. Resolver el estado objetivo e inspeccionar `datos/anatomia.json`, `cobertura.json` y el
-   repositorio. No modificar la anatomía, los esquemas ni el diagrama base.
-2. Fijar el alcance:
-   - `/lote` sin argumentos intenta resolver **todas las actividades abiertas**.
-   - `/lote 3` toma las tres primeras abiertas según `ruta.pasos`.
-   - `/lote memoria flujo` limita el trabajo a las actividades nombradas.
-3. Antes de preguntar, mostrar un **Estado actual · Plan del lote** con cifras exactas:
-   `Abiertas antes | Objetivo de este lote | Listas en la primera ronda | Bloqueadas por dependencias |
-   Quedarían si todas cierran`. Añadir una tabla breve `Actividad | Ya definido | Falta decidir |
-   Depende de`. Una previsión no es un cierre garantizado: decirlo de forma sencilla.
-4. Trabajar por rondas de dependencias dentro de la misma ejecución. En cada ronda incluir solo
-   actividades objetivo cuyas dependencias ya estén resueltas; leer completos sus prompts y contar
-   todas las preguntas necesarias. No preguntar por una actividad descendiente antes de persistir y
-   replanificar la que la desbloquea.
-5. Anunciar en cada ronda `Actividades: N · preguntas: Q · ventanas: M`. `AskUserQuestion` admite
-   hasta cuatro preguntas por ventana, pero el lote **no tiene máximo total**: abrir tantas ventanas
-   consecutivas como sean necesarias sin pedir que la persona vuelva a ejecutar `/lote`.
-6. Preguntar por necesidades y decisiones del trabajo, no por soluciones técnicas supuestas ni por
-   la estructura de Harness-Maker. Usar lenguaje normal, opciones concretas y `multiSelect` solo
-   cuando varias respuestas puedan coexistir. No omitir decisiones para reducir ventanas.
-7. Si `Other` cuestiona una pregunta, dice que no se entiende o rechaza su premisa, no tratarlo como
-   una elección. Terminar las preguntas independientes de la ronda, reinspeccionar la necesidad y
-   añadir otra ventana si hace falta reformular; no cerrar el punto por descarte automático.
-8. Al recibir cada ronda, revisar las 18 actividades antes de escribir. Toda actividad que resulte
-   afectada se incorpora al alcance como seguimiento derivado, aunque no figurase entre los nombres
-   o el número inicial. Mostrar el impacto y resolver sus preguntas mediante las rondas de impacto
-   dentro de esta misma ejecución.
-9. Al terminar las rondas principal y de impacto, fusionar solo lo confirmado en todas las
-   actividades incluidas, sus
-   Markdown y `cobertura.json`; regenerar, validar y recalcular el tramo pendiente. Si existe
-   `AUDITORIA.md` junto al estado, sincronizar su recuento, las filas afectadas y la siguiente
-   actividad sin tratarla como fuente. Registrar los impactos confirmados.
-10. Continuar automáticamente con la siguiente ronda desbloqueada hasta cubrir todo el alcance o
-   encontrar una decisión que realmente necesite trabajo externo o autoridad adicional. No asumir
-   que responder equivale a cerrar: una actividad puede quedar en curso, descartada o con deuda.
-11. Al finalizar, mostrar cifras reales: actividades intentadas del objetivo inicial, revisadas por impacto,
-    completadas, descartadas, con deuda, todavía en curso y total que queda abierto.
-    Explicar cuál es el siguiente paso si queda alguno.
-
-{render_claude_impact_guidance()}
-
-{render_claude_response_guidance()}
-"""
-
-
 def render_claude_diagnostic_skill() -> str:
     return f"""---
 name: diagnostico
@@ -629,15 +589,20 @@ disable-model-invocation: true
 # Diagnóstico de Harness-Maker
 
 1. Leer por completo `taller/prompts/00_diagnostico.md` y ejecutar su flujo.
-2. Inspeccionar primero el repositorio y mostrar un **Estado actual** breve con hechos observados,
-   inferencias, desconocidos y la ruta donde se guardará el diagnóstico.
-3. Contar todos los desconocidos y anunciar `Preguntas: N · ventanas: M`. Formularlos mediante
+2. El proyecto que se diagnostica es el que declara `mi-harness/diagnostico.json`, que `harness-lab
+   init --repo` ya fijó; por defecto, este repositorio. Observar solo dentro de esa ruta. **No
+   inventariar carpetas ajenas ni proponer como proyecto ninguna que la persona no haya nombrado**,
+   aunque el entorno dé acceso a otras rutas: cuál es su proyecto lo dice ella, no un hallazgo del
+   sistema de archivos. Si la ruta declarada no es la suya, preguntar cuál es y pedirla escrita.
+3. Mostrar un **Estado actual** breve con hechos observados, inferencias, desconocidos y la ruta
+   donde se guardará el diagnóstico.
+4. Contar todos los desconocidos y anunciar `Preguntas: N · ventanas: M`. Formularlos mediante
    llamadas consecutivas a `AskUserQuestion`, con hasta cuatro preguntas por ventana y sin máximo
    total dentro de esta ejecución. Usar `multiSelect` cuando corresponda, ofrecer entre dos y cuatro
    opciones concretas por pregunta y permitir escribir mediante la fila `Other`.
-4. Tras recibir todas las ventanas, registrar conjuntamente lo confirmado en el diagnóstico
+5. Tras recibir todas las ventanas, registrar conjuntamente lo confirmado en el diagnóstico
    sin inventar los valores restantes.
-5. Cuando el diagnóstico sea suficiente, generar y validar `mi-harness/estado.json`, confirmar las
+6. Cuando el diagnóstico sea suficiente, generar y validar `mi-harness/estado.json`, confirmar las
    rutas creadas y señalar la primera actividad de la ruta con la estructura de explicación indicada.
 
 No hacer preguntas en texto normal ni preguntar información observable.
@@ -1103,7 +1068,6 @@ def expected_outputs() -> dict[Path, str]:
         CLAUDE_SKILLS_DIR / "diagnostico" / "SKILL.md": render_claude_diagnostic_skill(),
         CLAUDE_SKILLS_DIR / "auditoria-final" / "SKILL.md": render_claude_final_audit_skill(),
         CLAUDE_SKILLS_DIR / "cierre" / "SKILL.md": render_claude_closing_skill(),
-        CLAUDE_SKILLS_DIR / "lote" / "SKILL.md": render_claude_batch_skill(),
         CLAUDE_SKILLS_DIR / "incoherencias" / "SKILL.md": render_claude_inconsistency_skill(),
     }
     for i, piece in enumerate(data["piezas"], 1):

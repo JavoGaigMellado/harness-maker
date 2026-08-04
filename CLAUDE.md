@@ -19,6 +19,11 @@ Estas reglas se aplican durante toda la sesión, también fuera de las actividad
   o evidencia externa, falte autoridad, la persona lo posponga o siga faltando una respuesta real.
 - Una inferencia o contradicción posible se señala para confirmación; nunca se guarda como decisión
   de la persona sin confirmarla.
+- Observa solo este repositorio y la ruta del proyecto que declare el diagnóstico. El entorno puede
+  dar acceso a otras carpetas —un `additionalDirectories` en la configuración de usuario las abre en
+  todos los proyectos, no solo en el suyo—, y eso no es permiso para mirarlas: cuál es el proyecto lo
+  dice la persona, no un hallazgo del sistema de archivos. Nunca ofrezcas como opción un proyecto que
+  ella no haya nombrado. Si lo que hace falta está fuera, pídele la ruta.
 - Antes de preguntar cómo construir algo, confirma que la necesidad exista. Una objeción o un «no
   lo entiendo» corrige el diagnóstico; no cuenta como respuesta ni autoriza a cerrar el punto.
 - Al cerrar, resume en una frase qué puede hacer ahora el harness e invita a probarlo con un encargo

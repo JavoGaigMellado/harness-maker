@@ -12,7 +12,7 @@ crea dos verdades que se separan en cuanto una cambia.
 | Mecanismo | Dónde | Para qué | Hasta dónde llega |
 |---|---|---|---|
 | **Instrucciones** | `CLAUDE.md` | Cómo se trabaja aquí: cómo responder, dónde se cambia cada cosa, qué se comprueba al terminar | Orienta en toda la sesión. No obliga: es texto que la IA lee y sigue |
-| **Comandos** | `.claude/skills/` (24) | Una capacidad por comando: las 18 actividades, más diagnóstico, lote, cierre, incoherencias y auditoría final | Se invocan a mano con `/nombre`. Se generan desde la doctrina; no se editan a mano |
+| **Comandos** | `.claude/skills/` (23) | Una capacidad por comando: las 18 actividades, más diagnóstico, cierre, incoherencias y auditoría final | Se invocan a mano con `/nombre`. Se generan desde la doctrina; no se editan a mano |
 | **Vigilantes** | `.claude/hooks/` (2) | Lo que no puede saltarse: `proteger_generados.py` impide editar un archivo generado; `validar_al_cerrar.py` valida antes de terminar la sesión | Se ejecutan solos, sin que nadie los invoque. Pueden bloquear una acción. Solo alcanzan a este asistente |
 | **Guardián de git** | `.githooks/pre-commit` | Comprueba antes de cada commit que los generados estén al día y para si no lo están | Alcanza a cualquiera —asistente, editor, script—, porque todo commit pasa por git. Se salta a propósito con `--no-verify` |
 | **Permisos** | `.claude/settings.json` | La frontera: qué se bloquea, qué se pregunta y qué se permite sin interrumpir | Los aplica el asistente antes de actuar. Viajan con el repositorio |
@@ -60,7 +60,7 @@ está vacío a propósito**: la IA trabaja dentro de este repositorio y se detie
 | Viaja con el repositorio | Se queda en tu copia |
 |---|---|
 | Doctrina (`datos/anatomia.json`), esquemas y diagramas | El puntero `.harness-maker.json` |
-| Las 24 skills y los 22 prompts portables | Tu recorrido en `mi-harness/` |
+| Las 23 skills y los 22 prompts portables | Tu recorrido en `mi-harness/` |
 | Los vigilantes, el guardián de git y los permisos | Los recorridos apartados `mi-harness-anterior-*` |
 | El programa y sus pruebas | Tus preferencias personales del asistente |
 | El banco de casos de `taller/casos/` | |

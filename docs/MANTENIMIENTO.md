@@ -65,7 +65,7 @@ es una vista de `datos/anatomia.json`, y editarlo significa editar el canónico 
 `harness-lab init`, y el mecanismo de actualización quedó resuelto el 2026-08-04 —ver «Cómo llega un
 arreglo a una copia ajena». El modo taller citado en el plan ya quedó resuelto en `diagrama_taller.html`. La capa
 ejecutable de Claude vive en `.claude/skills/` y se genera para diagnóstico, las 18 actividades, el
-cierre, la revisión de incoherencias y la auditoría final; `/lote` orquesta varias actividades ya desbloqueadas sin duplicar sus criterios. Cada
+cierre, la revisión de incoherencias y la auditoría final. Cada
 `/actividad` consume su prompt portable, usa `AskUserQuestion` y persiste antes de continuar. La
 experiencia completa y el criterio de promoción cubren solo Claude Code. Codex conserva el piloto
 experimental `.agents/skills/contexto/` con invocación `$contexto`, fuera de esa promesa.
@@ -87,8 +87,8 @@ experimental `.agents/skills/contexto/` con invocación `$contexto`, fuera de es
   y cambia cuando se cierra una actividad. Dentro de cada actividad, la lista canónica muestra cada
   punto como definido, parcial, ausente o no aplicable; los dos estados incompletos usan fondo rojizo,
   sin un bloque separado «Por definir». Las relaciones e impactos quedan en su propio desplegable.
-  `Instrucciones persistentes` muestra además el inventario de los 22 prompts y los accesos a `/lote`
-  y `/incoherencias`. El progreso verde cuenta solo actividades completadas y verificadas: las deudas,
+  `Instrucciones persistentes` muestra además el inventario de los 22 prompts y el acceso a
+  `/incoherencias`. El progreso verde cuenta solo actividades completadas y verificadas: las deudas,
   las verificaciones pendientes y los descartes aparecen por separado y nunca producen un 18/18 falso.
   En el mapa, el ámbar señala deuda de definición o normas pendientes; el azul señala una actividad
   definida que necesita pruebas o evidencia de verificación.
@@ -112,15 +112,16 @@ en una frase, decisiones, consecuencia práctica, capacidad actual, trabajo rest
 detalles técnicos quedan al final y solo aparecen cuando el perfil los pide o son necesarios.
 
 `AskUserQuestion` admite como máximo cuatro preguntas por ventana, no por comando. Las actividades
-individuales y `/lote` cuentan primero todo lo necesario y abren ventanas consecutivas. `/lote`
-trabaja además en rondas de dependencias: sin argumentos cubre todas las actividades abiertas; con
-un número o nombres limita el alcance. Antes y después muestra los recuentos reales.
+cuentan primero todo lo necesario y abren ventanas consecutivas, y muestran los recuentos reales
+antes y después. El comando que resolvía varias actividades en una ejecución se retiró el
+2026-08-04: el ritmo de cuestionario producía definiciones sobre la estructura del harness en vez de
+sobre el trabajo de la persona.
 
 El uso real mostró un tercer límite: detectar un impacto y reabrir otra actividad no basta si la
 persona solo descubre después el rojo del diagrama. Cada comando ejecuta ahora **rondas de impacto**:
 señala la actividad afectada, resuelve primero lo observable y pregunta inmediatamente las nuevas
 decisiones dentro de la misma ejecución. Una actividad afectada se incorpora como seguimiento
-derivado incluso en un `/lote` limitado. Solo queda abierta cuando la respuesta no puede cerrarla
+derivado. Solo queda abierta cuando la respuesta no puede cerrarla
 —por trabajo o evidencia externa, falta de autoridad o aplazamiento explícito—; nunca porque falte
 volver a invocar su comando.
 

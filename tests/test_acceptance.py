@@ -114,7 +114,7 @@ def test_canonical_and_generated_are_synchronized():
     # igual y ese sí es fijo, porque `taller/ejemplo/` viaja siempre.
     recorridos_de_persona={MI_HARNESS_DIR,HARNESS_LAB_DIR}
     fijas={p for p in expected_outputs() if p.parent not in recorridos_de_persona}
-    assert len(fijas)==49, f"salidas fijas: {len(fijas)}"
+    assert len(fijas)==48, f"salidas fijas: {len(fijas)}"
 
 
 def test_claude_skills_cover_the_whole_workshop():
@@ -122,7 +122,7 @@ def test_claude_skills_cover_the_whole_workshop():
     # `start` es mecánico: prepara la copia y abre el mapa, no decide nada. Exigirle
     # preguntas o fotografía de actividad obligaría a inventarle una conversación.
     mecanicos={"start"}
-    decisorios={"diagnostico","lote","incoherencias","auditoria-final","cierre",*(piece["id"] for piece in anatomy["piezas"])}
+    decisorios={"diagnostico","incoherencias","auditoria-final","cierre",*(piece["id"] for piece in anatomy["piezas"])}
     expected=decisorios|mecanicos
     found={path.parent.name for path in Path(".claude/skills").glob("*/SKILL.md")}
     assert found==expected
@@ -161,16 +161,10 @@ def test_claude_skills_cover_the_whole_workshop():
         assert "máximo" in content and "total" in content
         assert "Simple y guiado" in content
         assert "Rondas de impacto dentro del mismo comando" in content
-    batch=Path(".claude/skills/lote/SKILL.md").read_text(encoding="utf-8")
-    assert "todas las actividades abiertas" in batch
-    assert "Plan del lote" in batch
-    assert "no tiene máximo total" in batch
-    assert "rondas de dependencias" in batch
-    assert "actividades intentadas" in batch
-    assert "no se entiende o rechaza su premisa" in batch
-    assert "seguimiento derivado" in batch
-    assert "revisadas por impacto" in batch
-    assert "Preguntas adicionales por impacto" in batch
+    # No hay comando que resuelva varias actividades de una vez, y `found==expected` de arriba ya lo
+    # exige. Se retiró el 2026-08-04: el ritmo de cuestionario producía definiciones sobre cómo está
+    # organizado el harness en vez de sobre el trabajo de la persona.
+    assert not Path(".claude/skills/lote").exists()
     inconsistencies=Path(".claude/skills/incoherencias/SKILL.md").read_text(encoding="utf-8")
     inconsistency_prompt=Path("taller/prompts/101_incoherencias.md").read_text(encoding="utf-8")
     assert "name: incoherencias" in inconsistencies
@@ -315,7 +309,9 @@ def test_harness_lab_map_is_a_valid_full_snapshot():
     assert 'function resumenActividad' in workshop
     assert 'class="activity-summary"' in workshop
     assert 'campo("Resumen"' not in workshop
-    assert '"/lote"' in workshop
+    # El centro ofrece la actividad concreta, nunca un comando que resuelva varias de golpe.
+    assert '"/lote"' not in workshop and "/lote" not in workshop
+    assert 'if (pendiente) return "/" + pendiente;' in workshop
     assert '"/incoherencias"' in workshop
     assert 'function lista' in workshop
     assert 'function incoherenciasDe' in workshop
@@ -327,7 +323,6 @@ def test_harness_lab_map_is_a_valid_full_snapshot():
     assert '.node.verificar.in' in workshop
     assert 'return { c: "verificar", t: "Por verificar" }' in workshop
     assert 'insignia("pin verificar", "↻")' in workshop
-    assert "pregunta lo necesario en ventanas consecutivas" in workshop
     assert 'function relacionesDe' in workshop
     assert 'id="cats"' not in workshop and "A.categorias" not in workshop
     assert "Así lo resolvió el ejemplo del correo" not in workshop
@@ -852,7 +847,7 @@ def test_public_entrypoint_matches_the_installable_product():
         f"el README debe prometer Python {suelo.group(1)}, el suelo que declara pyproject.toml"
     )
     assert "Los siete mecanismos" in harnessdev
-    assert ".claude/skills/` (24)" in harnessdev
+    assert ".claude/skills/` (23)" in harnessdev
     # El README de usuario tiene que llevar a la licencia y al mantenimiento, y no arrastrar
     # la fotografía del recorrido ajeno que antes abría el documento.
     assert "LICENSE" in readme and "docs/DESARROLLO.md" in readme
@@ -959,3 +954,59 @@ def test_activities_resolve_by_pointer_and_may_improve_the_workshop():
         assert "es la fase 2, y mejorarla mientras se usa es el" in skill
         assert "En una copia recibida, no" in skill and "git pull" in skill
         assert "confirmación de la persona antes de tocarlos" in skill
+
+
+def test_a_new_route_points_at_the_core_and_the_diagnostic():
+    """Lo primero que se puede hacer es el diagnóstico, y vive en el centro del mapa.
+
+    Sin ruta calculada, `comandoCore` devolvía `/auditoria-final` —el último paso— porque «todavía
+    no hay siguiente» y «ya no queda nada pendiente» se calculaban igual. Y ningún nodo quedaba
+    señalado, así que el mapa de un clon recién hecho no tenía punto de entrada. Es literalmente la
+    primera pantalla de quien acaba de llegar.
+    """
+    workshop=Path("diagramas/diagrama_taller.html").read_text(encoding="utf-8")
+    assert "function sinRutaAun" in workshop
+    assert 'if (sinRutaAun(est)) return "/diagnostico";' in workshop
+    assert 'nucleoMapa.classList.toggle("siguiente", empezando)' in workshop
+    assert ".core.in.siguiente" in workshop
+    # El resalte de seleccionado se declara después para que gane cuando el núcleo esté abierto.
+    assert workshop.index(".core.in.siguiente") < workshop.index(".core.in.on")
+
+
+def test_activities_observe_only_the_project_the_person_declared():
+    """El proyecto lo dice la persona; el sistema de archivos no lo propone.
+
+    Un `additionalDirectories` en la configuración de usuario abre esa carpeta en todos los
+    proyectos de la máquina, así que el asistente puede ver repositorios que el clon no menciona.
+    Pasó de verdad: la primera pregunta de un clon limpio ofreció, y recomendó, un proyecto interno
+    que la persona no había nombrado. Desde el proyecto no hay permiso que lo impida —una regla de
+    usuario no se revoca desde aquí—, así que la frontera se escribe donde el asistente la lee.
+    """
+    anatomy=load_anatomy()
+    for piece in anatomy["piezas"]:
+        skill=Path(f".claude/skills/{piece['id']}/SKILL.md").read_text(encoding="utf-8")
+        assert "no inventariarlas ni traer datos de ellas" in skill
+        assert "additionalDirectories" in skill
+    diagnostico=Path(".claude/skills/diagnostico/SKILL.md").read_text(encoding="utf-8")
+    assert "ni proponer como proyecto ninguna que la persona no haya nombrado" in diagnostico
+    assert "additionalDirectories" in Path("CLAUDE.md").read_text(encoding="utf-8")
+
+
+def test_decisions_must_say_what_a_thing_is():
+    """Una decisión dice qué es, no que algo exista.
+
+    Probando el clon salieron definiciones como «las memorias están separadas por tipo y hay un
+    índice que permite recuperarlas»: describen la estructura del harness, que ya está en la
+    doctrina, y no dicen qué se recuerda. Además ninguna traía el separador ` — `, así que la vista
+    no podía enseñarlas como título y valor y las degradaba a una lista plana. Las dos mitades —la
+    forma y el contenido— viajan a las 18 actividades.
+    """
+    anatomy=load_anatomy()
+    for piece in anatomy["piezas"]:
+        skill=Path(f".claude/skills/{piece['id']}/SKILL.md").read_text(encoding="utf-8")
+        assert "El separador es ` — ` con espacios" in skill
+        assert "con los valores concretos" in skill
+        assert "pueda actuar sin abrir nada más" in skill
+    # La vista parte el texto por ese separador; si cambia, las definiciones se caen a lista plana.
+    workshop=Path("diagramas/diagrama_taller.html").read_text(encoding="utf-8")
+    assert 'texto.indexOf(" — ")' in workshop

@@ -57,7 +57,7 @@ Cerrar siempre con esta estructura y en este orden:
 4. **Qué cambia para ti** — consecuencia práctica al usar el harness.
 5. **Tu harness ahora puede** — una sola frase acumulativa y comprensible.
 6. **Qué queda** — número de actividades resueltas y abiertas, y siguiente actividad explicada en
-   lenguaje normal. En `/lote`, añadir cuántas se intentaron y cuántas se cerraron realmente.
+   lenguaje normal.
 7. **Impacto en otras partes** — decir `Ninguno` o nombrarlas con una frase práctica por cada una.
 8. **Detalles técnicos** — solo si el perfil es técnico, la persona los pide o necesita actuar ante
    un fallo. Resumir rutas, pruebas y riesgos; no narrar refactorizaciones ni decir que «las pruebas

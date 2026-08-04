@@ -103,7 +103,7 @@ solo se cierra cuando se registra el motivo. El siguiente prompt se encuentra en
 [`taller/prompts/`](taller/prompts/), según el `pieza_id` del primer paso pendiente.
 
 En Claude Code, `harness-lab generate` crea skills de proyecto en `.claude/skills/`: `/diagnostico`,
-los 18 comandos de actividad (`/contexto`, `/memoria`, etc.), `/lote`, `/cierre`,
+los 18 comandos de actividad (`/contexto`, `/memoria`, etc.), `/cierre`,
 `/incoherencias` y `/auditoria-final`. Cada actividad empieza con un resumen breve y reúne sus decisiones pendientes en selectores interactivos
 `AskUserQuestion`; se puede responder clicando opciones o escribiendo en `Other`. Si hacen falta más
 de cuatro preguntas, continúa con otra ventana dentro de la misma ejecución: no recorta decisiones
@@ -111,13 +111,11 @@ ni obliga a repetir el comando. Antes de preguntar cómo construir algo, comprue
 exista: una API, memoria o automatización innecesaria se marca `no aplica` con evidencia, no se
 convierte en trabajo.
 
-`/lote` sin argumentos intenta resolver todas las actividades abiertas. Antes de empezar dice
-cuántas trabajará, cuántas están listas, cuáles esperan una dependencia, cuántas preguntas ha
-detectado y cuántas quedarían si todo pudiera cerrarse. Trabaja en rondas: persiste primero las
-actividades que desbloquean otras y solo después formula las preguntas descendientes. Cada ventana
-admite hasta cuatro preguntas por límite de la interfaz, pero el lote no tiene máximo total y abre
-todas las ventanas necesarias dentro del mismo comando. Se puede limitar con `/lote 3` o nombrando
-actividades, por ejemplo `/lote memoria flujo`.
+Las actividades se recorren de una en una, y es a propósito. Existió un comando que resolvía varias
+en la misma ejecución y se retiró el 2026-08-04: contestar dieciocho actividades a ritmo de
+cuestionario producía definiciones sobre cómo está organizado el harness en vez de sobre el trabajo
+de quien lo usa, que es lo único que sirve dentro de tres meses. El mapa siempre señala la actividad
+concreta que toca.
 
 Cuando el recorrido ya no tiene actividades abiertas pero conserva deudas, criterios parciales,
 verificaciones pendientes o vistas desfasadas, usa `/incoherencias`. Enseña primero una fotografía

@@ -87,6 +87,11 @@ siga realmente pendiente; registrar y explicar la causa concreta.
   actualizar otra actividad cuando una afirmación confirmada cambie directamente su definición.
 - Sin una acción preparada por el prompt y aceptada expresamente en el cuestionario, limitar las
   escrituras al estado, `cobertura.json`, el Markdown de la actividad y sus derivados generados.
+- Observar solo este repositorio y la ruta del proyecto que declare el diagnóstico. Aunque el entorno
+  dé acceso a otras carpetas —un `additionalDirectories` de la configuración de usuario las abre en
+  todos los proyectos—, no inventariarlas ni traer datos de ellas ni proponerlas: cuál es el proyecto
+  lo dice la persona. Un dato que aparece sin que ella lo haya nombrado se le pregunta antes de
+  usarlo, y si no lo confirma no entra.
 - Si al hacer la actividad se ve que el taller mismo debería cambiar —los prompts de
   `taller/prompts/`, las skills, el generador o `diagramas/diagrama_taller.html`—, mirar antes de qué
   copia se trata. En la copia de desarrollo, la que tiene `proyectos/harness-lab/`, cambiarlo en el
@@ -108,7 +113,18 @@ siga realmente pendiente; registrar y explicar la causa concreta.
    rechaza su premisa, tratarla como corrección del diagnóstico: no convertirla en una elección ni
    cerrar el punto. Reinspeccionar la necesidad y explicar el nuevo encuadre.
 2. Mantener las decisiones como `Etiqueta — contenido` y sustituir la etiqueta existente en vez de
-   acumular definiciones contradictorias.
+   acumular definiciones contradictorias. El separador es ` — ` con espacios: sin él, la vista no
+   puede enseñarlas como definiciones con título y valor y las degrada a una lista plana.
+   Y el contenido dice **qué es**, con los valores concretos:
+   - No describir la estructura del harness ni que algo exista, esté declarado, separado u
+     organizado. Eso ya lo dice la doctrina y no informa de nada: `Las memorias están separadas por
+     tipo y hay un índice que permite recuperarlas` no le dice a nadie qué se recuerda.
+   - Escribir lo que contiene, con nombres, rutas y valores reales: `Se recuerdan cuatro cosas: el
+     patrón de conexión al lago, el SLA de las 08:00, que no hay equipo y dónde se reportan las
+     incidencias; el estado de los sistemas se vuelve a leer en vivo`.
+   - El criterio es que quien lo lea dentro de tres meses pueda actuar sin abrir nada más. Si el
+     contenido es una lista larga, dar el criterio, cuántos son y dónde vive la lista completa;
+     nunca solo el criterio.
 3. Revisar cada respuesta completa contra las 18 actividades, no solo contra la actividad abierta.
    Informar siempre `Impacto en el resto: ninguno` o enumerar las actividades afectadas y el motivo.
    Aplicar las rondas de impacto anteriores antes de persistir. Una posible relación todavía no
@@ -153,7 +169,7 @@ Cerrar siempre con esta estructura y en este orden:
 4. **Qué cambia para ti** — consecuencia práctica al usar el harness.
 5. **Tu harness ahora puede** — una sola frase acumulativa y comprensible.
 6. **Qué queda** — número de actividades resueltas y abiertas, y siguiente actividad explicada en
-   lenguaje normal. En `/lote`, añadir cuántas se intentaron y cuántas se cerraron realmente.
+   lenguaje normal.
 7. **Impacto en otras partes** — decir `Ninguno` o nombrarlas con una frase práctica por cada una.
 8. **Detalles técnicos** — solo si el perfil es técnico, la persona los pide o necesita actuar ante
    un fallo. Resumir rutas, pruebas y riesgos; no narrar refactorizaciones ni decir que «las pruebas

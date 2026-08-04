@@ -138,6 +138,13 @@
   .core .clab{font-size:1.22cqw;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
               line-height:1.15;max-width:11cqw;margin-top:0.4cqw}
   .core .csub{font-size:0.95cqw;color:#cfc7b8;line-height:1.3;max-width:9.8cqw;margin-top:0.35cqw}
+  /* La primera acción de un recorrido nuevo es el centro: mientras no haya ruta, el diagnóstico es
+     lo único que se puede hacer, así que el núcleo tiene que ser lo que más se ve. Va antes que
+     `.on` a propósito: si además está abierto, gana el resalte de seleccionado. */
+  .core.in.siguiente{box-shadow:0 0 0 0.22cqw rgba(176,141,87,.9),
+              0 0 0 1.05cqw rgba(176,141,87,.24), 0 0 2.6cqw 0.5cqw rgba(176,141,87,.3),
+              0 1.4cqw 3.6cqw rgba(43,43,43,.3), inset 0 0 0 0.13cqw rgba(176,141,87,.85)}
+  .core.in.siguiente .clab{color:#fdf7ec}
   .core.in.on{box-shadow:0 0 0 0.3cqw rgba(176,141,87,.85),0 0 0 0.75cqw rgba(176,141,87,.2),
               0 1.4cqw 3.6cqw rgba(43,43,43,.28)}
 
@@ -944,8 +951,19 @@ A.anillos.forEach(function (r) {
       if (!resuelta(piezaDe(est, pasos[i].pieza_id))) return pasos[i].pieza_id;
     return null;
   }
+  function sinRutaAun(est) {
+    return !est || !est.ruta || !(est.ruta.pasos || []).length;
+  }
   function comandoCore(est) {
-    if (siguienteDe(est)) return "/lote";
+    /* Un recorrido sin ruta empieza por el diagnóstico. Sin esta primera línea, una copia recién
+       clonada ofrecía `/auditoria-final` —el último paso— como primera acción, porque «todavía no
+       hay ruta» y «ya no queda nada pendiente» daban el mismo resultado. */
+    if (sinRutaAun(est)) return "/diagnostico";
+    /* La actividad concreta, no un comando que resuelva varias de golpe: cada decisión se piensa
+       una vez, y contestar dieciocho actividades a ritmo de cuestionario es lo que producía
+       definiciones sobre la estructura del harness en vez de sobre el trabajo de la persona. */
+    var pendiente = siguienteDe(est);
+    if (pendiente) return "/" + pendiente;
     if (incoherenciasDe(est).length) return "/incoherencias";
     return "/auditoria-final";
   }
@@ -1000,9 +1018,7 @@ A.anillos.forEach(function (r) {
     items.push({ n: "99", titulo: "Cierre y replanificación", cmd: "/cierre" });
     items.push({ n: "100", titulo: "Auditoría final profunda", cmd: "/auditoria-final" });
     items.push({ n: "101", titulo: "Resolver incoherencias", cmd: "/incoherencias" });
-    return '<div class="route-now"><span class="rl">Lote</span><strong><code>/lote</code> · varias actividades</strong>' +
-      '<small>Recorre todas las actividades abiertas y pregunta lo necesario en ventanas consecutivas.</small></div>' +
-      '<div class="route-now"><span class="rl">Revisión</span><strong><code>/incoherencias</code> · todos los flecos</strong>' +
+    return '<div class="route-now"><span class="rl">Revisión</span><strong><code>/incoherencias</code> · todos los flecos</strong>' +
       '<small>Resuelve deudas, verificaciones y contradicciones sin volver a cada comando.</small></div>' +
       fold("Los 22 prompts", items.length,
       '<ol class="prompt-list">' + items.map(function (item) {
@@ -1301,6 +1317,17 @@ A.anillos.forEach(function (r) {
 
   function pintarDiagrama() {
     var est = estadoActivo(), sig = est ? siguienteDe(est) : null;
+
+    /* Sin ruta, el mapa no tenía ningún punto de entrada señalado y quien acababa de clonar no sabía
+       por dónde empezar. La primera acción vive en el centro, así que el centro lo dice. */
+    var nucleoMapa = document.querySelector(".core");
+    if (nucleoMapa) {
+      var empezando = sinRutaAun(est);
+      nucleoMapa.classList.toggle("siguiente", empezando);
+      if (empezando) nucleoMapa.setAttribute("aria-current", "step");
+      else nucleoMapa.removeAttribute("aria-current");
+    }
+
     P.forEach(function (p) {
       var nodo = hub.querySelector('.node[data-key="' + p.k + '"]');
       var nodoMovil = fb.querySelector('.hf-item[data-key="' + p.k + '"]');
