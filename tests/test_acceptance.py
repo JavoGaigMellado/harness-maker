@@ -1071,3 +1071,49 @@ def test_init_says_which_project_it_pointed_at(tmp_path, monkeypatch, capsys):
     salida=capsys.readouterr().out
     assert "Proyecto diagnosticado:" in salida and str(proyecto.resolve()) in salida
     assert "--repo <ruta>" in salida
+
+
+def test_the_doctrine_does_not_name_the_four_cases_by_letter():
+    """Los cuatro casos no se nombran «A», «B», «C» ni «D».
+
+    La leyenda pedía seguirlos de ficha en ficha, y los dossiers que la sostenían se retiraron del
+    árbol: quien usa el taller no puede consultarlos, así que las letras solo le hacían memorizar
+    etiquetas vacías. La procedencia y el límite de la evidencia siguen contados en el centro.
+    """
+    import re as _re
+    anatomy=load_anatomy()
+    crudo=json.dumps(anatomy,ensure_ascii=False)
+    assert not _re.search(r"<b>[ABCD]</b>", crudo)
+    assert "seguirlos de ficha en ficha" not in crudo
+    # El centro sigue diciendo de dónde sale la doctrina, sin etiquetas.
+    assert "cuatro proyectos reales" in anatomy["centro"]["casos"]
+    workshop=Path("diagramas/diagrama_taller.html").read_text(encoding="utf-8")
+    assert ".abcd" not in workshop
+
+
+def test_every_example_lands_in_the_email_assistant():
+    """El centro promete que el correo hila todo el diagrama, así que cada ejemplo lo cumple.
+
+    El de Contexto enumeraba categorías en abstracto —«quién eres, cómo funciona tu empresa»— y no
+    enseñaba ningún correo. Un ejemplo que no aterriza no es un ejemplo.
+    """
+    vocabulario=("correo","borrador","hilo","buzón","mensaje","cliente","enviar","envío","respuesta",
+                 "responde","respondes")
+    anatomy=load_anatomy()
+    for piece in anatomy["piezas"]:
+        ejemplo=piece["ejemplo"].lower()
+        assert any(v in ejemplo for v in vocabulario), f"{piece['id']} no aterriza en el correo"
+
+
+def test_the_diagnostic_does_not_re_ask_which_project_it_is():
+    """`init` ya eligió el proyecto y lo dijo; volver a preguntarlo reabre lo decidido.
+
+    Al pedir que preguntase cuando la ruta no fuera la suya, la primera ventana del diagnóstico
+    ofrecía carpetas —incluida una interna que la persona no había vuelto a nombrar—. Decir qué
+    carpeta se observa es informar; ofrecer candidatos es volver a decidir por ella.
+    """
+    skill=Path(".claude/skills/diagnostico/SKILL.md").read_text(encoding="utf-8")
+    plano=" ".join(skill.split())
+    assert "no volver a preguntar cuál es" in plano.lower()
+    assert "ni ofrecer candidatos ni buscarlos" in plano
+    assert "harness-lab init --reiniciar --repo" in plano

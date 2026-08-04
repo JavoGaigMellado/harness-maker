@@ -29,7 +29,7 @@ Al portátil que se rompe, al fichero que se sobrescribe y a la persona que se v
 
 Pregunta principal: **¿Sobrevive tu harness al portátil, al borrado y a que tú no estés?**
 
-En el ejemplo del ayudante de correo: Todo está en un repositorio con historia. Las claves, fuera. Hay una copia que no vive en tu portátil. Y un README que explica cómo arrancar en diez minutos.
+En el ejemplo del ayudante de correo: El ayudante de correo vive en un repositorio con historia: se ve cuándo cambió cada regla y por qué. La contraseña del buzón, fuera. Hay una copia que no está en tu portátil. Y un README que explica cómo dejarlo respondiendo en diez minutos.
 
 ## Puntos clave
 

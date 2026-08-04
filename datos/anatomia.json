@@ -36,7 +36,7 @@
       "<b>Si solo te llevas una idea:</b> el mejor harness no es el que más automatiza. Es el que te ayuda a trabajar mejor, actúa dentro de límites conscientes, deja resultados verificables y aprende sin perder su historia."
     ],
     "industria": "<p>Anthropic define un <i>agent harness</i> como el sistema que permite actuar al modelo: procesa entradas, orquesta herramientas y devuelve resultados. E identifica Claude Code como un harness flexible. <b>Ahí el bucle general ya está resuelto</b>: lo que cada persona construye encima es la capa de su trabajo.</p><p>NIST sitúa misión, alcance, responsabilidades y tolerancia al riesgo <b>antes</b> de las actividades de medida. Por eso el centro de este diagrama es el trabajo, no la tecnología.</p><cite>Anthropic, <a href='https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents'>Demystifying evals for AI agents</a> · NIST, <a href='https://airc.nist.gov/airmf-resources/airmf/5-sec-core/'>AI Risk Management Framework Core</a></cite>",
-    "casos": "<div class='chips-lbl' style='margin-top:0'>Los cuatro proyectos, para poder seguirlos de ficha en ficha</div><ul><li><b>A</b> — un asistente de web, en producción. El único con comprobación automática.</li><li><b>B</b> — una demo montada en un día para una reunión de dirección.</li><li><b>C</b> — el sistema con el que una consultoría lleva su propio negocio.</li><li><b>D</b> — un entorno con el que una persona opera una plataforma de datos. Sin código propio.</li></ul><p>Los cuatro llegaron por caminos distintos a la misma frontera. <b>C</b> la tiene escrita en una línea:</p><p style='font-family:Georgia,serif;font-size:15.5px;color:#2b2b2b;text-align:center;padding:8px 0'>«datos e integridad → código;<br>juicio y matiz → IA»</p><p>Es decir: <b>lo que se puede calcular o comprobar, lo hace el código; lo que requiere criterio, lo hace el modelo.</b></p><p><b>D es el caso que más ha cambiado este diagrama.</b> No tiene programa propio y aun así tiene un harness completo. Cualquier pieza escrita como «programa algo que…» dejaba fuera a D — y a la mayoría de la gente.</p>",
+    "casos": "<p>La doctrina de este diagrama sale de cuatro proyectos reales, muy distintos entre sí: uno en producción con comprobación automática, una demo montada en un día, el sistema con el que una consultoría lleva su propio negocio y un entorno con el que una persona opera una plataforma de datos sin escribir programa alguno.</p><p>Los cuatro llegaron por caminos distintos a la misma frontera, que uno de ellos tiene escrita en una línea:</p><p style='font-family:Georgia,serif;font-size:15.5px;color:#2b2b2b;text-align:center;padding:8px 0'>«datos e integridad → código;<br>juicio y matiz → IA»</p><p>Es decir: <b>lo que se puede calcular o comprobar, lo hace el código; lo que requiere criterio, lo hace el modelo.</b></p><p><b>El caso que más ha cambiado este diagrama es el que no tiene programa propio.</b> Aun así tiene un harness completo. Cualquier pieza escrita como «programa algo que…» lo dejaba fuera — y con él a la mayoría de la gente.</p>",
     "limitacion_evidencia": "Las piezas salen de la documentación pública de quienes construyen estas herramientas y del análisis de cuatro proyectos reales.<br><br><b>Límites de la evidencia interna:</b> los cuatro comparten autor y asistente, así que <b>n=4 y no independiente</b>. Ninguno tenía usuarios finales a diario. Sirve para formular hipótesis, no para demostrar causalidades.<br><br>Cuando una observación interna aparece en una ficha, va etiquetada como observación."
   },
   "anillos": [
@@ -259,7 +259,7 @@
       "transversal": false,
       "pregunta_principal": "¿Qué tiene delante cuando trabaja?",
       "explicacion": "Qué tiene delante cuando trabaja.\n\nNo es solo quién debe ser. Son cinco capas: tú, tu organización, el proyecto, la tarea de ahora y lo que quedó de la sesión anterior.\n\nEl contexto es finito. Hay que elegir qué entra.",
-      "ejemplo": "Antes de tocar el correo ya sabe: quién eres, cómo funciona tu empresa, de qué va el proyecto, qué te acaban de pedir y qué se decidió la última vez.",
+      "ejemplo": "Llega «¿podéis adelantar la entrega dos semanas?». Antes de escribir una palabra ya tiene delante que ese cliente es tuyo, que en tu empresa las fechas las confirma operaciones y no tú, que ese proyecto ya va con retraso, y que la última vez se prometió una fecha sin consultar y hubo que rectificarla.",
       "prioridad_base": "obligatoria",
       "reglas_aplicabilidad": [],
       "reglas_prioridad": [],
@@ -417,7 +417,7 @@
         "Comprobar que otra persona entiende el estado solo leyendo."
       ],
       "industria": "<p>Claude Code guarda la memoria de proyecto en ficheros versionados: viven junto al trabajo y se revisan como cualquier otro artefacto.</p><p>En agentes de larga duración el problema deja de ser la respuesta puntual y pasa a ser <b>conservar estado y decisiones a lo largo de muchas sesiones</b> sin arrastrar todo el historial.</p><cite>Claude Code, <a href='https://code.claude.com/docs/en/memory'>Memory</a> · Anthropic, <a href='https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents'>Effective harnesses for long-running agents</a></cite>",
-      "casos": "<p><b>Observado:</b> los cuatro proyectos guardaban algo, pero solo <b>C</b> separaba preferencia, estado y decisión. En <b>D</b> la pérdida de estado obligó a rehacer trabajo: «se pierde y no pasa nada» no es cierto en todos los trabajos.</p>"
+      "casos": "<p><b>Observado:</b> los cuatro proyectos guardaban algo, pero solo uno separaba preferencia, estado y decisión. En otro, la pérdida de estado obligó a rehacer trabajo: «se pierde y no pasa nada» no es cierto en todos los trabajos.</p>"
     },
     {
       "id": "prompts",
@@ -501,7 +501,7 @@
         "Lo que no puede fallar, ponerlo donde el sistema lo imponga."
       ],
       "industria": "<p>Claude Code separa estos mecanismos de forma explícita: memoria e instrucciones para la orientación duradera, skills y comandos para capacidades invocables, hooks para lo que debe ejecutarse sí o sí.</p><cite>Claude Code, <a href='https://code.claude.com/docs/en/features-overview'>Features overview</a> y <a href='https://code.claude.com/docs/en/memory'>Memory</a></cite>",
-      "casos": "<p><b>Observado:</b> en los cuatro proyectos las instrucciones crecieron sin control hasta que alguien las podó. En <b>A</b> la poda llegó tras comprobar que reglas contradictorias daban resultados inconsistentes.</p>"
+      "casos": "<p><b>Observado:</b> en los cuatro proyectos las instrucciones crecieron sin control hasta que alguien las podó. En uno, la poda llegó tras comprobar que reglas contradictorias daban resultados inconsistentes.</p>"
     },
     {
       "id": "conocimiento",
@@ -698,7 +698,7 @@
         "Definir retención y borrado."
       ],
       "industria": "<p>OWASP sitúa la <b>inyección de instrucciones</b> —directa e indirecta— entre los riesgos principales, junto al tratamiento inseguro de las salidas y la cadena de suministro de extensiones.</p><p>Claude Code desarrolla la contención por capas: permisos explícitos, límites de ficheros y red, y sandbox.</p><cite>OWASP, <a href='https://genai.owasp.org/llm-top-10/?cat=253'>Top 10 for LLM Applications 2025</a> · Claude Code, <a href='https://code.claude.com/docs/en/permissions'>Permissions</a> y <a href='https://code.claude.com/docs/en/sandboxing'>Sandboxing</a> · Anthropic, <a href='https://www.anthropic.com/engineering/how-we-contain-claude'>How we contain Claude</a></cite>",
-      "casos": "<p><b>Observado:</b> ninguno de los cuatro proyectos tenía usuarios diarios, así que su experiencia sobre ataques reales es limitada. En <b>A</b>, la única defensa que sobrevivió al uso fue la de permisos.</p>"
+      "casos": "<p><b>Observado:</b> ninguno de los cuatro proyectos tenía usuarios diarios, así que su experiencia sobre ataques reales es limitada. En uno, la única defensa que sobrevivió al uso fue la de permisos.</p>"
     },
     {
       "id": "proveedor",
@@ -782,7 +782,7 @@
         "Si hay código propio: aislar la llamada en un único sitio."
       ],
       "industria": "<p>Anthropic describe el <i>agent harness</i> como el sistema que permite actuar al modelo: procesa entradas, orquesta herramientas y devuelve resultados. E identifica Claude Code como un harness flexible. <b>Ahí el bucle ya está hecho</b>: lo que construyes es la capa de tu trabajo.</p><cite>Anthropic, <a href='https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents'>Demystifying evals for AI agents</a></cite>",
-      "casos": "<p><b>Observado:</b> tres de los cuatro tenían código propio y aislaron la llamada. El cuarto, <b>D</b>, no tiene programa y aun así tiene harness. Por eso esta pieza no puede decir «escribe un adaptador».</p>"
+      "casos": "<p><b>Observado:</b> tres de los cuatro tenían código propio y aislaron la llamada. El cuarto no tiene programa y aun así tiene harness. Por eso esta pieza no puede decir «escribe un adaptador».</p>"
     },
     {
       "id": "tools",
@@ -893,7 +893,7 @@
         "Dejar por escrito la alternativa manual."
       ],
       "industria": "<p>El Model Context Protocol trata la autorización como parte del diseño: qué identidad se usa y qué alcance se concede, en vez de heredar credenciales amplias. OWASP recoge la confianza en extensiones de terceros como riesgo propio.</p><cite>MCP, <a href='https://modelcontextprotocol.io/docs/tutorials/security/authorization'>Understanding Authorization</a> · OWASP, <a href='https://genai.owasp.org/llm-top-10/?cat=253'>Top 10 for LLM Applications 2025</a></cite>",
-      "casos": "<p><b>Observado:</b> las herramientas de lectura se añadieron pronto y sin incidentes; las de escritura, tarde y con miedo. En <b>A</b>, escritura acotada a una carpeta y con registro funcionó bien durante meses.</p>"
+      "casos": "<p><b>Observado:</b> las herramientas de lectura se añadieron pronto y sin incidentes; las de escritura, tarde y con miedo. En uno, escritura acotada a una carpeta y con registro funcionó bien durante meses.</p>"
     },
     {
       "id": "salida",
@@ -977,7 +977,7 @@
         "Listar los efectos externos que puede producir."
       ],
       "industria": "<p>La salida estructurada es la técnica adecuada <b>cuando otra máquina consume el resultado</b>. Cuando el consumidor es una persona, imponer una estructura rígida puede empeorarlo sin ganar nada.</p><cite>OpenAI, <a href='https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/'>A practical guide to building agents</a></cite>",
-      "casos": "<p><b>Observado:</b> los cuatro usaban salida estructurada, y los cuatro tenían programa que la consumía. No hay ningún caso sin código, así que <b>no puede decirse que sea universal</b>. En <b>C</b>, marcar «borrador / revisado / definitivo» evitó envíos prematuros.</p>"
+      "casos": "<p><b>Observado:</b> los cuatro usaban salida estructurada, y los cuatro tenían programa que la consumía. No hay ningún caso sin código, así que <b>no puede decirse que sea universal</b>. En uno, marcar «borrador / revisado / definitivo» evitó envíos prematuros.</p>"
     },
     {
       "id": "flujo",
@@ -1079,7 +1079,7 @@
         "Anotar qué decide el modelo y qué la persona."
       ],
       "industria": "<p>Las guías de construcción de agentes coinciden: empezar por lo más simple y añadir orquestación solo cuando el caso lo pide, con criterios de parada, límites de coste y puntos de intervención humana definidos por adelantado.</p><cite>OpenAI, <a href='https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/'>A practical guide to building agents</a> · Anthropic, <a href='https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents'>Effective harnesses for long-running agents</a></cite>",
-      "casos": "<p><b>Observado:</b> los cuatro empezaron más simples de lo que acabaron, y ninguno lo lamentó. En <b>D</b>, sin código, el flujo son comandos preparados dentro del asistente.</p>"
+      "casos": "<p><b>Observado:</b> los cuatro empezaron más simples de lo que acabaron, y ninguno lo lamentó. En el que no tenía programa propio, el flujo son comandos preparados dentro del asistente.</p>"
     },
     {
       "id": "validar",
@@ -1364,7 +1364,7 @@
         "Revisar el banco con casos nuevos."
       ],
       "industria": "<p>La guía de evaluación de agentes parte de tareas reales representativas y criterios explícitos, y recomienda definir qué es correcto antes de ampliar la autonomía, combinando comprobaciones deterministas con juicio humano.</p><cite>Anthropic, <a href='https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents'>Demystifying evals for AI agents</a></cite>",
-      "casos": "<p><b>Observado:</b> solo <b>A</b> tenía comprobación automática. En los otros tres el criterio no estaba escrito, y en los tres hubo desacuerdos sobre si algo estaba bien. Escribir el criterio ayuda aunque no lo automatices.</p>"
+      "casos": "<p><b>Observado:</b> solo uno de los cuatro tenía comprobación automática. En los otros tres el criterio no estaba escrito, y en los tres hubo desacuerdos sobre si algo estaba bien. Escribir el criterio ayuda aunque no lo automatices.</p>"
     },
     {
       "id": "observabilidad",
@@ -1471,7 +1471,7 @@
         "Decidir retención y acceso de los registros."
       ],
       "industria": "<p>Las prácticas de evaluación en uso real recomiendan revisar muestras de trabajo auténtico de forma periódica, y tratar el feedback de quien lo usa como parte del ciclo de mejora, no como un comentario lateral.</p><cite>Anthropic, <a href='https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents'>Demystifying evals for AI agents</a></cite>",
-      "casos": "<p><b>Observado:</b> ninguno de los cuatro tenía un ciclo de feedback formal. En <b>C</b> las correcciones se anotaban a mano y se revisaban de vez en cuando. Fue el único que las convirtió en reglas de forma sistemática.</p>",
+      "casos": "<p><b>Observado:</b> ninguno de los cuatro tenía un ciclo de feedback formal. En uno, las correcciones se anotaban a mano y se revisaban de vez en cuando. Fue el único que las convirtió en reglas de forma sistemática.</p>",
       "accion_preparada": {
         "titulo": "Abrir la plantilla de correcciones",
         "hace": [
@@ -1494,7 +1494,7 @@
       "transversal": false,
       "pregunta_principal": "¿Dónde vive tu harness, y en qué mecanismo va cada regla?",
       "explicacion": "Dónde vive tu harness, en concreto.\n\nEn Claude Code esto no es un andamio: es la arquitectura. Instrucciones, reglas, comandos, subagentes, hooks, integraciones y permisos son mecanismos distintos.\n\nElegir mal el mecanismo es el fallo más común.",
-      "ejemplo": "Tu estilo va en instrucciones de proyecto. Lo que haces cada día, en un comando. Lo que no puede saltarse, en un hook. Lo que no debe tocarse, en permisos. Todo dentro del repositorio.",
+      "ejemplo": "Que respondes en usted va en las instrucciones del proyecto. «Prepárame el borrador de este hilo» va en un comando. Que nada se envíe sin que lo leas va en un hook. Que no pueda abrir la carpeta de facturación va en permisos. Todo dentro del repositorio del ayudante de correo.",
       "prioridad_base": "alta",
       "reglas_aplicabilidad": [],
       "reglas_prioridad": [
@@ -1570,7 +1570,7 @@
         "Comprobar que alguien puede clonar y arrancar sin ayuda."
       ],
       "industria": "<p>Claude Code documenta los componentes de extensión y sus diferencias, la estructura del directorio de configuración y el sistema de plugins. La distinción entre lo que orienta, lo que se invoca, lo que obliga y lo que limita es explícita.</p><cite>Claude Code, <a href='https://code.claude.com/docs/en/features-overview'>Features overview</a>, <a href='https://code.claude.com/docs/en/claude-directory'>.claude directory</a> y <a href='https://code.claude.com/docs/en/plugins'>Plugins</a></cite>",
-      "casos": "<p><b>Observado:</b> en los cuatro esta capa creció sin plan y hubo que reordenarla. El síntoma siempre fue el mismo: la misma regla escrita en dos sitios. En <b>D</b>, sin código, esta pieza <b>es</b> casi todo el harness.</p>",
+      "casos": "<p><b>Observado:</b> en los cuatro esta capa creció sin plan y hubo que reordenarla. El síntoma siempre fue el mismo: la misma regla escrita en dos sitios. En el que no tenía programa propio, esta pieza <b>es</b> casi todo el harness.</p>",
       "accion_preparada": {
         "titulo": "Dejar el andamiaje del asistente montado",
         "hace": [
@@ -1767,7 +1767,7 @@
       "transversal": true,
       "pregunta_principal": "¿Sobrevive tu harness al portátil, al borrado y a que tú no estés?",
       "explicacion": "Que el harness sobreviva.\n\nAl portátil que se rompe, al fichero que se sobrescribe y a la persona que se va.\n\nSi otra persona no puede clonarlo y arrancar, no tienes un harness: tienes una máquina configurada.",
-      "ejemplo": "Todo está en un repositorio con historia. Las claves, fuera. Hay una copia que no vive en tu portátil. Y un README que explica cómo arrancar en diez minutos.",
+      "ejemplo": "El ayudante de correo vive en un repositorio con historia: se ve cuándo cambió cada regla y por qué. La contraseña del buzón, fuera. Hay una copia que no está en tu portátil. Y un README que explica cómo dejarlo respondiendo en diez minutos.",
       "prioridad_base": "media",
       "reglas_aplicabilidad": [],
       "reglas_prioridad": [],
@@ -1860,7 +1860,7 @@
       "transversal": true,
       "pregunta_principal": "¿Qué no hace, y cuándo se revisa o se retira?",
       "explicacion": "Qué no hace, y hasta cuándo.\n\nRegistrar los descartes con su motivo evita repetir la misma discusión cada mes.\n\nY la pregunta que casi nadie se hace: cuándo hay que revisar esto, y cuándo retirarlo.",
-      "ejemplo": "Está escrito que no toca facturación (riesgo alto, valor bajo), que traducir se pospone hasta tener casos, y que todo se revisa en enero. Cada descarte tiene responsable.",
+      "ejemplo": "Está escrito que no responde los correos de facturación (riesgo alto, valor bajo), que traducir los hilos con proveedores extranjeros se pospone hasta tener casos, y que todo se revisa en enero. Cada descarte tiene responsable.",
       "prioridad_base": "obligatoria",
       "reglas_aplicabilidad": [],
       "reglas_prioridad": [

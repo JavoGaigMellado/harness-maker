@@ -29,7 +29,7 @@ No es solo quién debe ser. Son cinco capas: tú, tu organización, el proyecto,
 
 Pregunta principal: **¿Qué tiene delante cuando trabaja?**
 
-En el ejemplo del ayudante de correo: Antes de tocar el correo ya sabe: quién eres, cómo funciona tu empresa, de qué va el proyecto, qué te acaban de pedir y qué se decidió la última vez.
+En el ejemplo del ayudante de correo: Llega «¿podéis adelantar la entrega dos semanas?». Antes de escribir una palabra ya tiene delante que ese cliente es tuyo, que en tu empresa las fechas las confirma operaciones y no tú, que ese proyecto ya va con retraso, y que la última vez se prometió una fecha sin consultar y hubo que rectificarla.
 
 ## Puntos clave
 

@@ -29,7 +29,7 @@ Registrar los descartes con su motivo evita repetir la misma discusión cada mes
 
 Pregunta principal: **¿Qué no hace, y cuándo se revisa o se retira?**
 
-En el ejemplo del ayudante de correo: Está escrito que no toca facturación (riesgo alto, valor bajo), que traducir se pospone hasta tener casos, y que todo se revisa en enero. Cada descarte tiene responsable.
+En el ejemplo del ayudante de correo: Está escrito que no responde los correos de facturación (riesgo alto, valor bajo), que traducir los hilos con proveedores extranjeros se pospone hasta tener casos, y que todo se revisa en enero. Cada descarte tiene responsable.
 
 ## Puntos clave
 

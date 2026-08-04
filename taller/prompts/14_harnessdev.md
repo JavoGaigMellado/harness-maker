@@ -29,7 +29,7 @@ En Claude Code esto no es un andamio: **es la arquitectura**. Instrucciones, reg
 
 Pregunta principal: **¿Dónde vive tu harness, y en qué mecanismo va cada regla?**
 
-En el ejemplo del ayudante de correo: Tu estilo va en instrucciones de proyecto. Lo que haces cada día, en un comando. Lo que no puede saltarse, en un hook. Lo que no debe tocarse, en permisos. Todo dentro del repositorio.
+En el ejemplo del ayudante de correo: Que respondes en usted va en las instrucciones del proyecto. «Prepárame el borrador de este hilo» va en un comando. Que nada se envíe sin que lo leas va en un hook. Que no pueda abrir la carpeta de facturación va en permisos. Todo dentro del repositorio del ayudante de correo.
 
 ## Puntos clave
 

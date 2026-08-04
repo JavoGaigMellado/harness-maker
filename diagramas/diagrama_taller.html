@@ -257,16 +257,6 @@
             padding:2px 7px;border-radius:5px;flex:none}
   .chips-lbl{font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);
              font-weight:600;margin:18px 0 0}
-  /* leyenda de los cuatro proyectos, visible nada más entrar */
-  .abcd{background:var(--bg);border:1px solid var(--line);border-radius:10px;
-        padding:11px 14px 12px;margin:15px 0 0}
-  .abcd .chips-lbl{margin:0 0 7px}
-  .abcd ul{margin:0;padding-left:16px}
-  .abcd li{font-size:13px;line-height:1.5;color:var(--ink2);margin-bottom:4px;
-           text-align:justify;hyphens:auto}
-  .abcd li:last-child{margin-bottom:0}
-  .abcd b{color:var(--ink)}
-
   .srcblock{border-radius:10px;padding:12px 14px;margin:0 0 10px;font-size:13px;line-height:1.58}
   .srcblock .sh{display:flex;align-items:center;gap:8px;font-size:9.5px;letter-spacing:.15em;
                 text-transform:uppercase;font-weight:700;margin-bottom:7px}
@@ -746,16 +736,14 @@ A.anillos.forEach(function (r) {
   /* ── Pestaña «Información»: el contenido del diagrama base, intacto ── */
 
   function cuerpoInfoCore() {
-    /* la leyenda A/B/C/D abre el bloque `pro`: se saca fuera para que se vea
-       antes que las fichas, sin tocar el contenido */
-    var corte = CORE.pro.indexOf("</ul>");
-    var leyenda = corte > 0 ? CORE.pro.slice(0, corte + 5) : "";
-    var restoPro = corte > 0 ? CORE.pro.slice(corte + 5) : CORE.pro;
+    /* Aquí se sacaba fuera una leyenda de los cuatro casos —«A», «B», «C», «D»— para poder
+       seguirlos de ficha en ficha. Se retiró el 2026-08-04: los dossiers que la sostenían no están
+       en el árbol, así que a quien usa el taller esas letras no le dicen nada. La procedencia sigue
+       contada, y sin etiquetas que memorizar. */
     return '<p class="desc">' + CORE.desc + '</p>' +
       '<div class="ej"><span class="ej-lbl">El ejemplo que hila todo el diagrama</span><p>' + CORE.ej + '</p></div>' +
-      (leyenda ? '<div class="abcd">' + leyenda + '</div>' : '') +
       fold("Cómo se lee el diagrama", "", bullets(CORE.pts)) +
-      sources(CORE.ext, restoPro) +
+      sources(CORE.ext, CORE.pro) +
       fold("De dónde salen estas piezas", "", '<p style="font-size:13.5px;color:var(--ink2);margin:0;line-height:1.55">' + CORE.risk + '</p>');
   }
 

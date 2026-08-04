@@ -593,7 +593,12 @@ disable-model-invocation: true
    init --repo` ya fijó; por defecto, este repositorio. Observar solo dentro de esa ruta. **No
    inventariar carpetas ajenas ni proponer como proyecto ninguna que la persona no haya nombrado**,
    aunque el entorno dé acceso a otras rutas: cuál es su proyecto lo dice ella, no un hallazgo del
-   sistema de archivos. Si la ruta declarada no es la suya, preguntar cuál es y pedirla escrita.
+   sistema de archivos.
+   **Y no volver a preguntar cuál es.** Ya está decidido: `init` lo eligió y lo dijo al escribirlo.
+   Preguntarlo otra vez convierte en duda algo resuelto y obliga a repetir rutas que la persona no ha
+   vuelto a nombrar. Basta con decir en una línea qué carpeta se está observando. Solo si ella dice
+   que está mal, indicarle `harness-lab init --reiniciar --repo <ruta>`; ni ofrecer candidatos ni
+   buscarlos.
 3. Mostrar un **Estado actual** breve con hechos observados, inferencias, desconocidos y la ruta
    donde se guardará el diagnóstico.
 4. Contar todos los desconocidos y anunciar `Preguntas: N · ventanas: M`. Formularlos mediante
