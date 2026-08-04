@@ -1010,3 +1010,25 @@ def test_decisions_must_say_what_a_thing_is():
     # La vista parte el texto por ese separador; si cambia, las definiciones se caen a lista plana.
     workshop=Path("diagramas/diagrama_taller.html").read_text(encoding="utf-8")
     assert 'texto.indexOf(" — ")' in workshop
+
+
+def test_restarting_says_the_route_is_new_and_names_the_next_step(tmp_path, monkeypatch, capsys):
+    """`init --reiniciar` estrena un recorrido, así que no puede decir que reactiva uno existente.
+
+    `existing_diagnostic` se calculaba antes de apartar el anterior, de modo que el reinicio anunciaba
+    «Recorrido existente reactivado» y se callaba la línea que nombra el siguiente paso. Es
+    exactamente lo que necesita leer quien acaba de decidir empezar de cero.
+    """
+    from harness_lab import cli
+    proyecto=tmp_path/"proyecto"; proyecto.mkdir()
+    espacio=tmp_path/"mi-harness"
+    monkeypatch.setattr(cli,"ROOT",tmp_path)
+    monkeypatch.setattr(cli,"POINTER_PATH",tmp_path/".harness-maker.json")
+    comun=["init","--repo",str(proyecto),"--workspace",str(espacio)]
+    cli.main(comun)
+    assert "/diagnostico" in capsys.readouterr().out
+    cli.main(comun+["--reiniciar"])
+    salida=capsys.readouterr().out
+    assert "Recorrido existente reactivado" not in salida
+    assert "/diagnostico" in salida
+    assert len(list(tmp_path.glob("mi-harness-anterior-*")))==1

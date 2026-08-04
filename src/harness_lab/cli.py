@@ -39,7 +39,10 @@ def main(argv: list[str] | None=None) -> None:
     args=parser().parse_args(argv)
     try:
         if args.cmd=="init":
-            existing_diagnostic=(args.workspace / "diagnostico.json").exists()
+            # `--reiniciar` aparta el recorrido anterior, así que el que queda es nuevo aunque hubiera
+            # uno antes. Sin este `and not`, el reinicio decía «recorrido existente reactivado» y se
+            # callaba la línea que nombra el siguiente paso, que es justo la que hace falta al empezar.
+            existing_diagnostic=(args.workspace / "diagnostico.json").exists() and not args.reiniciar
             written=init_workspace(ROOT,POINTER_PATH,args.workspace,args.repo,restart=args.reiniciar)
             if enable_git_hooks(ROOT): print("Activado el guardián de generados (core.hooksPath = .githooks)")
             diagnostic=(args.workspace / "diagnostico.json").resolve()
