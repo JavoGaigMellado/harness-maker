@@ -951,5 +951,11 @@ def test_activities_resolve_by_pointer_and_may_improve_the_workshop():
         assert "`.harness-maker.json`" in prompt and "harness-lab init" in prompt
         assert "proyectos/*/estado.json" not in prompt
         skill=Path(f".claude/skills/{piece['id']}/SKILL.md").read_text(encoding="utf-8")
-        assert "Es la fase 2: mejorarla mientras se usa" in skill
+        # Las dos mitades de la regla, no una frase: en la copia de desarrollo el taller se mejora
+        # mientras se usa, y en una copia recibida no se toca. Si solo viajara la primera, cada
+        # actividad invitaría a editar archivos versionados que llegan por `git pull`, y la
+        # actualización —el mecanismo que hace llegar los arreglos— chocaría en la copia de quien
+        # los espera.
+        assert "es la fase 2, y mejorarla mientras se usa es el" in skill
+        assert "En una copia recibida, no" in skill and "git pull" in skill
         assert "confirmación de la persona antes de tocarlos" in skill

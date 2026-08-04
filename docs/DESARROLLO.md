@@ -144,7 +144,8 @@ procedencia, no el tema.
 
 **Retirarlos del árbol no los borra de la historia de git.** Es el motivo por el que repartir exige
 crear un repositorio nuevo desde el árbol limpio, no limpiar este: `git log` de esta copia sigue
-conteniéndolo todo. El procedimiento está en [`docs/REPARTO.md`](REPARTO.md).
+conteniéndolo todo. El procedimiento está en `docs/REPARTO.md`, que no viaja al reparto: por eso se
+nombra sin enlazarlo, o el único enlace roto del árbol repartido sería este.
 
 La evidencia interna sigue siendo **n=4 no independiente**: los cuatro casos compartían autor,
 asistente y en parte organización. Sirve para formular preguntas e hipótesis de diseño, no para

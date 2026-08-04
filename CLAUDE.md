@@ -45,9 +45,14 @@ Estas reglas se aplican durante toda la sesión, también fuera de las actividad
   No se toca como efecto lateral: si trabajando se ve que debería cambiar, se propone y se espera
   la confirmación de la persona.
 - Fase 2 · taller: generador, prompts, skills y `diagramas/diagrama_taller.html`. Aquí viven la
-  interacción y la forma de mostrar cualquier proyecto. Cuando al usar el taller se ve algo que
-  arreglar en él, se arregla en el momento y se informa al cerrar: destilarlo es el objetivo de la
-  fase 3, no una distracción.
+  interacción y la forma de mostrar cualquier proyecto. En la copia de desarrollo —la que tiene
+  `proyectos/harness-lab/`— cuando al usar el taller se ve algo que arreglar en él, se arregla en el
+  momento y se informa al cerrar: destilarlo es el objetivo de la fase 3, no una distracción.
+  En una copia recibida, no: el taller llega por `git pull`, y editarlo allí deja archivos
+  versionados modificados que chocan con la siguiente actualización, que es justo el mecanismo que
+  hace llegar los arreglos. Ahí la mejora se propone, se anota en el recorrido y se traslada a quien
+  mantiene el proyecto; misma regla que la fase 1. Lo que siempre se puede tocar en cualquier copia
+  es el recorrido de la persona.
 - Fase 3 · el recorrido de quien usa el taller: `estado.json`, `cobertura.json` y `piezas/` dentro
   del directorio que declare el puntero, normalmente `mi-harness/`. Aquí viven las decisiones
   concretas de ese proyecto, y **no se tocan como efecto lateral de arreglar el taller**. En la copia

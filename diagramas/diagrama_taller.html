@@ -558,11 +558,20 @@
 
 <script src="../datos/anatomia.js"></script>
 <script src="../taller/ejemplo/estado.js"></script>
-<script src="../proyectos/harness-lab/estado.js"></script>
 <!-- El recorrido propio, si esa persona ya lo tiene. Si no existe, el archivo falta y no pasa nada. -->
 <script src="../mi-harness/estado.js"></script>
 <script src="../mi-harness/cobertura.js"></script>
-<script src="../proyectos/harness-lab/cobertura.js"></script>
+<!-- El recorrido del propio Harness-Maker es fase 3: existe en la copia de desarrollo y no viaja al
+     reparto. Solo se pide cuando la URL lo nombra, que es la única vía de enseñarlo, para que una
+     copia recibida no intente cargar dos archivos que allí no existen; faltar no rompía la página,
+     pero dejaba en la consola de quien acaba de llegar dos rutas de un proyecto que no es el suyo.
+     El `document.write` es deliberado: el render de abajo lee estos globales de forma síncrona. -->
+<script>
+  if (new URLSearchParams(location.search).get("proyecto") === "harness-lab") {
+    document.write('<script src="../proyectos/harness-lab/estado.js"><\/script>');
+    document.write('<script src="../proyectos/harness-lab/cobertura.js"><\/script>');
+  }
+</script>
 <script>
 (function () {
   "use strict";

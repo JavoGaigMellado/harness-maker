@@ -88,9 +88,13 @@ siga realmente pendiente; registrar y explicar la causa concreta.
 - Sin una acción preparada por el prompt y aceptada expresamente en el cuestionario, limitar las
   escrituras al estado, `cobertura.json`, el Markdown de la actividad y sus derivados generados.
 - Si al hacer la actividad se ve que el taller mismo debería cambiar —los prompts de
-  `taller/prompts/`, las skills, el generador o `diagramas/diagrama_taller.html`—, cambiarlo en el
-  momento y decir al cerrar qué se tocó y por qué. Es la fase 2: mejorarla mientras se usa es el
-  objetivo, no un efecto lateral.
+  `taller/prompts/`, las skills, el generador o `diagramas/diagrama_taller.html`—, mirar antes de qué
+  copia se trata. En la copia de desarrollo, la que tiene `proyectos/harness-lab/`, cambiarlo en el
+  momento y decir al cerrar qué se tocó y por qué: es la fase 2, y mejorarla mientras se usa es el
+  objetivo, no un efecto lateral. En una copia recibida, no: el taller llega por `git pull`, y
+  editarlo allí deja archivos versionados modificados que chocan con la siguiente actualización, que
+  es justo lo que hace llegar los arreglos. Proponer la mejora, anotarla en el recorrido y decir que
+  se traslade a quien mantiene el proyecto.
 - No modificar `datos/anatomia.json`, los esquemas ni `diagramas/diagrama_base.html`, que son la
   doctrina. Si se descubre que debería cambiar, proponerlo en el mismo cuestionario y esperar la
   confirmación de la persona antes de tocarlos.
