@@ -1044,9 +1044,11 @@ recordar en qué orden va cada paso.
 4. Si alguna comprobación está en rojo, decirlo primero y proponer el arreglo concreto antes
    de ofrecer trabajo del recorrido. Trabajar sobre rojo confunde un fallo del taller con un
    fallo de la máquina, y eso contamina cualquier prueba posterior.
-5. El mapa se abre solo en el navegador. Si la persona no lo ve, darle la ruta
-   `diagramas/mapa_harness_lab.html` para abrirlo con doble clic: carga sus datos por
-   `<script>` y no necesita servidor.
+5. El mapa se abre solo en el navegador. Si la persona no lo ve, darle **la ruta que el arrancador
+   acaba de imprimir**, no una fija: en una copia recibida el mapa es `diagramas/diagrama_taller.html`
+   y `diagramas/mapa_harness_lab.html` no existe, porque es del recorrido propio del proyecto y no
+   viaja. Carga sus datos por `<script>` y no necesita servidor, así que basta el doble clic. Con
+   `file://` enseña la semilla generada; para que se refresque solo, abrirlo con Live Preview.
 6. Cerrar diciendo qué puede hacer ya y con qué comando sigue. Si no queda actividad abierta
    pero hay verificaciones pendientes, nombrarlas: definidas no es lo mismo que comprobadas.
 

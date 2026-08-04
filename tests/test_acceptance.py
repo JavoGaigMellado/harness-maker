@@ -971,6 +971,12 @@ def test_a_new_route_points_at_the_core_and_the_diagnostic():
     assert ".core.in.siguiente" in workshop
     # El resalte de seleccionado se declara después para que gane cuando el núcleo esté abierto.
     assert workshop.index(".core.in.siguiente") < workshop.index(".core.in.on")
+    # Un halo estático no se leía como «púlsame»: late, y además lo dice con palabras.
+    assert "@keyframes latido-nucleo" in workshop
+    assert 'animation:latido-nucleo' in workshop
+    assert '"empieza aquí"' in workshop
+    # Y sin animación sigue siendo lo más visible, no un centro apagado.
+    assert ".core.in.siguiente{animation:none" in workshop
 
 
 def test_activities_observe_only_the_project_the_person_declared():
@@ -1032,3 +1038,36 @@ def test_restarting_says_the_route_is_new_and_names_the_next_step(tmp_path, monk
     assert "Recorrido existente reactivado" not in salida
     assert "/diagnostico" in salida
     assert len(list(tmp_path.glob("mi-harness-anterior-*")))==1
+
+
+def test_start_does_not_send_the_person_to_a_file_that_did_not_travel():
+    """`/start` mandaba abrir `diagramas/mapa_harness_lab.html`, que no viaja al reparto.
+
+    Es el atajo al recorrido propio del proyecto y se va con la fase 3, así que en la copia de quien
+    recibe no existe. La skill tiene que dar la ruta que el arrancador acaba de imprimir, y el mapa
+    que existe en cualquier copia es `diagramas/diagrama_taller.html`.
+    """
+    skill=Path(".claude/skills/start/SKILL.md").read_text(encoding="utf-8")
+    # Sin saltos: el ajuste de líneas del generador partía «no viaja» en dos y la prueba mentía.
+    plano=" ".join(skill.split())
+    assert "diagramas/diagrama_taller.html" in plano
+    assert "`diagramas/mapa_harness_lab.html` no existe" in plano and "no viaja" in plano
+    # Y el arrancador imprime esa ruta de verdad, o la instrucción sería falsa.
+    assert "Mapa abierto en el navegador" in Path("src/harness_lab/arranque.py").read_text(encoding="utf-8")
+
+
+def test_init_says_which_project_it_pointed_at(tmp_path, monkeypatch, capsys):
+    """`--repo` toma la carpeta actual por defecto, así que hay que decir cuál eligió.
+
+    Sin esta línea, un reinicio dentro del propio taller dejaba el diagnóstico apuntando a
+    Harness-Maker sin que nadie lo hubiera decidido, y el diagnóstico posterior tenía que inferirlo
+    leyendo el JSON. Una elección por omisión que no se anuncia se lee como una decisión.
+    """
+    from harness_lab import cli
+    proyecto=tmp_path/"proyecto"; proyecto.mkdir()
+    monkeypatch.setattr(cli,"ROOT",tmp_path)
+    monkeypatch.setattr(cli,"POINTER_PATH",tmp_path/".harness-maker.json")
+    cli.main(["init","--repo",str(proyecto),"--workspace",str(tmp_path/"mi-harness")])
+    salida=capsys.readouterr().out
+    assert "Proyecto diagnosticado:" in salida and str(proyecto.resolve()) in salida
+    assert "--repo <ruta>" in salida

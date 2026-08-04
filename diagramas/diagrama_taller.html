@@ -141,10 +141,17 @@
   /* La primera acción de un recorrido nuevo es el centro: mientras no haya ruta, el diagnóstico es
      lo único que se puede hacer, así que el núcleo tiene que ser lo que más se ve. Va antes que
      `.on` a propósito: si además está abierto, gana el resalte de seleccionado. */
-  .core.in.siguiente{box-shadow:0 0 0 0.22cqw rgba(176,141,87,.9),
-              0 0 0 1.05cqw rgba(176,141,87,.24), 0 0 2.6cqw 0.5cqw rgba(176,141,87,.3),
-              0 1.4cqw 3.6cqw rgba(43,43,43,.3), inset 0 0 0 0.13cqw rgba(176,141,87,.85)}
+  .core.in.siguiente{animation:latido-nucleo 2.8s ease-in-out infinite}
   .core.in.siguiente .clab{color:#fdf7ec}
+  .core.in.siguiente .csub{color:#e8cfa4;letter-spacing:.07em;text-transform:uppercase;
+              font-weight:700}
+  @keyframes latido-nucleo{
+    0%,100%{box-shadow:0 0 0 0.22cqw rgba(176,141,87,.85),0 0 0 0.9cqw rgba(176,141,87,.18),
+      0 0 1.8cqw 0.3cqw rgba(176,141,87,.22),0 1.4cqw 3.6cqw rgba(43,43,43,.28),
+      inset 0 0 0 0.13cqw rgba(176,141,87,.85)}
+    50%{box-shadow:0 0 0 0.34cqw rgba(212,178,120,1),0 0 0 1.5cqw rgba(176,141,87,.26),
+      0 0 3cqw 0.7cqw rgba(176,141,87,.42),0 1.4cqw 3.6cqw rgba(43,43,43,.32),
+      inset 0 0 0 0.16cqw rgba(212,178,120,1)}}
   .core.in.on{box-shadow:0 0 0 0.3cqw rgba(176,141,87,.85),0 0 0 0.75cqw rgba(176,141,87,.2),
               0 1.4cqw 3.6cqw rgba(43,43,43,.28)}
 
@@ -479,6 +486,11 @@
   @media (prefers-reduced-motion:reduce){
     .node.siguiente.in{animation:none;box-shadow:0 0 0 .18cqw var(--accent-soft),
                                     0 0 0 .32cqw rgba(176,141,87,.24)}
+    /* Sin latido sigue siendo lo más visible del mapa: el halo se queda en su punto alto. */
+    .core.in.siguiente{animation:none;
+      box-shadow:0 0 0 .3cqw rgba(212,178,120,1),0 0 0 1.2cqw rgba(176,141,87,.24),
+      0 0 2.6cqw .5cqw rgba(176,141,87,.34),0 1.4cqw 3.6cqw rgba(43,43,43,.3),
+      inset 0 0 0 .15cqw rgba(212,178,120,1)}
     .rings .spoke.siguiente:not(.lit){animation:none}}
   .rings .prog{fill:none;stroke:var(--done);stroke-width:.42;stroke-linecap:round;opacity:.9;
     transform:rotate(-90deg);transform-origin:50px 50px;pointer-events:none;
@@ -885,9 +897,18 @@ A.anillos.forEach(function (r) {
     var subtitulo = document.querySelector(".core .csub");
     if (!nucleo || !titulo || !subtitulo) return;
     titulo.textContent = pr ? pr.nombre : A.centro.nombre;
-    subtitulo.textContent = pr ? "tu trabajo con IA" : A.centro.subtitulo;
-    nucleo.setAttribute("aria-label", pr ? "Abrir el objetivo de " + pr.nombre : A.centro.nombre);
-    nucleo.title = pr ? "Abrir el objetivo y el recorrido de " + pr.nombre : A.centro.nombre;
+    /* Mientras no haya ruta, el centro es la única cosa que se puede pulsar, y latir no basta para
+       decir que se pulsa: lo dice con palabras. El subtítulo que sustituye sigue visible en la
+       cabecera del panel, así que no se pierde nada. */
+    var empezando = sinRutaAun(est);
+    subtitulo.textContent = pr ? "tu trabajo con IA" : (empezando ? "empieza aquí" : A.centro.subtitulo);
+    var comoSeLlama = pr ? pr.nombre : A.centro.nombre;
+    nucleo.setAttribute("aria-label", empezando
+      ? "Empezar por el diagnóstico de " + comoSeLlama
+      : (pr ? "Abrir el objetivo de " + pr.nombre : A.centro.nombre));
+    nucleo.title = empezando
+      ? "Empieza aquí: abre el diagnóstico"
+      : (pr ? "Abrir el objetivo y el recorrido de " + pr.nombre : A.centro.nombre);
   }
   function origenEstadoActivo() {
     if (fuente === "ejemplo") return "taller/ejemplo/estado.json";

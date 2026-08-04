@@ -55,6 +55,12 @@ def main(argv: list[str] | None=None) -> None:
             if existing_diagnostic:
                 print(f"Recorrido existente reactivado desde {diagnostic.relative_to(ROOT.resolve())}")
             else:
+                # Qué proyecto se va a diagnosticar se dice, no se deja adivinar. `--repo` toma la
+                # carpeta actual por defecto, así que sin esta línea un reinicio en el propio taller
+                # dejaba el diagnóstico apuntando a Harness-Maker sin que nadie lo hubiera decidido:
+                # había que inferirlo leyendo el JSON.
+                print(f"Proyecto diagnosticado: {args.repo.resolve()}")
+                print("Si tu proyecto está en otra carpeta, repite con `--repo <ruta>`.")
                 print(f"Siguiente paso: completa los desconocidos de {diagnostic.relative_to(ROOT.resolve())} con /diagnostico")
         elif args.cmd=="generate":
             paths=generate(); print(f"Generados {len(paths)} archivos desde datos/anatomia.json")
