@@ -1,0 +1,318 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI Project Dossier (v3.0)",
+  "description": "Estructura generada por prompts/PEGAR_EN_PROYECTO.md. Refleja sus claves de primer nivel; cada sección tiene un campo 'notes' libre y observaciones_abiertas es deliberadamente abierta.",
+  "type": "object",
+  "required": [
+    "meta",
+    "identidad",
+    "lifecycle",
+    "tech_stack",
+    "ai_architecture",
+    "prompts",
+    "contexto_y_memoria",
+    "harness_y_boilerplate",
+    "evaluacion_y_calidad",
+    "observabilidad_y_coste",
+    "seguridad_y_guardrails",
+    "workflow_y_dx",
+    "harness_de_desarrollo",
+    "procedencia_y_decisiones",
+    "valoracion_honesta",
+    "observaciones_abiertas"
+  ],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "properties": {
+        "extraction_prompt_version": { "type": "string" },
+        "project_name": { "type": "string" },
+        "date_generated": { "type": "string", "format": "date" },
+        "confidentiality": { "type": "string", "description": "personal | trabajo | mixto — de dónde sale el proyecto" },
+        "extraction_notes": { "type": "string" }
+      }
+    },
+
+    "identidad": {
+      "type": "object",
+      "properties": {
+        "purpose_summary": { "type": "string" },
+        "problema_que_resuelve": { "type": "string" },
+        "quien_lo_usa": { "type": "string" },
+        "estado": { "type": "string", "description": "idea | prototipo | uso personal activo | producción con usuarios reales | abandonado" },
+        "sigue_mantenido": { "type": "boolean" },
+        "por_que_se_paro": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+
+    "lifecycle": {
+      "type": "object",
+      "properties": {
+        "primer_commit": { "type": "string" },
+        "ultimo_commit": { "type": "string" },
+        "num_commits": { "type": "integer" },
+        "num_autores": { "type": "integer" },
+        "loc_aproximadas": { "type": "integer" },
+        "num_archivos_codigo": { "type": "integer" },
+        "lenguajes": { "type": "array", "items": { "type": "string" } },
+        "notes": { "type": "string" }
+      }
+    },
+
+    "tech_stack": {
+      "type": "object",
+      "properties": {
+        "language": { "type": "string" },
+        "gestion_entorno": { "type": "string" },
+        "frameworks": { "type": "array", "items": { "type": "string" } },
+        "llm_provider": { "type": "string" },
+        "llm_sdk": { "type": "string" },
+        "llm_sdk_version": { "type": "string" },
+        "models_used": { "type": "array", "items": { "type": "string" } },
+        "modelo_configurable": { "type": "string" },
+        "infra_ia_adicional": { "type": "array", "items": { "type": "string" } },
+        "infra_no_ia": { "type": "array", "items": { "type": "string" } },
+        "notes": { "type": "string" }
+      }
+    },
+
+    "ai_architecture": {
+      "type": "object",
+      "properties": {
+        "descripcion_del_flujo": { "type": "string" },
+        "pattern_libre": { "type": "string" },
+        "pattern_etiqueta": {
+          "type": "string",
+          "description": "single-call / prompt-chaining / routing / parallelization / orchestrator-workers / evaluator-optimizer / autonomous-agent / rag / pipeline / other"
+        },
+        "num_llamadas_llm_por_ejecucion": { "type": "string" },
+        "quien_controla_el_flujo": { "type": "string" },
+        "tools_given_to_model": { "type": "array", "items": { "type": "string" } },
+        "salida_estructurada": { "type": "string" },
+        "validacion_de_salida": { "type": "string" },
+        "streaming": { "type": "boolean" },
+        "multiturno": { "type": "string" },
+        "orchestration": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+
+    "prompts": {
+      "type": "object",
+      "properties": {
+        "donde_viven": { "type": "string" },
+        "cuantos_hay": { "type": "integer" },
+        "longitud_aproximada": { "type": "string" },
+        "templating": { "type": "string" },
+        "versionado": { "type": "string" },
+        "few_shot": { "type": "string" },
+        "se_prueban_antes_de_cambiar": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+
+    "contexto_y_memoria": {
+      "type": "object",
+      "properties": {
+        "que_entra_en_contexto": { "type": "string" },
+        "gestion_del_tamano": { "type": "string" },
+        "hay_riesgo_de_desbordar": { "type": "string" },
+        "memory_persistence": { "type": "string" },
+        "rag": { "type": "string" },
+        "caching": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+
+    "harness_y_boilerplate": {
+      "type": "object",
+      "description": "Materia prima para diseñar la plantilla reutilizable — sección clave.",
+      "properties": {
+        "estructura_de_carpetas": { "type": "string" },
+        "gestion_de_config": { "type": "string" },
+        "gestion_de_secretos": { "type": "string" },
+        "instanciacion_del_cliente_llm": { "type": "string" },
+        "manejo_de_errores_llm": { "type": "string" },
+        "logging": { "type": "string" },
+        "donde_van_los_resultados": { "type": "string" },
+        "entrypoints": { "type": "string" },
+        "packaging": { "type": "string" },
+        "codigo_copiado_de_otros_proyectos_mios": { "type": "string" },
+        "boilerplate_reescrito_desde_cero": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+
+    "evaluacion_y_calidad": {
+      "type": "object",
+      "properties": {
+        "has_tests": { "type": "boolean" },
+        "que_se_testea": { "type": "string" },
+        "framework_de_tests": { "type": "string" },
+        "eval_offline": { "type": "string" },
+        "eval_online": { "type": "string" },
+        "revision_humana": { "type": "string" },
+        "llm_as_judge": { "type": "string" },
+        "como_sabes_que_funciona": { "type": "string" },
+        "disciplina_epistemica": {
+          "type": "string",
+          "description": "cómo evita el sistema que el modelo afirme cosas no verificadas: fuentes autoritativas declaradas, obligación de citar, falsación/revisión adversarial, jueces que pueden decir 'no consta', o nada. Aplica tanto al producto como al asistente de desarrollo"
+        },
+        "trazabilidad_dato_origen": {
+          "type": "string",
+          "description": "¿se puede reconstruir de qué input salió cada afirmación de una salida concreta? sí / parcial / no, y con qué mecanismo"
+        },
+        "fallos_conocidos_observados": { "type": "array", "items": { "type": "string" } },
+        "notes": { "type": "string" }
+      }
+    },
+
+    "observabilidad_y_coste": {
+      "type": "object",
+      "properties": {
+        "has_tracing": { "type": "boolean" },
+        "herramienta_tracing": { "type": "string" },
+        "se_registran_las_llamadas_llm": { "type": "string" },
+        "tracks_cost": { "type": "boolean" },
+        "coste_aproximado": { "type": "string" },
+        "tracks_latency": { "type": "boolean" },
+        "latencia_es_un_problema": { "type": "string" },
+        "rate_limits": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+
+    "seguridad_y_guardrails": {
+      "type": "object",
+      "properties": {
+        "que_puede_hacer_el_modelo": { "type": "string" },
+        "aprobacion_humana": { "type": "string" },
+        "principio_de_minimo_privilegio": { "type": "string" },
+        "entrada_no_confiable": { "type": "string" },
+        "mitigaciones": { "type": "string" },
+        "datos_sensibles": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+
+    "workflow_y_dx": {
+      "type": "object",
+      "properties": {
+        "como_se_desarrolla": { "type": "string" },
+        "tiempo_de_ciclo": { "type": "string" },
+        "coste_de_validar_un_cambio": {
+          "type": "string",
+          "description": "qué hace falta REALMENTE para saber que un cambio funciona: test en segundos, o ejecución completa con datos reales y coste en €. Cuantificar si es posible"
+        },
+        "se_puede_probar_sin_datos_reales": {
+          "type": "string",
+          "description": "¿hay fixtures, datos de ejemplo, modo dry-run o mocks del LLM, o cada prueba consume API de pago y datos de producción?"
+        },
+        "ci_cd": { "type": "string" },
+        "calidad_de_la_documentacion": { "type": "string" },
+        "friccion_principal": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+
+    "harness_de_desarrollo": {
+      "type": "object",
+      "description": "La maquinaria con la que se CONSTRUYE el proyecto (distinta de la que el proyecto ejecuta). Si se desarrolló con un asistente de IA, es arquitectura de IA de pleno derecho y el objeto central de estudio de este ejercicio. 'n/a' si se escribió a mano sin asistente.",
+      "properties": {
+        "existe": { "type": "boolean" },
+        "asistente_y_entorno": { "type": "string", "description": "Claude Code | Cursor | Copilot | ChatGPT copiando y pegando | ninguno — y sobre qué editor" },
+        "comandos_propios": { "type": "array", "items": { "type": "string" }, "description": "slash commands o scripts del flujo de trabajo, y qué hace cada uno" },
+        "hooks": { "type": "array", "items": { "type": "string" }, "description": "cuándo disparan, qué vigilan, si bloquean o solo avisan" },
+        "modelo_de_permisos": { "type": "string", "description": "allowlist concreta, modo de permisos, o nada configurado" },
+        "memoria_del_agente": { "type": "string", "description": "CLAUDE.md/AGENTS.md, archivos de estado regenerados, notas" },
+        "observabilidad_del_harness": { "type": "string", "description": "¿deja rastro propio (logs de hooks, auditorías, changelog del harness) o es caja negra?" },
+        "como_evoluciono": { "type": "string", "description": "¿de una vez al principio, o a golpes de fricción? qué incidentes concretos lo hicieron crecer" },
+        "notes": { "type": "string" }
+      }
+    },
+
+    "procedencia_y_decisiones": {
+      "type": "object",
+      "description": "El PORQUÉ de las decisiones, extraído de commits, CLAUDE.md/AGENTS.md y transcripciones de sesiones de IA.",
+      "properties": {
+        "fuentes_consultadas": {
+          "type": "object",
+          "properties": {
+            "mensajes_de_commit": { "type": "string" },
+            "instrucciones_a_agentes": { "type": "string" },
+            "transcripciones_ia": { "type": "string" },
+            "otras": { "type": "string" }
+          }
+        },
+        "como_se_construyo": {
+          "type": "object",
+          "properties": {
+            "asistencia_ia": { "type": "string" },
+            "estilo_de_desarrollo": { "type": "string" },
+            "duracion_real": { "type": "string" },
+            "intensidad": { "type": "string" }
+          }
+        },
+        "decisiones_clave": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "decision": { "type": "string" },
+              "alternativas_consideradas": { "type": "string" },
+              "por_que": { "type": "string" },
+              "evidencia": { "type": "string" },
+              "sigue_siendo_valida": { "type": "string" }
+            }
+          }
+        },
+        "cambios_de_rumbo": { "type": "array", "items": { "type": "string" } },
+        "incidentes_y_defensas": {
+          "type": "array",
+          "description": "secuencia 'algo falló de verdad → se añadió una defensa concreta', reconstruida de CHANGELOG/commits/comentarios/transcripciones. Solo incidentes reales, nunca riesgos hipotéticos.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "incidente": { "type": "string" },
+              "defensa_anadida": { "type": "string" },
+              "cuando": { "type": "string" },
+              "evidencia": { "type": "string" }
+            }
+          }
+        },
+        "problemas_recurrentes_en_conversacion": { "type": "array", "items": { "type": "string" } },
+        "instrucciones_acumuladas_a_la_ia": { "type": "string" },
+        "friccion_con_el_entorno": { "type": "array", "items": { "type": "string" } },
+        "notes": { "type": "string" }
+      }
+    },
+
+    "valoracion_honesta": {
+      "type": "object",
+      "properties": {
+        "strengths": { "type": "array", "items": { "type": "string" } },
+        "weaknesses": { "type": "array", "items": { "type": "string" } },
+        "lo_mas_dificil": { "type": "string" },
+        "que_se_rompio_en_la_practica": { "type": "string" },
+        "que_haria_diferente": { "type": "string" },
+        "reusable_patterns": { "type": "array", "items": { "type": "string" } },
+        "antipatterns": { "type": "array", "items": { "type": "string" } },
+        "decisiones_no_obvias": { "type": "array", "items": { "type": "string" } },
+        "notes": { "type": "string" }
+      }
+    },
+
+    "observaciones_abiertas": {
+      "type": "object",
+      "description": "Campo libre y deliberadamente sin estructura fija — es la sección más importante para rediseñar el propio esquema.",
+      "properties": {
+        "que_no_encajo_en_el_esquema": { "type": "string" },
+        "campos_que_sobraron": { "type": "string" },
+        "lo_mas_distintivo": { "type": "string" },
+        "texto_libre": { "type": "string" }
+      },
+      "additionalProperties": true
+    }
+  }
+}

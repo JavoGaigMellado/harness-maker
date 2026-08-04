@@ -1,0 +1,1977 @@
+{
+  "schema_version": "2.0.0",
+  "doctrina_version": "2026.08.02",
+  "metadatos": {
+    "titulo": "Anatomía de un harness de trabajo con IA",
+    "descripcion_producto": "Taller guiado que diagnostica, planifica y deja decisiones, artefactos y evidencia para el harness de trabajo con IA de una persona, programe o no.",
+    "no_es": "No es una plantilla que implemente los subsistemas de una aplicación de IA.",
+    "limitacion_evidencia": "La evidencia interna procede de cuatro proyectos relacionados, con autor y asistente compartidos; n=4 no independiente. Se usa para formular hipótesis y preguntas, no causalidades universales.",
+    "fuentes_historicas": [
+      "historia/investigacion/external_best_practices.md",
+      "historia/diagramas/anatomia_datos_v2.js",
+      "evidencia interna n=4 · los cuatro dossiers y los informes que los sintetizaron se retiraron del arbol el 2026-08-04 por ser fuente de proyectos propios; la doctrina que salio de ellos es la que hay, y su procedencia primaria ya no es consultable aqui"
+    ],
+    "generados": [
+      "datos/anatomia.js",
+      "datos/indice_piezas.json",
+      "taller/prompts/"
+    ],
+    "fuente_contenido": "diagramas/diagrama_base.html (volcado del 2026-08-02); desde esta versión el diagrama consume este fichero y no tiene datos propios.",
+    "ejemplo_hilo": "Un ayudante para responder el correo. Llega un mensaje. Él mira de qué proyecto habla, en qué punto está y qué te piden. Escribe un borrador. Tú lo lees, lo corriges y lo envías. Él nunca envía nada por su cuenta.\n\nEse ayudante no viene hecho. Las 18 piezas de este diagrama son lo que hay que decidir para construirlo. Y sirven igual para cualquier otro trabajo."
+  },
+  "centro": {
+    "nombre": "Tu trabajo con IA",
+    "subtitulo": "qué quieres conseguir y cómo sabrás que ayuda",
+    "icono": "🎯",
+    "resumen": "Un harness es lo que convierte un asistente general en un colaborador que entiende tu trabajo.\n\nNo viene hecho. Lo construyes tú: propósito, contexto, instrucciones, conocimiento, memoria, formas de trabajo, límites, comprobaciones y aprendizaje.\n\nEste diagrama son las 18 decisiones que hay que tomar. Se lee de dentro hacia fuera.",
+    "resumen_html": "Un harness es lo que convierte un asistente general en un colaborador que entiende <b>tu</b> trabajo.<br><br>No viene hecho. Lo construyes tú: propósito, contexto, instrucciones, conocimiento, memoria, formas de trabajo, límites, comprobaciones y aprendizaje.<br><br><b>Este diagrama son las 18 decisiones que hay que tomar.</b> Se lee de dentro hacia fuera.",
+    "ejemplo": "Un ayudante para responder el correo. Llega un mensaje. Él mira de qué proyecto habla, en qué punto está y qué te piden. Escribe un borrador. Tú lo lees, lo corriges y lo envías. <b>Él nunca envía nada por su cuenta.</b><br><br>Ese ayudante no viene hecho. Las 18 piezas de este diagrama son lo que hay que decidir para construirlo. <b>Y sirven igual para cualquier otro trabajo.</b>",
+    "principios": [
+      "<b>El centro es tu trabajo</b>, no el modelo. Qué quieres conseguir, para quién, con qué límites y cómo sabrás que ayuda.",
+      "<b>1 · Orientación</b> — qué debe entender.",
+      "<b>2 · Capacidades</b> — qué puede hacer y quién manda.",
+      "<b>3 · Confianza</b> — cómo sabes que está bien.",
+      "<b>4 · Continuidad</b> — cómo sigue vivo.",
+      "<b>Son preguntas, no tareas obligatorias.</b> Una pieza puede ser necesaria, opcional, posterior o no aplicable. Pero conviene evaluarla y dejar escrito por qué, en vez de saltársela.",
+      "<b>Si solo te llevas una idea:</b> el mejor harness no es el que más automatiza. Es el que te ayuda a trabajar mejor, actúa dentro de límites conscientes, deja resultados verificables y aprende sin perder su historia."
+    ],
+    "industria": "<p>Anthropic define un <i>agent harness</i> como el sistema que permite actuar al modelo: procesa entradas, orquesta herramientas y devuelve resultados. E identifica Claude Code como un harness flexible. <b>Ahí el bucle general ya está resuelto</b>: lo que cada persona construye encima es la capa de su trabajo.</p><p>NIST sitúa misión, alcance, responsabilidades y tolerancia al riesgo <b>antes</b> de las actividades de medida. Por eso el centro de este diagrama es el trabajo, no la tecnología.</p><cite>Anthropic, <a href='https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents'>Demystifying evals for AI agents</a> · NIST, <a href='https://airc.nist.gov/airmf-resources/airmf/5-sec-core/'>AI Risk Management Framework Core</a></cite>",
+    "casos": "<div class='chips-lbl' style='margin-top:0'>Los cuatro proyectos, para poder seguirlos de ficha en ficha</div><ul><li><b>A</b> — un asistente de web, en producción. El único con comprobación automática.</li><li><b>B</b> — una demo montada en un día para una reunión de dirección.</li><li><b>C</b> — el sistema con el que una consultoría lleva su propio negocio.</li><li><b>D</b> — un entorno con el que una persona opera una plataforma de datos. Sin código propio.</li></ul><p>Los cuatro llegaron por caminos distintos a la misma frontera. <b>C</b> la tiene escrita en una línea:</p><p style='font-family:Georgia,serif;font-size:15.5px;color:#2b2b2b;text-align:center;padding:8px 0'>«datos e integridad → código;<br>juicio y matiz → IA»</p><p>Es decir: <b>lo que se puede calcular o comprobar, lo hace el código; lo que requiere criterio, lo hace el modelo.</b></p><p><b>D es el caso que más ha cambiado este diagrama.</b> No tiene programa propio y aun así tiene un harness completo. Cualquier pieza escrita como «programa algo que…» dejaba fuera a D — y a la mayoría de la gente.</p>",
+    "limitacion_evidencia": "Las piezas salen de la documentación pública de quienes construyen estas herramientas y del análisis de cuatro proyectos reales.<br><br><b>Límites de la evidencia interna:</b> los cuatro comparten autor y asistente, así que <b>n=4 y no independiente</b>. Ninguno tenía usuarios finales a diario. Sirve para formular hipótesis, no para demostrar causalidades.<br><br>Cuando una observación interna aparece en una ficha, va etiquetada como observación."
+  },
+  "anillos": [
+    {
+      "id": 1,
+      "nombre": "Orientación",
+      "pregunta": "¿Qué debe entender para ayudarte bien?",
+      "radio": 15,
+      "descripcion": "Lo que sabe antes de empezar.\n\nQuién eres y qué haces. Qué recuerda de otras veces. Con qué instrucciones trabaja. De dónde saca los datos. Qué no debe tocar.\n\nSi esto entra bien, los otros tres anillos tienen mucho menos trabajo.",
+      "descripcion_html": "Lo que sabe antes de empezar.<br><br>Quién eres y qué haces. Qué recuerda de otras veces. Con qué instrucciones trabaja. De dónde saca los datos. Qué no debe tocar.<br><br><b>Si esto entra bien, los otros tres anillos tienen mucho menos trabajo.</b>",
+      "ejemplo": "Sabe que gestionas proyectos, recuerda lo hablado con ese cliente, tiene tus reglas de estilo, consulta la ficha del proyecto y no saca datos personales de ahí.",
+      "puntos_clave": [
+        "El error típico: darle de más «por si acaso». Elegir qué entra es trabajo, no pereza.",
+        "Cinco preguntas: qué entiende, qué recuerda, qué reglas sigue, de dónde saca los datos, qué no cruza.",
+        "Por aquí también te pueden atacar. Por eso los límites están en este anillo y no al final.",
+        "No hace falta programar para responder estas cinco."
+      ]
+    },
+    {
+      "id": 2,
+      "nombre": "Capacidades",
+      "pregunta": "¿Cómo trabaja, qué puede hacer y quién manda?",
+      "radio": 27.1,
+      "descripcion": "Lo que pasa desde que pides algo hasta que hay resultado.\n\nSobre qué plataforma. Con qué herramientas. Qué deja hecho. Y en qué momentos decides tú.\n\nEl reparto de control lo decides tú, no el modelo.",
+      "descripcion_html": "Lo que pasa desde que pides algo hasta que hay resultado.<br><br>Sobre qué plataforma. Con qué herramientas. Qué deja hecho. Y en qué momentos decides tú.<br><br><b>El reparto de control lo decides tú, no el modelo.</b>",
+      "ejemplo": "Trabaja en tu portátil. Puede leer la carpeta del proyecto. No puede enviar correos. Deja el borrador en un fichero y espera tu visto bueno.",
+      "puntos_clave": [
+        "Empieza por lo más simple que funcione. La automatización se añade cuando repetir duele.",
+        "«Puede hacerlo» y «puede hacerlo sin preguntar» son dos decisiones distintas.",
+        "El resultado no siempre es texto: puede ser un fichero, una decisión o una acción con efectos.",
+        "Cuanta más autonomía des, más barato tiene que ser comprobar."
+      ]
+    },
+    {
+      "id": 3,
+      "nombre": "Confianza",
+      "pregunta": "¿Cómo sabes que está bien?",
+      "radio": 34.1,
+      "descripcion": "Cómo compruebas lo que sale y qué te cuesta comprobarlo.\n\nSin esto no tienes un harness: tienes algo que funcionó una vez.\n\nY ojo: el mecanismo que comprueba también puede estar mal.",
+      "descripcion_html": "Cómo compruebas lo que sale y qué te cuesta comprobarlo.<br><br>Sin esto no tienes un harness: tienes algo que funcionó una vez.<br><br><b>Y ojo: el mecanismo que comprueba también puede estar mal.</b>",
+      "ejemplo": "Tienes seis correos reales con la respuesta que diste tú. Revisar un borrador te lleva dos minutos. Cada corrección queda anotada.",
+      "puntos_clave": [
+        "Comprobar cuesta: tu tiempo, la espera, el dinero. Ese precio decide cuánta autonomía te puedes permitir.",
+        "No hace falta escribir tests. Hacen falta ejemplos reales y saber qué cuenta como bien hecho.",
+        "Si automatizas la revisión, alguien tiene que revisar al revisor.",
+        "Lo que corriges es la mejor información que tienes. Si no se anota, se pierde."
+      ]
+    },
+    {
+      "id": 4,
+      "nombre": "Continuidad",
+      "pregunta": "¿Cómo sigue vivo dentro de seis meses?",
+      "radio": 44.47,
+      "descripcion": "Lo que hace que el harness no se evapore.\n\nDónde vive su configuración. Qué fallos ya tiene previstos. Cómo se recupera. Cuándo se revisa o se retira.\n\nEsto no es el andamio: es la forma concreta que tiene tu harness.",
+      "descripcion_html": "Lo que hace que el harness no se evapore.<br><br>Dónde vive su configuración. Qué fallos ya tiene previstos. Cómo se recupera. Cuándo se revisa o se retira.<br><br><b>Esto no es el andamio: es la forma concreta que tiene tu harness.</b>",
+      "ejemplo": "Todo está en ficheros dentro del proyecto. Otra persona lo clona y arranca. Las claves están fuera. Hay escrito qué queda fuera y cuándo se revisa.",
+      "puntos_clave": [
+        "En Claude Code el harness <i>es</i> configuración: instrucciones, comandos, hooks, permisos.",
+        "Si otra persona no puede clonarlo y empezar, no has hecho un harness: has configurado tu máquina.",
+        "Los fallos que ya has visto valen más que los que imaginas.",
+        "Todo harness tiene fecha de revisión. Y algunos deberían retirarse."
+      ]
+    }
+  ],
+  "prioridades": {
+    "obligatoria": {
+      "orden": 0,
+      "nombre": "Obligatoria"
+    },
+    "alta": {
+      "orden": 1,
+      "nombre": "Alta"
+    },
+    "media": {
+      "orden": 2,
+      "nombre": "Media"
+    },
+    "baja": {
+      "orden": 3,
+      "nombre": "Baja"
+    },
+    "descartar": {
+      "orden": 4,
+      "nombre": "Evaluar descarte"
+    }
+  },
+  "reglas_globales": [
+    {
+      "id": "suelo.contexto",
+      "condicion": {
+        "always": true
+      },
+      "prioridad": "obligatoria",
+      "porque": "El diagrama marca «Contexto» como «siempre aplica»: toda persona debe decidirla, aunque decida no hacer nada.",
+      "procedencia": "diagramas/diagrama_base.html, categoría c1 · volcado 2026-08-02"
+    },
+    {
+      "id": "suelo.prompts",
+      "condicion": {
+        "always": true
+      },
+      "prioridad": "obligatoria",
+      "porque": "El diagrama marca «Instrucciones persistentes» como «siempre aplica»: toda persona debe decidirla, aunque decida no hacer nada.",
+      "procedencia": "diagramas/diagrama_base.html, categoría c1 · volcado 2026-08-02"
+    },
+    {
+      "id": "suelo.guardrails",
+      "condicion": {
+        "always": true
+      },
+      "prioridad": "obligatoria",
+      "porque": "El diagrama marca «Seguridad, datos y límites» como «siempre aplica»: toda persona debe decidirla, aunque decida no hacer nada.",
+      "procedencia": "diagramas/diagrama_base.html, categoría c1 · volcado 2026-08-02"
+    },
+    {
+      "id": "suelo.proveedor",
+      "condicion": {
+        "always": true
+      },
+      "prioridad": "obligatoria",
+      "porque": "El diagrama marca «Plataforma y modelo» como «siempre aplica»: toda persona debe decidirla, aunque decida no hacer nada.",
+      "procedencia": "diagramas/diagrama_base.html, categoría c1 · volcado 2026-08-02"
+    },
+    {
+      "id": "suelo.salida",
+      "condicion": {
+        "always": true
+      },
+      "prioridad": "obligatoria",
+      "porque": "El diagrama marca «Resultados y artefactos» como «siempre aplica»: toda persona debe decidirla, aunque decida no hacer nada.",
+      "procedencia": "diagramas/diagrama_base.html, categoría c1 · volcado 2026-08-02"
+    },
+    {
+      "id": "suelo.validar",
+      "condicion": {
+        "always": true
+      },
+      "prioridad": "obligatoria",
+      "porque": "El diagrama marca «Coste de comprobar» como «siempre aplica»: toda persona debe decidirla, aunque decida no hacer nada.",
+      "procedencia": "diagramas/diagrama_base.html, categoría c1 · volcado 2026-08-02"
+    },
+    {
+      "id": "suelo.fuera",
+      "condicion": {
+        "always": true
+      },
+      "prioridad": "obligatoria",
+      "porque": "El diagrama marca «Alcance y ciclo de vida» como «siempre aplica»: toda persona debe decidirla, aunque decida no hacer nada.",
+      "procedencia": "diagramas/diagrama_base.html, categoría c1 · volcado 2026-08-02"
+    }
+  ],
+  "areas_globales": [
+    {
+      "id": "proposito_gobierno",
+      "etapa": "entrada",
+      "preguntas": [
+        "¿Qué trabajo se delega, para quién, quién responde y qué resultado cuenta como éxito?"
+      ],
+      "criterio_cierre": "Propósito, usuarios, propietario, baseline y éxito registrados."
+    },
+    {
+      "id": "datos_privacidad",
+      "etapa": "diagnostico_y_seguridad",
+      "preguntas": [
+        "¿Qué datos se usan, con qué finalidad, acceso, retención, borrado y residencia?"
+      ],
+      "criterio_cierre": "Clasificación y política o descarte razonado."
+    },
+    {
+      "id": "intervencion_humana",
+      "etapa": "flujo_agencia",
+      "preguntas": [
+        "¿Cuándo se detiene, escala o pide autorización y quién puede aprobar?"
+      ],
+      "criterio_cierre": "Umbrales y acciones sensibles documentados."
+    },
+    {
+      "id": "estado_recuperacion",
+      "etapa": "flujo_agencia",
+      "preguntas": [
+        "¿Cómo se evitan duplicados y se reanuda tras un fallo?"
+      ],
+      "criterio_cierre": "Estado, idempotencia y recuperación decididos cuando aplican."
+    },
+    {
+      "id": "operacion_feedback",
+      "etapa": "calidad_operacion",
+      "preguntas": [
+        "¿Cómo se despliega, observa, revierte, atiende un incidente y aprende del uso real?"
+      ],
+      "criterio_cierre": "Runbook mínimo o descarte por etapa."
+    },
+    {
+      "id": "seguridad_supply_chain",
+      "etapa": "transversal",
+      "preguntas": [
+        "¿Qué identidades, permisos, dependencias y fronteras limitan el impacto?"
+      ],
+      "criterio_cierre": "Threat model e inventario proporcional al riesgo."
+    },
+    {
+      "id": "ciclo_vida",
+      "etapa": "salida",
+      "preguntas": [
+        "¿Se promueve, congela, retira o acepta como deuda, quién decide y cuándo?"
+      ],
+      "criterio_cierre": "Decisión de salida, responsable y condición de revisión."
+    }
+  ],
+  "piezas": [
+    {
+      "id": "contexto",
+      "nombre": "Contexto",
+      "resumen": "Qué tiene delante cuando trabaja.",
+      "anillo": 1,
+      "angulo": 358.3,
+      "icono": "🎭",
+      "tipo": "componente",
+      "dominio": "contexto_contrato",
+      "transversal": false,
+      "pregunta_principal": "¿Qué tiene delante cuando trabaja?",
+      "explicacion": "Qué tiene delante cuando trabaja.\n\nNo es solo quién debe ser. Son cinco capas: tú, tu organización, el proyecto, la tarea de ahora y lo que quedó de la sesión anterior.\n\nEl contexto es finito. Hay que elegir qué entra.",
+      "ejemplo": "Antes de tocar el correo ya sabe: quién eres, cómo funciona tu empresa, de qué va el proyecto, qué te acaban de pedir y qué se decidió la última vez.",
+      "prioridad_base": "obligatoria",
+      "reglas_aplicabilidad": [],
+      "reglas_prioridad": [],
+      "dependencias": [],
+      "desbloquea": [
+        "prompts"
+      ],
+      "preguntas_diagnostico": [
+        "¿Qué evidencia observable existe hoy sobre contexto?",
+        "¿Qué aspecto de contexto no puede deducirse del repositorio?"
+      ],
+      "preguntas_recorrido": [
+        "¿Cuál es el conjunto mínimo de contexto útil?",
+        "¿Qué decisión concreta tomamos y quién puede cambiarla?",
+        "¿Qué prueba o artefacto demostrará el cierre?",
+        "¿Qué riesgo queda y cuándo se revisa?"
+      ],
+      "criterio_cierre": [
+        "Existe una decisión registrada o política explícita.",
+        "Existe al menos un artefacto, evidencia, descarte razonado o deuda con responsable.",
+        "La verificación y los riesgos residuales quedan anotados."
+      ],
+      "evidencias_aceptadas": [
+        "archivo versionado",
+        "prueba ejecutada con resultado",
+        "decisión fechada y responsable",
+        "descarte con motivo y condición de revisión"
+      ],
+      "artefactos_sugeridos": [
+        "docs/harness/contexto.md"
+      ],
+      "condiciones_descarte": [
+        "Solo si una regla declarada demuestra que no aplica; registrar motivo y evidencia."
+      ],
+      "riesgos_omision": [
+        "Dejar sin decidir contexto puede crear fallo silencioso, deuda invisible o falsa confianza."
+      ],
+      "referencias": [
+        {
+          "tipo_evidencia": "evidencia_interna_n4",
+          "calidad": "media",
+          "procedencia": "Cuatro perfiles relacionados, autor/asistente compartidos; no independientes",
+          "referencia": "evidencia interna n=4 · sintesis del 2026-08-01, retirada del arbol el 2026-08-04"
+        },
+        {
+          "tipo_evidencia": "recomendacion",
+          "calidad": "alta",
+          "procedencia": "Auditoría corregida y auditoría ascendente",
+          "referencia": "evidencia interna n=4 · auditoria del esqueleto del 2026-08-01, retirada del arbol el 2026-08-04"
+        }
+      ],
+      "categoria": "c1",
+      "descripcion_html": "Qué tiene delante cuando trabaja.<br><br>No es solo quién debe ser. Son cinco capas: tú, tu organización, el proyecto, la tarea de ahora y lo que quedó de la sesión anterior.<br><br><b>El contexto es finito. Hay que elegir qué entra.</b>",
+      "puntos_clave": [
+        "Cinco capas, y cada una cambia a un ritmo distinto. No las mezcles.",
+        "Carga bajo demanda lo que no siempre hace falta. Suele ganar a llevarlo todo encima.",
+        "Escribe qué queda anotado al terminar. Es lo que evita empezar de cero mañana.",
+        "Que sea finito no significa que haya un número mágico. Depende de tu tarea."
+      ],
+      "que_montar": [
+        "Separar las cinco capas: persona, organización, proyecto, tarea, sesión.",
+        "Decidir qué se carga siempre y qué solo cuando hace falta.",
+        "Escribir qué se anota al cerrar la sesión.",
+        "Probar con menos contexto del que crees y comparar.",
+        "Anotar qué dejaste fuera y por qué."
+      ],
+      "industria": "<p>Anthropic separa <b>escribir un buen prompt</b> —puntual— de <b>decidir qué pasar al modelo en cada paso</b>, que es continuo. La regla: el conjunto más pequeño de información que consiga el resultado.</p><p>Chroma midió modelos frontera al crecer la entrada y encontró degradación bastante antes del límite de la ventana. En una prueba, el mismo modelo rinde mejor con ~300 tokens enfocados que con ~113.000. <b>Es una prueba concreta, no una regla general.</b></p><cite>Anthropic, <a href='https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents'>Effective context engineering for AI agents</a> · Chroma, <a href='https://www.trychroma.com/research/context-rot'>Context Rot</a></cite>",
+      "casos": "<p><b>Observado, no medido:</b> en los cuatro proyectos hacía falta menos contexto del que se daba al principio. En los cuatro se recortó después de ver resultados peores de lo esperado.</p>"
+    },
+    {
+      "id": "memoria",
+      "nombre": "Memoria y continuidad",
+      "resumen": "Qué se guarda de una vez para la siguiente.",
+      "anillo": 1,
+      "angulo": 53.5,
+      "icono": "🧾",
+      "tipo": "componente",
+      "dominio": "contexto_contrato",
+      "transversal": false,
+      "pregunta_principal": "¿Qué se guarda de una vez para la siguiente?",
+      "explicacion": "Qué se guarda de una vez para la siguiente.\n\nSon cinco cosas distintas y conviene no confundirlas:\n\nMemoria — preferencias y hechos.\nEstado — por dónde va la tarea.\nConocimiento — fuentes que consulta.\nInstrucciones — cómo trabaja.\nHistorial — qué pasó y cuándo.",
+      "ejemplo": "Recuerda que firmas «Un saludo» (memoria). Sabe que ese correo está pendiente de la respuesta del cliente (estado). Consulta la ficha (conocimiento). Aplica tu estilo (instrucciones). Guarda lo que hizo el martes (historial).",
+      "prioridad_base": "alta",
+      "reglas_aplicabilidad": [
+        {
+          "id": "memoria.single_shot",
+          "condicion": {
+            "ejes.patron_ejecucion": "llamada_unica"
+          },
+          "prioridad": "descartar",
+          "porque": "Una llamada sin continuidad no necesita memoria persistente.",
+          "procedencia": "Auditoría corregida 2026-08-01 y doctrina de la pieza memoria"
+        }
+      ],
+      "reglas_prioridad": [],
+      "dependencias": [],
+      "desbloquea": [],
+      "preguntas_diagnostico": [
+        "¿Qué evidencia observable existe hoy sobre memoria?",
+        "¿Qué aspecto de memoria no puede deducirse del repositorio?"
+      ],
+      "preguntas_recorrido": [
+        "¿Qué debe persistir entre interacciones?",
+        "¿Qué decisión concreta tomamos y quién puede cambiarla?",
+        "¿Qué prueba o artefacto demostrará el cierre?",
+        "¿Qué riesgo queda y cuándo se revisa?"
+      ],
+      "criterio_cierre": [
+        "Existe una decisión registrada o política explícita.",
+        "Existe al menos un artefacto, evidencia, descarte razonado o deuda con responsable.",
+        "La verificación y los riesgos residuales quedan anotados."
+      ],
+      "evidencias_aceptadas": [
+        "archivo versionado",
+        "prueba ejecutada con resultado",
+        "decisión fechada y responsable",
+        "descarte con motivo y condición de revisión"
+      ],
+      "artefactos_sugeridos": [
+        "docs/harness/memoria.md"
+      ],
+      "condiciones_descarte": [
+        "Solo si una regla declarada demuestra que no aplica; registrar motivo y evidencia."
+      ],
+      "riesgos_omision": [
+        "Dejar sin decidir memoria puede crear fallo silencioso, deuda invisible o falsa confianza."
+      ],
+      "referencias": [
+        {
+          "tipo_evidencia": "evidencia_interna_n4",
+          "calidad": "media",
+          "procedencia": "Cuatro perfiles relacionados, autor/asistente compartidos; no independientes",
+          "referencia": "evidencia interna n=4 · sintesis del 2026-08-01, retirada del arbol el 2026-08-04"
+        },
+        {
+          "tipo_evidencia": "recomendacion",
+          "calidad": "alta",
+          "procedencia": "Auditoría corregida y auditoría ascendente",
+          "referencia": "evidencia interna n=4 · auditoria del esqueleto del 2026-08-01, retirada del arbol el 2026-08-04"
+        }
+      ],
+      "categoria": "c2",
+      "descripcion_html": "Qué se guarda de una vez para la siguiente.<br><br>Son cinco cosas distintas y conviene no confundirlas:<br><br><b>Memoria</b> — preferencias y hechos.<br><b>Estado</b> — por dónde va la tarea.<br><b>Conocimiento</b> — fuentes que consulta.<br><b>Instrucciones</b> — cómo trabaja.<br><b>Historial</b> — qué pasó y cuándo.",
+      "puntos_clave": [
+        "Si las cinco acaban en el mismo sitio, compiten por espacio y se pisan.",
+        "Decide qué se escribe al terminar para que otra sesión continúe.",
+        "En tareas largas, perder decisiones y estado sí importa: se repite trabajo.",
+        "Lo que se guarda hay que poder revisarlo, corregirlo y borrarlo."
+      ],
+      "que_montar": [
+        "Decidir qué se guarda de cada uno de los cinco tipos.",
+        "Elegir dónde vive cada tipo y quién lo edita.",
+        "Definir qué se escribe al cerrar una sesión.",
+        "Fijar cada cuánto se revisa y qué se borra.",
+        "Comprobar que otra persona entiende el estado solo leyendo."
+      ],
+      "industria": "<p>Claude Code guarda la memoria de proyecto en ficheros versionados: viven junto al trabajo y se revisan como cualquier otro artefacto.</p><p>En agentes de larga duración el problema deja de ser la respuesta puntual y pasa a ser <b>conservar estado y decisiones a lo largo de muchas sesiones</b> sin arrastrar todo el historial.</p><cite>Claude Code, <a href='https://code.claude.com/docs/en/memory'>Memory</a> · Anthropic, <a href='https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents'>Effective harnesses for long-running agents</a></cite>",
+      "casos": "<p><b>Observado:</b> los cuatro proyectos guardaban algo, pero solo <b>C</b> separaba preferencia, estado y decisión. En <b>D</b> la pérdida de estado obligó a rehacer trabajo: «se pierde y no pasa nada» no es cierto en todos los trabajos.</p>"
+    },
+    {
+      "id": "prompts",
+      "nombre": "Instrucciones persistentes",
+      "resumen": "Las instrucciones que están siempre puestas.",
+      "anillo": 1,
+      "angulo": 108.7,
+      "icono": "📝",
+      "tipo": "componente",
+      "dominio": "contexto_contrato",
+      "transversal": true,
+      "pregunta_principal": "¿Qué instrucciones están siempre puestas?",
+      "explicacion": "Las instrucciones que están siempre puestas.\n\nTu forma de trabajar, escrita una vez: convenciones, preferencias, prohibiciones y qué manda cuando dos reglas chocan.\n\nNo es «escribir un buen prompt». Es una capa que se mantiene y se versiona.",
+      "ejemplo": "Está escrito que respondes en usted, que nunca prometes fechas sin confirmar y que si el cliente pregunta por precios, no contestas: avisas.",
+      "prioridad_base": "obligatoria",
+      "reglas_aplicabilidad": [],
+      "reglas_prioridad": [],
+      "dependencias": [
+        "contexto"
+      ],
+      "desbloquea": [
+        "eval"
+      ],
+      "preguntas_diagnostico": [
+        "¿Qué evidencia observable existe hoy sobre prompts?",
+        "¿Qué aspecto de prompts no puede deducirse del repositorio?"
+      ],
+      "preguntas_recorrido": [
+        "¿Qué instrucciones gobiernan el comportamiento?",
+        "¿Qué decisión concreta tomamos y quién puede cambiarla?",
+        "¿Qué prueba o artefacto demostrará el cierre?",
+        "¿Qué riesgo queda y cuándo se revisa?"
+      ],
+      "criterio_cierre": [
+        "Existe una decisión registrada o política explícita.",
+        "Existe al menos un artefacto, evidencia, descarte razonado o deuda con responsable.",
+        "La verificación y los riesgos residuales quedan anotados."
+      ],
+      "evidencias_aceptadas": [
+        "archivo versionado",
+        "prueba ejecutada con resultado",
+        "decisión fechada y responsable",
+        "descarte con motivo y condición de revisión"
+      ],
+      "artefactos_sugeridos": [
+        "prompts/ y registro de versiones"
+      ],
+      "condiciones_descarte": [
+        "Solo si una regla declarada demuestra que no aplica; registrar motivo y evidencia."
+      ],
+      "riesgos_omision": [
+        "Dejar sin decidir prompts puede crear fallo silencioso, deuda invisible o falsa confianza."
+      ],
+      "referencias": [
+        {
+          "tipo_evidencia": "evidencia_interna_n4",
+          "calidad": "media",
+          "procedencia": "Cuatro perfiles relacionados, autor/asistente compartidos; no independientes",
+          "referencia": "evidencia interna n=4 · sintesis del 2026-08-01, retirada del arbol el 2026-08-04"
+        },
+        {
+          "tipo_evidencia": "recomendacion",
+          "calidad": "alta",
+          "procedencia": "Auditoría corregida y auditoría ascendente",
+          "referencia": "evidencia interna n=4 · auditoria del esqueleto del 2026-08-01, retirada del arbol el 2026-08-04"
+        }
+      ],
+      "categoria": "c1",
+      "descripcion_html": "Las instrucciones que están siempre puestas.<br><br>Tu forma de trabajar, escrita una vez: convenciones, preferencias, prohibiciones y qué manda cuando dos reglas chocan.<br><br><b>No es «escribir un buen prompt». Es una capa que se mantiene y se versiona.</b>",
+      "puntos_clave": [
+        "Cuatro mecanismos, cuatro usos. <b>Instrucciones</b> para lo permanente. <b>Reglas</b> para lo situacional. <b>Skills o comandos</b> para lo que se invoca. <b>Hooks</b> para lo que no puede fallar.",
+        "Las instrucciones se acumulan. Revisa tamaño y vigencia, y quita lo que ya no aplica.",
+        "Escribe qué manda cuando lo personal y lo del proyecto se contradicen.",
+        "Una regla que nadie comprueba es una intención. Para obligar están los hooks y los permisos."
+      ],
+      "que_montar": [
+        "Escribir la orientación permanente en un solo sitio.",
+        "Marcar qué es preferencia personal y qué es regla del proyecto.",
+        "Definir la prioridad cuando dos instrucciones chocan.",
+        "Revisar periódicamente qué sigue vigente.",
+        "Lo que no puede fallar, ponerlo donde el sistema lo imponga."
+      ],
+      "industria": "<p>Claude Code separa estos mecanismos de forma explícita: memoria e instrucciones para la orientación duradera, skills y comandos para capacidades invocables, hooks para lo que debe ejecutarse sí o sí.</p><cite>Claude Code, <a href='https://code.claude.com/docs/en/features-overview'>Features overview</a> y <a href='https://code.claude.com/docs/en/memory'>Memory</a></cite>",
+      "casos": "<p><b>Observado:</b> en los cuatro proyectos las instrucciones crecieron sin control hasta que alguien las podó. En <b>A</b> la poda llegó tras comprobar que reglas contradictorias daban resultados inconsistentes.</p>"
+    },
+    {
+      "id": "conocimiento",
+      "nombre": "Conocimiento y fuentes",
+      "resumen": "De dónde saca lo que afirma.",
+      "anillo": 1,
+      "angulo": 163.9,
+      "icono": "📚",
+      "tipo": "componente",
+      "dominio": "contexto_contrato",
+      "transversal": false,
+      "pregunta_principal": "¿De dónde saca lo que afirma?",
+      "explicacion": "De dónde saca lo que afirma.\n\nLa pregunta no es «¿monto un buscador?». Es más simple:\n\nQué fuentes valen. Quién las mantiene. Cuál gana si se contradicen. Qué se responde cuando no hay ninguna.",
+      "ejemplo": "Las fuentes buenas son la ficha del proyecto y el histórico de ese cliente. Si no coinciden, manda la ficha. Si no hay dato, el borrador dice «pendiente de confirmar» en vez de inventarlo.",
+      "prioridad_base": "alta",
+      "reglas_aplicabilidad": [],
+      "reglas_prioridad": [],
+      "dependencias": [],
+      "desbloquea": [],
+      "preguntas_diagnostico": [
+        "¿Qué evidencia observable existe hoy sobre conocimiento?",
+        "¿Qué aspecto de conocimiento no puede deducirse del repositorio?"
+      ],
+      "preguntas_recorrido": [
+        "¿De dónde salen los datos afirmados?",
+        "¿Qué decisión concreta tomamos y quién puede cambiarla?",
+        "¿Qué prueba o artefacto demostrará el cierre?",
+        "¿Qué riesgo queda y cuándo se revisa?"
+      ],
+      "criterio_cierre": [
+        "Existe una decisión registrada o política explícita.",
+        "Existe al menos un artefacto, evidencia, descarte razonado o deuda con responsable.",
+        "La verificación y los riesgos residuales quedan anotados."
+      ],
+      "evidencias_aceptadas": [
+        "archivo versionado",
+        "prueba ejecutada con resultado",
+        "decisión fechada y responsable",
+        "descarte con motivo y condición de revisión"
+      ],
+      "artefactos_sugeridos": [
+        "docs/harness/conocimiento.md"
+      ],
+      "condiciones_descarte": [
+        "Solo si una regla declarada demuestra que no aplica; registrar motivo y evidencia."
+      ],
+      "riesgos_omision": [
+        "Dejar sin decidir conocimiento puede crear fallo silencioso, deuda invisible o falsa confianza."
+      ],
+      "referencias": [
+        {
+          "tipo_evidencia": "evidencia_interna_n4",
+          "calidad": "media",
+          "procedencia": "Cuatro perfiles relacionados, autor/asistente compartidos; no independientes",
+          "referencia": "evidencia interna n=4 · sintesis del 2026-08-01, retirada del arbol el 2026-08-04"
+        },
+        {
+          "tipo_evidencia": "recomendacion",
+          "calidad": "alta",
+          "procedencia": "Auditoría corregida y auditoría ascendente",
+          "referencia": "evidencia interna n=4 · auditoria del esqueleto del 2026-08-01, retirada del arbol el 2026-08-04"
+        }
+      ],
+      "categoria": "c2",
+      "descripcion_html": "De dónde saca lo que afirma.<br><br>La pregunta no es «¿monto un buscador?». Es más simple:<br><br>Qué fuentes valen. Quién las mantiene. Cuál gana si se contradicen. Qué se responde cuando no hay ninguna.",
+      "puntos_clave": [
+        "Antes de elegir técnica, responde lo básico: qué vale, quién lo mantiene, cuál gana.",
+        "Separa lo que se puede usar de lo que <b>no puede salir de su sitio</b>.",
+        "Sin procedencia no hay forma de comprobar nada. Decide cómo se cita.",
+        "El caso más olvidado: qué pasa si no hay fuente. <b>«No lo sé» tiene que valer.</b>"
+      ],
+      "que_montar": [
+        "Listar las fuentes autorizadas y quién mantiene cada una.",
+        "Escribir cuál manda en caso de conflicto.",
+        "Marcar qué información no puede salir de su origen.",
+        "Definir cómo se cita la procedencia.",
+        "Decidir qué se responde cuando no hay fuente."
+      ],
+      "industria": "<p>No hay una técnica que gane siempre. Dejarlo en el contexto, buscar sobre un índice o consultar una fuente viva se eligen según <b>volumen, actualización, permisos y necesidad de citar</b>. Cuando hay que acreditar de dónde sale cada dato, poder citar pesa más que la comodidad.</p><cite>Anthropic, <a href='https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents'>Effective context engineering for AI agents</a></cite>",
+      "casos": "<p><b>Observado en B:</b> lo importante no era el código, era la documentación, con su preparación, validación y anonimizado.</p><p>Y una decisión que merece copiarse: <b>si el sistema debe poder decir que algo no existe, buscar por parecido no lo demuestra</b>. Es una restricción de ese caso, no una regla sobre buscadores.</p>"
+    },
+    {
+      "id": "guardrails",
+      "nombre": "Seguridad, datos y límites",
+      "resumen": "Qué no debe pasar nunca, y qué lo impide de verdad.",
+      "anillo": 1,
+      "angulo": 219.1,
+      "icono": "🛡️",
+      "tipo": "politica",
+      "dominio": "flujo_agencia",
+      "transversal": true,
+      "pregunta_principal": "¿Qué no debe pasar nunca, y qué lo impide de verdad?",
+      "explicacion": "Qué no debe pasar nunca, y qué lo impide de verdad.\n\nVa más allá de que alguien intente engañar al modelo. Incluye qué datos toca, con qué identidad, con qué permisos, hasta dónde llega el daño y qué exige tu visto bueno.\n\nLas instrucciones orientan. Los permisos frenan.",
+      "ejemplo": "No puede enviar correos. Solo lee la carpeta del proyecto. Los datos personales no salen de ahí. Y el texto que llega en un correo se trata como información, nunca como órdenes.",
+      "prioridad_base": "obligatoria",
+      "reglas_aplicabilidad": [],
+      "reglas_prioridad": [
+        {
+          "id": "seguridad.entrada_externa",
+          "condicion": {
+            "ejes.fuente_entrada": {
+              "in": [
+                "entrada_externa",
+                "mixta"
+              ]
+            }
+          },
+          "prioridad": "alta",
+          "porque": "La entrada no confiable activa threat model y contención.",
+          "procedencia": "Auditoría corregida 2026-08-01 y doctrina de la pieza guardrails"
+        },
+        {
+          "id": "seguridad.escritura",
+          "condicion": {
+            "ejes.herramientas_escritura": true
+          },
+          "prioridad": "obligatoria",
+          "porque": "Las escrituras exigen autorización y límite de impacto.",
+          "procedencia": "Auditoría corregida 2026-08-01 y doctrina de la pieza guardrails"
+        },
+        {
+          "id": "seguridad.datos",
+          "condicion": {
+            "ejes.datos_sensibles": true
+          },
+          "prioridad": "obligatoria",
+          "porque": "Los datos sensibles activan privacidad, acceso, retención y borrado.",
+          "procedencia": "Auditoría corregida 2026-08-01 y doctrina de la pieza guardrails"
+        }
+      ],
+      "dependencias": [
+        "tools"
+      ],
+      "desbloquea": [],
+      "preguntas_diagnostico": [
+        "¿Qué evidencia observable existe hoy sobre seguridad y límites?",
+        "¿Qué aspecto de seguridad y límites no puede deducirse del repositorio?"
+      ],
+      "preguntas_recorrido": [
+        "¿Qué amenazas existen y cómo se contiene su impacto?",
+        "¿Qué decisión concreta tomamos y quién puede cambiarla?",
+        "¿Qué prueba o artefacto demostrará el cierre?",
+        "¿Qué riesgo queda y cuándo se revisa?"
+      ],
+      "criterio_cierre": [
+        "Existe una decisión registrada o política explícita.",
+        "Existe al menos un artefacto, evidencia, descarte razonado o deuda con responsable.",
+        "La verificación y los riesgos residuales quedan anotados."
+      ],
+      "evidencias_aceptadas": [
+        "archivo versionado",
+        "prueba ejecutada con resultado",
+        "decisión fechada y responsable",
+        "descarte con motivo y condición de revisión"
+      ],
+      "artefactos_sugeridos": [
+        "docs/threat-model.md"
+      ],
+      "condiciones_descarte": [
+        "Solo si una regla declarada demuestra que no aplica; registrar motivo y evidencia."
+      ],
+      "riesgos_omision": [
+        "Dejar sin decidir seguridad y límites puede crear fallo silencioso, deuda invisible o falsa confianza."
+      ],
+      "referencias": [
+        {
+          "tipo_evidencia": "evidencia_interna_n4",
+          "calidad": "media",
+          "procedencia": "Cuatro perfiles relacionados, autor/asistente compartidos; no independientes",
+          "referencia": "evidencia interna n=4 · sintesis del 2026-08-01, retirada del arbol el 2026-08-04"
+        },
+        {
+          "tipo_evidencia": "recomendacion",
+          "calidad": "alta",
+          "procedencia": "Auditoría corregida y auditoría ascendente",
+          "referencia": "evidencia interna n=4 · auditoria del esqueleto del 2026-08-01, retirada del arbol el 2026-08-04"
+        }
+      ],
+      "categoria": "c1",
+      "descripcion_html": "Qué no debe pasar nunca, y qué lo impide de verdad.<br><br>Va más allá de que alguien intente engañar al modelo. Incluye qué datos toca, con qué identidad, con qué permisos, hasta dónde llega el daño y qué exige tu visto bueno.<br><br><b>Las instrucciones orientan. Los permisos frenan.</b>",
+      "puntos_clave": [
+        "Hay <b>dos puertas</b>: lo que te escribe quien habla contigo, y el texto de terceros que acaba dentro del trabajo.",
+        "Marca todo dato externo como «esto es información, no instrucciones».",
+        "Mínimo privilegio. Una frase pidiendo prudencia se salta sola; un permiso no.",
+        "Pregúntate el daño máximo. Si esto falla del todo, ¿hasta dónde llega?",
+        "Datos: para qué se usan, cuánto se guardan, cuándo se borran."
+      ],
+      "que_montar": [
+        "Listar qué datos toca y cuáles no pueden salir de su sitio.",
+        "Dar a cada integración su identidad y su permiso mínimo.",
+        "Tratar todo texto de terceros como información.",
+        "Escribir qué acciones exigen confirmación.",
+        "Estimar el daño máximo y ajustar el encierro.",
+        "Definir retención y borrado."
+      ],
+      "industria": "<p>OWASP sitúa la <b>inyección de instrucciones</b> —directa e indirecta— entre los riesgos principales, junto al tratamiento inseguro de las salidas y la cadena de suministro de extensiones.</p><p>Claude Code desarrolla la contención por capas: permisos explícitos, límites de ficheros y red, y sandbox.</p><cite>OWASP, <a href='https://genai.owasp.org/llm-top-10/?cat=253'>Top 10 for LLM Applications 2025</a> · Claude Code, <a href='https://code.claude.com/docs/en/permissions'>Permissions</a> y <a href='https://code.claude.com/docs/en/sandboxing'>Sandboxing</a> · Anthropic, <a href='https://www.anthropic.com/engineering/how-we-contain-claude'>How we contain Claude</a></cite>",
+      "casos": "<p><b>Observado:</b> ninguno de los cuatro proyectos tenía usuarios diarios, así que su experiencia sobre ataques reales es limitada. En <b>A</b>, la única defensa que sobrevivió al uso fue la de permisos.</p>"
+    },
+    {
+      "id": "proveedor",
+      "nombre": "Plataforma y modelo",
+      "resumen": "Sobre qué trabajas y con qué capacidad.",
+      "anillo": 2,
+      "angulo": 328.4,
+      "icono": "🔌",
+      "tipo": "componente",
+      "dominio": "contexto_contrato",
+      "transversal": false,
+      "pregunta_principal": "¿Sobre qué plataforma trabajas, con qué modelo y a qué coste?",
+      "explicacion": "Sobre qué trabajas y con qué capacidad.\n\nPuede ser una plataforma ya montada donde solo eliges, o código propio que llama a una API.\n\nLa pregunta universal: qué plataforma, qué modelo, a qué coste y qué haces si un día no está.",
+      "ejemplo": "Usas Claude Code con el modelo por defecto. Sabes cuánto gastas al mes. Si el servicio se cae, respondes los correos urgentes a mano y el resto espera.",
+      "prioridad_base": "obligatoria",
+      "reglas_aplicabilidad": [],
+      "reglas_prioridad": [],
+      "dependencias": [],
+      "desbloquea": [
+        "validar"
+      ],
+      "preguntas_diagnostico": [
+        "¿Qué evidencia observable existe hoy sobre capa de proveedor?",
+        "¿Qué aspecto de capa de proveedor no puede deducirse del repositorio?"
+      ],
+      "preguntas_recorrido": [
+        "¿Dónde termina el proyecto y empieza el proveedor o plataforma?",
+        "¿Qué decisión concreta tomamos y quién puede cambiarla?",
+        "¿Qué prueba o artefacto demostrará el cierre?",
+        "¿Qué riesgo queda y cuándo se revisa?"
+      ],
+      "criterio_cierre": [
+        "Existe una decisión registrada o política explícita.",
+        "Existe al menos un artefacto, evidencia, descarte razonado o deuda con responsable.",
+        "La verificación y los riesgos residuales quedan anotados."
+      ],
+      "evidencias_aceptadas": [
+        "archivo versionado",
+        "prueba ejecutada con resultado",
+        "decisión fechada y responsable",
+        "descarte con motivo y condición de revisión"
+      ],
+      "artefactos_sugeridos": [
+        "docs/harness/proveedor.md"
+      ],
+      "condiciones_descarte": [
+        "Solo si una regla declarada demuestra que no aplica; registrar motivo y evidencia."
+      ],
+      "riesgos_omision": [
+        "Dejar sin decidir capa de proveedor puede crear fallo silencioso, deuda invisible o falsa confianza."
+      ],
+      "referencias": [
+        {
+          "tipo_evidencia": "evidencia_interna_n4",
+          "calidad": "media",
+          "procedencia": "Cuatro perfiles relacionados, autor/asistente compartidos; no independientes",
+          "referencia": "evidencia interna n=4 · sintesis del 2026-08-01, retirada del arbol el 2026-08-04"
+        },
+        {
+          "tipo_evidencia": "recomendacion",
+          "calidad": "alta",
+          "procedencia": "Auditoría corregida y auditoría ascendente",
+          "referencia": "evidencia interna n=4 · auditoria del esqueleto del 2026-08-01, retirada del arbol el 2026-08-04"
+        }
+      ],
+      "categoria": "c1",
+      "descripcion_html": "Sobre qué trabajas y con qué capacidad.<br><br>Puede ser una plataforma ya montada donde solo eliges, o código propio que llama a una API.<br><br><b>La pregunta universal: qué plataforma, qué modelo, a qué coste y qué haces si un día no está.</b>",
+      "puntos_clave": [
+        "Elegir modelo es elegir capacidad y coste. Uno pequeño puede bastar para lo repetitivo.",
+        "Mira las condiciones de datos antes que las prestaciones. Definen qué trabajos puedes hacer ahí.",
+        "Dependes de un tercero. Ten escrito qué haces si falla.",
+        "Si mañana cambias de plataforma, ¿qué se va contigo y qué se queda?",
+        "<b>Solo si tienes código propio:</b> aislar la llamada al proveedor en un sitio. Es condicional, no obligatorio."
+      ],
+      "que_montar": [
+        "Escribir qué plataforma y qué modelo usas, y por qué.",
+        "Anotar coste y límites previstos.",
+        "Revisar condiciones de datos y privacidad.",
+        "Definir qué se hace si el servicio no está.",
+        "Anotar qué parte es portable.",
+        "Si hay código propio: aislar la llamada en un único sitio."
+      ],
+      "industria": "<p>Anthropic describe el <i>agent harness</i> como el sistema que permite actuar al modelo: procesa entradas, orquesta herramientas y devuelve resultados. E identifica Claude Code como un harness flexible. <b>Ahí el bucle ya está hecho</b>: lo que construyes es la capa de tu trabajo.</p><cite>Anthropic, <a href='https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents'>Demystifying evals for AI agents</a></cite>",
+      "casos": "<p><b>Observado:</b> tres de los cuatro tenían código propio y aislaron la llamada. El cuarto, <b>D</b>, no tiene programa y aun así tiene harness. Por eso esta pieza no puede decir «escribe un adaptador».</p>"
+    },
+    {
+      "id": "tools",
+      "nombre": "Herramientas e integraciones",
+      "resumen": "Con qué puede actuar, además de hablar.",
+      "anillo": 2,
+      "angulo": 37.4,
+      "icono": "🔧",
+      "tipo": "componente",
+      "dominio": "flujo_agencia",
+      "transversal": false,
+      "pregunta_principal": "¿Con qué puede actuar, y qué puede hacer sin preguntarte?",
+      "explicacion": "Con qué puede actuar, además de hablar.\n\nLeer ficheros, buscar en la web, consultar un sistema, escribir en algún sitio.\n\nCada herramienta trae dos preguntas: qué puede hacer, y qué puede hacer sin preguntarte.",
+      "ejemplo": "Puede leer la carpeta del proyecto y buscar en la web sin preguntar. Puede escribir en tu carpeta de borradores avisando. Para tocar el sistema del cliente, pide permiso cada vez.",
+      "prioridad_base": "media",
+      "reglas_aplicabilidad": [
+        {
+          "id": "tools.none",
+          "condicion": {
+            "all": [
+              {
+                "ejes.herramientas_lectura": false
+              },
+              {
+                "ejes.herramientas_escritura": false
+              }
+            ]
+          },
+          "prioridad": "descartar",
+          "porque": "Sin herramientas se documenta el descarte.",
+          "procedencia": "Auditoría corregida 2026-08-01 y doctrina de la pieza tools"
+        }
+      ],
+      "reglas_prioridad": [
+        {
+          "id": "tools.write",
+          "condicion": {
+            "ejes.herramientas_escritura": true
+          },
+          "prioridad": "obligatoria",
+          "porque": "La escritura amplía impacto y necesita autorización explícita.",
+          "procedencia": "Auditoría corregida 2026-08-01 y doctrina de la pieza tools"
+        }
+      ],
+      "dependencias": [],
+      "desbloquea": [
+        "guardrails"
+      ],
+      "preguntas_diagnostico": [
+        "¿Qué evidencia observable existe hoy sobre herramientas?",
+        "¿Qué aspecto de herramientas no puede deducirse del repositorio?"
+      ],
+      "preguntas_recorrido": [
+        "¿Qué puede observar o cambiar el modelo?",
+        "¿Qué decisión concreta tomamos y quién puede cambiarla?",
+        "¿Qué prueba o artefacto demostrará el cierre?",
+        "¿Qué riesgo queda y cuándo se revisa?"
+      ],
+      "criterio_cierre": [
+        "Existe una decisión registrada o política explícita.",
+        "Existe al menos un artefacto, evidencia, descarte razonado o deuda con responsable.",
+        "La verificación y los riesgos residuales quedan anotados."
+      ],
+      "evidencias_aceptadas": [
+        "archivo versionado",
+        "prueba ejecutada con resultado",
+        "decisión fechada y responsable",
+        "descarte con motivo y condición de revisión"
+      ],
+      "artefactos_sugeridos": [
+        "docs/herramientas_y_autorizacion.md"
+      ],
+      "condiciones_descarte": [
+        "Solo si una regla declarada demuestra que no aplica; registrar motivo y evidencia."
+      ],
+      "riesgos_omision": [
+        "Dejar sin decidir herramientas puede crear fallo silencioso, deuda invisible o falsa confianza."
+      ],
+      "referencias": [
+        {
+          "tipo_evidencia": "evidencia_interna_n4",
+          "calidad": "media",
+          "procedencia": "Cuatro perfiles relacionados, autor/asistente compartidos; no independientes",
+          "referencia": "evidencia interna n=4 · sintesis del 2026-08-01, retirada del arbol el 2026-08-04"
+        },
+        {
+          "tipo_evidencia": "recomendacion",
+          "calidad": "alta",
+          "procedencia": "Auditoría corregida y auditoría ascendente",
+          "referencia": "evidencia interna n=4 · auditoria del esqueleto del 2026-08-01, retirada del arbol el 2026-08-04"
+        }
+      ],
+      "categoria": "c3",
+      "descripcion_html": "Con qué puede actuar, además de hablar.<br><br>Leer ficheros, buscar en la web, consultar un sistema, escribir en algún sitio.<br><br><b>Cada herramienta trae dos preguntas: qué puede hacer, y qué puede hacer sin preguntarte.</b>",
+      "puntos_clave": [
+        "Leer es barato y casi siempre compensa.",
+        "Escribir aporta mucho <b>cuando está acotada, autorizada, registrada y es reversible</b>.",
+        "Cada integración con su propia identidad y su permiso mínimo. No con los tuyos.",
+        "Por cada herramienta: ¿es reversible? ¿cuesta dinero? ¿qué pasa si falla a medias?",
+        "Ten escrita la alternativa manual."
+      ],
+      "que_montar": [
+        "Listar qué herramientas hacen falta y para qué tarea.",
+        "Separar las que leen de las que escriben o gastan.",
+        "Dar identidad y permiso mínimo a cada una.",
+        "Escribir cuáles piden confirmación.",
+        "Anotar qué pasa si una falla a medias.",
+        "Dejar por escrito la alternativa manual."
+      ],
+      "industria": "<p>El Model Context Protocol trata la autorización como parte del diseño: qué identidad se usa y qué alcance se concede, en vez de heredar credenciales amplias. OWASP recoge la confianza en extensiones de terceros como riesgo propio.</p><cite>MCP, <a href='https://modelcontextprotocol.io/docs/tutorials/security/authorization'>Understanding Authorization</a> · OWASP, <a href='https://genai.owasp.org/llm-top-10/?cat=253'>Top 10 for LLM Applications 2025</a></cite>",
+      "casos": "<p><b>Observado:</b> las herramientas de lectura se añadieron pronto y sin incidentes; las de escritura, tarde y con miedo. En <b>A</b>, escritura acotada a una carpeta y con registro funcionó bien durante meses.</p>"
+    },
+    {
+      "id": "salida",
+      "nombre": "Resultados y artefactos",
+      "resumen": "Qué deja hecho y en qué forma.",
+      "anillo": 2,
+      "angulo": 106.4,
+      "icono": "🧩",
+      "tipo": "componente",
+      "dominio": "contexto_contrato",
+      "transversal": false,
+      "pregunta_principal": "¿Qué deja hecho, en qué forma y quién lo consume?",
+      "explicacion": "Qué deja hecho y en qué forma.\n\nLa pregunta no es si devuelve JSON. Es qué produce, quién lo consume y en qué estado queda.\n\nUn borrador, un documento, un fichero cambiado o una acción con efectos son cosas muy distintas.",
+      "ejemplo": "Deja el borrador en un fichero, marcado como borrador, con las fuentes citadas y una nota de lo que no ha podido confirmar.",
+      "prioridad_base": "obligatoria",
+      "reglas_aplicabilidad": [],
+      "reglas_prioridad": [],
+      "dependencias": [],
+      "desbloquea": [
+        "flujo"
+      ],
+      "preguntas_diagnostico": [
+        "¿Qué evidencia observable existe hoy sobre salida estructurada?",
+        "¿Qué aspecto de salida estructurada no puede deducirse del repositorio?"
+      ],
+      "preguntas_recorrido": [
+        "¿Qué contrato debe cumplir la salida?",
+        "¿Qué decisión concreta tomamos y quién puede cambiarla?",
+        "¿Qué prueba o artefacto demostrará el cierre?",
+        "¿Qué riesgo queda y cuándo se revisa?"
+      ],
+      "criterio_cierre": [
+        "Existe una decisión registrada o política explícita.",
+        "Existe al menos un artefacto, evidencia, descarte razonado o deuda con responsable.",
+        "La verificación y los riesgos residuales quedan anotados."
+      ],
+      "evidencias_aceptadas": [
+        "archivo versionado",
+        "prueba ejecutada con resultado",
+        "decisión fechada y responsable",
+        "descarte con motivo y condición de revisión"
+      ],
+      "artefactos_sugeridos": [
+        "docs/harness/salida.md"
+      ],
+      "condiciones_descarte": [
+        "Solo si una regla declarada demuestra que no aplica; registrar motivo y evidencia."
+      ],
+      "riesgos_omision": [
+        "Dejar sin decidir salida estructurada puede crear fallo silencioso, deuda invisible o falsa confianza."
+      ],
+      "referencias": [
+        {
+          "tipo_evidencia": "evidencia_interna_n4",
+          "calidad": "media",
+          "procedencia": "Cuatro perfiles relacionados, autor/asistente compartidos; no independientes",
+          "referencia": "evidencia interna n=4 · sintesis del 2026-08-01, retirada del arbol el 2026-08-04"
+        },
+        {
+          "tipo_evidencia": "recomendacion",
+          "calidad": "alta",
+          "procedencia": "Auditoría corregida y auditoría ascendente",
+          "referencia": "evidencia interna n=4 · auditoria del esqueleto del 2026-08-01, retirada del arbol el 2026-08-04"
+        }
+      ],
+      "categoria": "c1",
+      "descripcion_html": "Qué deja hecho y en qué forma.<br><br>La pregunta no es si devuelve JSON. Es qué produce, quién lo consume y en qué estado queda.<br><br><b>Un borrador, un documento, un fichero cambiado o una acción con efectos son cosas muy distintas.</b>",
+      "puntos_clave": [
+        "Empieza por el consumidor. ¿Lo lee una persona o lo procesa un programa?",
+        "El formato estricto es obligatorio solo en el segundo caso.",
+        "Distingue borrador de definitivo. Mezclarlos es de donde salen los envíos accidentales.",
+        "El resultado lleva encima lo necesario para comprobarlo: fuentes, supuestos y dudas.",
+        "Dónde se guarda es parte del resultado. Lo que se pierde al cerrar no es un artefacto."
+      ],
+      "que_montar": [
+        "Escribir qué tipo de resultado produce cada tarea.",
+        "Anotar quién lo consume: persona o máquina.",
+        "Definir dónde se guarda.",
+        "Marcar el estado: borrador, revisado o definitivo.",
+        "Exigir fuentes y dudas dentro del resultado.",
+        "Listar los efectos externos que puede producir."
+      ],
+      "industria": "<p>La salida estructurada es la técnica adecuada <b>cuando otra máquina consume el resultado</b>. Cuando el consumidor es una persona, imponer una estructura rígida puede empeorarlo sin ganar nada.</p><cite>OpenAI, <a href='https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/'>A practical guide to building agents</a></cite>",
+      "casos": "<p><b>Observado:</b> los cuatro usaban salida estructurada, y los cuatro tenían programa que la consumía. No hay ningún caso sin código, así que <b>no puede decirse que sea universal</b>. En <b>C</b>, marcar «borrador / revisado / definitivo» evitó envíos prematuros.</p>"
+    },
+    {
+      "id": "flujo",
+      "nombre": "Flujos, delegación y supervisión",
+      "resumen": "Cómo se organiza el trabajo y dónde decides tú.",
+      "anillo": 2,
+      "angulo": 175.4,
+      "icono": "🔀",
+      "tipo": "decision",
+      "dominio": "flujo_agencia",
+      "transversal": false,
+      "pregunta_principal": "¿Cómo se organiza el trabajo y dónde decides tú?",
+      "explicacion": "Cómo se organiza el trabajo y dónde decides tú.\n\nDesde una pregunta suelta hasta una secuencia preparada, con pasos, topes y puntos de visto bueno.\n\nSi no está escrito qué decides tú, lo decide él.",
+      "ejemplo": "Para el correo habitual hay una secuencia: lee el hilo, mira la ficha, propone tres enfoques, tú eliges, redacta y guarda. Si no lo resuelve en tres intentos, te pregunta.",
+      "prioridad_base": "alta",
+      "reglas_aplicabilidad": [],
+      "reglas_prioridad": [
+        {
+          "id": "flujo.agente",
+          "condicion": {
+            "ejes.patron_ejecucion": "agente"
+          },
+          "prioridad": "obligatoria",
+          "porque": "Un agente necesita límites, estado, recuperación y autorización.",
+          "procedencia": "Auditoría corregida 2026-08-01 y doctrina de la pieza flujo"
+        },
+        {
+          "id": "flujo.workflow",
+          "condicion": {
+            "ejes.patron_ejecucion": "workflow"
+          },
+          "prioridad": "alta",
+          "porque": "Un workflow debe declarar estado e idempotencia.",
+          "procedencia": "Auditoría corregida 2026-08-01 y doctrina de la pieza flujo"
+        }
+      ],
+      "dependencias": [
+        "salida"
+      ],
+      "desbloquea": [],
+      "preguntas_diagnostico": [
+        "¿Qué evidencia observable existe hoy sobre control de flujo?",
+        "¿Qué aspecto de control de flujo no puede deducirse del repositorio?"
+      ],
+      "preguntas_recorrido": [
+        "¿Quién decide el siguiente paso y cómo se recupera una ejecución?",
+        "¿Qué decisión concreta tomamos y quién puede cambiarla?",
+        "¿Qué prueba o artefacto demostrará el cierre?",
+        "¿Qué riesgo queda y cuándo se revisa?"
+      ],
+      "criterio_cierre": [
+        "Existe una decisión registrada o política explícita.",
+        "Existe al menos un artefacto, evidencia, descarte razonado o deuda con responsable.",
+        "La verificación y los riesgos residuales quedan anotados."
+      ],
+      "evidencias_aceptadas": [
+        "archivo versionado",
+        "prueba ejecutada con resultado",
+        "decisión fechada y responsable",
+        "descarte con motivo y condición de revisión"
+      ],
+      "artefactos_sugeridos": [
+        "docs/estado_ejecucion.md"
+      ],
+      "condiciones_descarte": [
+        "Solo si una regla declarada demuestra que no aplica; registrar motivo y evidencia."
+      ],
+      "riesgos_omision": [
+        "Dejar sin decidir control de flujo puede crear fallo silencioso, deuda invisible o falsa confianza."
+      ],
+      "referencias": [
+        {
+          "tipo_evidencia": "evidencia_interna_n4",
+          "calidad": "media",
+          "procedencia": "Cuatro perfiles relacionados, autor/asistente compartidos; no independientes",
+          "referencia": "evidencia interna n=4 · sintesis del 2026-08-01, retirada del arbol el 2026-08-04"
+        },
+        {
+          "tipo_evidencia": "recomendacion",
+          "calidad": "alta",
+          "procedencia": "Auditoría corregida y auditoría ascendente",
+          "referencia": "evidencia interna n=4 · auditoria del esqueleto del 2026-08-01, retirada del arbol el 2026-08-04"
+        }
+      ],
+      "categoria": "c2",
+      "descripcion_html": "Cómo se organiza el trabajo y dónde decides tú.<br><br>Desde una pregunta suelta hasta una secuencia preparada, con pasos, topes y puntos de visto bueno.<br><br><b>Si no está escrito qué decides tú, lo decide él.</b>",
+      "puntos_clave": [
+        "Empieza simple. Añade estructura cuando repetir a mano ya duela.",
+        "Pon topes explícitos: intentos, tiempo, coste. Sin techo, un fallo se convierte en gasto.",
+        "Define cuándo escala a una persona. La escalada es parte del diseño, no un fallo.",
+        "Deja escrito qué decide el modelo y qué decides tú."
+      ],
+      "que_montar": [
+        "Listar las tareas habituales y cuáles merecen secuencia preparada.",
+        "Escribir los pasos y el criterio de parada de cada una.",
+        "Fijar topes de intentos, tiempo y coste.",
+        "Marcar dónde hace falta visto bueno.",
+        "Definir cuándo y a quién se escala.",
+        "Anotar qué decide el modelo y qué la persona."
+      ],
+      "industria": "<p>Las guías de construcción de agentes coinciden: empezar por lo más simple y añadir orquestación solo cuando el caso lo pide, con criterios de parada, límites de coste y puntos de intervención humana definidos por adelantado.</p><cite>OpenAI, <a href='https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/'>A practical guide to building agents</a> · Anthropic, <a href='https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents'>Effective harnesses for long-running agents</a></cite>",
+      "casos": "<p><b>Observado:</b> los cuatro empezaron más simples de lo que acabaron, y ninguno lo lamentó. En <b>D</b>, sin código, el flujo son comandos preparados dentro del asistente.</p>"
+    },
+    {
+      "id": "validar",
+      "nombre": "Coste de comprobar",
+      "resumen": "Cuánto te cuesta saber si está bien.",
+      "anillo": 3,
+      "angulo": 8.3,
+      "icono": "🔁",
+      "tipo": "metrica",
+      "dominio": "calidad_operacion",
+      "transversal": true,
+      "pregunta_principal": "¿Cuánto te cuesta saber si está bien?",
+      "explicacion": "Cuánto te cuesta saber si está bien.\n\nTu tiempo, la espera, el dinero y lo difícil que sea ver el resultado real.\n\nEse precio decide cuánta autonomía te puedes permitir. Más que lo listo que sea el modelo.",
+      "ejemplo": "Revisar un borrador de correo: dos minutos. Puedes dejar que genere muchos. Comprobar si citó bien una cláusula del contrato: media hora y una llamada. Ahí hace falta un escalón más barato antes.",
+      "prioridad_base": "obligatoria",
+      "reglas_aplicabilidad": [],
+      "reglas_prioridad": [
+        {
+          "id": "validar.caro",
+          "condicion": {
+            "any": [
+              {
+                "ejes.coste_prueba.minutos": {
+                  "gt": 5
+                }
+              },
+              {
+                "ejes.coste_prueba.economico": {
+                  "gt": 0
+                }
+              }
+            ]
+          },
+          "prioridad": "obligatoria",
+          "porque": "Un bucle caro debe descomponerse antes de ampliar el sistema.",
+          "procedencia": "Auditoría corregida 2026-08-01 y doctrina de la pieza validar"
+        }
+      ],
+      "dependencias": [
+        "proveedor"
+      ],
+      "desbloquea": [
+        "eval"
+      ],
+      "preguntas_diagnostico": [
+        "¿Qué evidencia observable existe hoy sobre coste de comprobar?",
+        "¿Qué aspecto de coste de comprobar no puede deducirse del repositorio?"
+      ],
+      "preguntas_recorrido": [
+        "¿Cuánto cuesta obtener confianza sobre un cambio?",
+        "¿Qué decisión concreta tomamos y quién puede cambiarla?",
+        "¿Qué prueba o artefacto demostrará el cierre?",
+        "¿Qué riesgo queda y cuándo se revisa?"
+      ],
+      "criterio_cierre": [
+        "Existe una decisión registrada o política explícita.",
+        "Existe al menos un artefacto, evidencia, descarte razonado o deuda con responsable.",
+        "La verificación y los riesgos residuales quedan anotados."
+      ],
+      "evidencias_aceptadas": [
+        "archivo versionado",
+        "prueba ejecutada con resultado",
+        "decisión fechada y responsable",
+        "descarte con motivo y condición de revisión"
+      ],
+      "artefactos_sugeridos": [
+        "docs/estrategia_validacion.md"
+      ],
+      "condiciones_descarte": [
+        "Solo si una regla declarada demuestra que no aplica; registrar motivo y evidencia."
+      ],
+      "riesgos_omision": [
+        "Dejar sin decidir coste de comprobar puede crear fallo silencioso, deuda invisible o falsa confianza."
+      ],
+      "referencias": [
+        {
+          "tipo_evidencia": "evidencia_interna_n4",
+          "calidad": "media",
+          "procedencia": "Cuatro perfiles relacionados, autor/asistente compartidos; no independientes",
+          "referencia": "evidencia interna n=4 · sintesis del 2026-08-01, retirada del arbol el 2026-08-04"
+        },
+        {
+          "tipo_evidencia": "recomendacion",
+          "calidad": "alta",
+          "procedencia": "Auditoría corregida y auditoría ascendente",
+          "referencia": "evidencia interna n=4 · auditoria del esqueleto del 2026-08-01, retirada del arbol el 2026-08-04"
+        }
+      ],
+      "categoria": "c1",
+      "descripcion_html": "Cuánto te cuesta saber si está bien.<br><br>Tu tiempo, la espera, el dinero y lo difícil que sea ver el resultado real.<br><br><b>Ese precio decide cuánta autonomía te puedes permitir. Más que lo listo que sea el modelo.</b>",
+      "puntos_clave": [
+        "Descomponlo: tu tiempo, la ejecución, el dinero, la espera y lo difícil de observar.",
+        "<b>Si comprobar sale caro, diseña un escalón más barato antes de dar autonomía.</b>",
+        "Cuenta el coste de equivocarte al comprobar. Dar por bueno lo malo y por malo lo bueno no cuestan igual.",
+        "Un escalón barato no tiene que ser automático. Una checklist de tres líneas puede bastar."
+      ],
+      "que_montar": [
+        "Estimar el coste de comprobar cada tipo de resultado.",
+        "Separar tiempo propio, espera, dinero y dificultad.",
+        "Diseñar un escalón barato para lo que salga caro.",
+        "Anotar el coste de un falso bien y de un falso mal.",
+        "Revisar la autonomía a la luz de ese coste."
+      ],
+      "industria": "<p>La literatura sobre evaluación de agentes insiste en que la capacidad de medir condiciona lo que se puede delegar, y en diseñar la comprobación <b>antes</b> de ampliar la autonomía.</p><cite>Anthropic, <a href='https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents'>Demystifying evals for AI agents</a> · METR, <a href='https://metr.org/time-horizons/'>Task-Completion Time Horizons</a></cite>",
+      "casos": "<p><b>Aportación propia, como patrón observado:</b> donde comprobar era barato apareció disciplina; donde era caro, no. Con n=4 y autor compartido <b>es una hipótesis, no una causalidad demostrada</b>. Úsala como pregunta: ¿qué harías si comprobar costara la mitad?</p>"
+    },
+    {
+      "id": "medidor",
+      "nombre": "¿Quién revisa al revisor?",
+      "resumen": "Si has delegado la comprobación en un mecanismo, ese mecanismo también puede estar mal.",
+      "anillo": 3,
+      "angulo": 77.3,
+      "icono": "⚖️",
+      "tipo": "politica",
+      "dominio": "calidad_operacion",
+      "transversal": true,
+      "pregunta_principal": "Si has delegado la comprobación, ¿quién comprueba al comprobador?",
+      "explicacion": "Si has delegado la comprobación en un mecanismo, ese mecanismo también puede estar mal.\n\nUn revisor que aprueba todo es peor que no tener revisor: da tranquilidad falsa.\n\nAplica solo cuando la comprobación deja de ser tuya.",
+      "ejemplo": "Has puesto un comprobador que revisa los borradores. Antes de fiarte, le pasas diez correos que ya sabes cómo deberían salir: cinco bien y cinco mal. Y miras si acierta.",
+      "prioridad_base": "baja",
+      "reglas_aplicabilidad": [],
+      "reglas_prioridad": [],
+      "dependencias": [
+        "eval"
+      ],
+      "desbloquea": [],
+      "preguntas_diagnostico": [
+        "¿Qué evidencia observable existe hoy sobre ¿quién revisa al revisor??",
+        "¿Qué aspecto de ¿quién revisa al revisor? no puede deducirse del repositorio?"
+      ],
+      "preguntas_recorrido": [
+        "¿Cómo detectamos errores del mecanismo de evaluación?",
+        "¿Qué decisión concreta tomamos y quién puede cambiarla?",
+        "¿Qué prueba o artefacto demostrará el cierre?",
+        "¿Qué riesgo queda y cuándo se revisa?"
+      ],
+      "criterio_cierre": [
+        "Existe una decisión registrada o política explícita.",
+        "Existe al menos un artefacto, evidencia, descarte razonado o deuda con responsable.",
+        "La verificación y los riesgos residuales quedan anotados."
+      ],
+      "evidencias_aceptadas": [
+        "archivo versionado",
+        "prueba ejecutada con resultado",
+        "decisión fechada y responsable",
+        "descarte con motivo y condición de revisión"
+      ],
+      "artefactos_sugeridos": [
+        "docs/harness/medidor.md"
+      ],
+      "condiciones_descarte": [
+        "Solo si una regla declarada demuestra que no aplica; registrar motivo y evidencia."
+      ],
+      "riesgos_omision": [
+        "Dejar sin decidir ¿quién revisa al revisor? puede crear fallo silencioso, deuda invisible o falsa confianza."
+      ],
+      "referencias": [
+        {
+          "tipo_evidencia": "evidencia_interna_n4",
+          "calidad": "media",
+          "procedencia": "Cuatro perfiles relacionados, autor/asistente compartidos; no independientes",
+          "referencia": "evidencia interna n=4 · sintesis del 2026-08-01, retirada del arbol el 2026-08-04"
+        },
+        {
+          "tipo_evidencia": "recomendacion",
+          "calidad": "alta",
+          "procedencia": "Auditoría corregida y auditoría ascendente",
+          "referencia": "evidencia interna n=4 · auditoria del esqueleto del 2026-08-01, retirada del arbol el 2026-08-04"
+        }
+      ],
+      "categoria": "c4",
+      "descripcion_html": "Si has delegado la comprobación en un mecanismo, ese mecanismo también puede estar mal.<br><br><b>Un revisor que aprueba todo es peor que no tener revisor: da tranquilidad falsa.</b><br><br>Aplica solo cuando la comprobación deja de ser tuya.",
+      "puntos_clave": [
+        "Necesitas ejemplos que ya sabes cómo deberían salir, para calibrarlo.",
+        "Mira los desacuerdos entre el revisor y tú. Ahí se ve si mide lo que crees.",
+        "Separa quien genera de quien evalúa. Si es lo mismo, se aprueba a sí mismo.",
+        "Distingue el fallo del producto del fallo del revisor. Se arreglan distinto.",
+        "Declara qué cubre. Sin eso, se asume que lo cubre todo."
+      ],
+      "que_montar": [
+        "Reunir casos que deben aprobar y casos que deben fallar.",
+        "Comprobar el revisor contra ellos antes de fiarte.",
+        "Separar quien genera de quien evalúa.",
+        "Revisar los desacuerdos con la persona.",
+        "Declarar qué cubre y qué no."
+      ],
+      "industria": "<p>Anthropic recomienda mirar además del resultado la trayectoria y el estado final del entorno, usar comprobaciones deterministas donde existan y validar el propio evaluador contra ejemplos calibrados antes de confiar en él.</p><cite>Anthropic, <a href='https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents'>Demystifying evals for AI agents</a></cite>",
+      "casos": "<p><b>Observado en A</b>, el único con comprobación automática: el revisor inicial aprobaba casi todo. Solo se detectó al pasarle casos que debían fallar. Los otros tres nunca llegaron a tener revisor automático — por eso esta pregunta no aplica a todos.</p>"
+    },
+    {
+      "id": "eval",
+      "nombre": "Casos y criterios de éxito",
+      "resumen": "Qué cuenta como bien hecho, con ejemplos delante.",
+      "anillo": 3,
+      "angulo": 146.3,
+      "icono": "📐",
+      "tipo": "componente",
+      "dominio": "calidad_operacion",
+      "transversal": false,
+      "pregunta_principal": "¿Qué cuenta como bien hecho, y con qué ejemplos lo demuestras?",
+      "explicacion": "Qué cuenta como bien hecho, con ejemplos delante.\n\nNo hacen falta pruebas de software. Valen encargos reales guardados, ejemplos buenos y malos, una rúbrica o una checklist.\n\nLo que no vale es tener el criterio solo en la cabeza.",
+      "ejemplo": "Guardas seis correos reales con la respuesta que diste tú, dos casos que siempre salen mal (quejas y temas legales) y una checklist de cuatro puntos antes de enviar.",
+      "prioridad_base": "alta",
+      "reglas_aplicabilidad": [],
+      "reglas_prioridad": [
+        {
+          "id": "eval.produccion",
+          "condicion": {
+            "ejes.madurez": "produccion"
+          },
+          "prioridad": "alta",
+          "porque": "El uso real exige feedback, muestreo y detección de deriva.",
+          "procedencia": "Auditoría corregida 2026-08-01 y doctrina de la pieza eval"
+        }
+      ],
+      "dependencias": [
+        "prompts",
+        "validar"
+      ],
+      "desbloquea": [
+        "medidor"
+      ],
+      "preguntas_diagnostico": [
+        "¿Qué evidencia observable existe hoy sobre banco de pruebas?",
+        "¿Qué aspecto de banco de pruebas no puede deducirse del repositorio?"
+      ],
+      "preguntas_recorrido": [
+        "¿Qué casos y rúbricas representan calidad y uso real?",
+        "¿Qué decisión concreta tomamos y quién puede cambiarla?",
+        "¿Qué prueba o artefacto demostrará el cierre?",
+        "¿Qué riesgo queda y cuándo se revisa?"
+      ],
+      "criterio_cierre": [
+        "Existe una decisión registrada o política explícita.",
+        "Existe al menos un artefacto, evidencia, descarte razonado o deuda con responsable.",
+        "La verificación y los riesgos residuales quedan anotados."
+      ],
+      "evidencias_aceptadas": [
+        "archivo versionado",
+        "prueba ejecutada con resultado",
+        "decisión fechada y responsable",
+        "descarte con motivo y condición de revisión"
+      ],
+      "artefactos_sugeridos": [
+        "evals/casos.*"
+      ],
+      "condiciones_descarte": [
+        "Solo si una regla declarada demuestra que no aplica; registrar motivo y evidencia."
+      ],
+      "riesgos_omision": [
+        "Dejar sin decidir banco de pruebas puede crear fallo silencioso, deuda invisible o falsa confianza."
+      ],
+      "referencias": [
+        {
+          "tipo_evidencia": "evidencia_interna_n4",
+          "calidad": "media",
+          "procedencia": "Cuatro perfiles relacionados, autor/asistente compartidos; no independientes",
+          "referencia": "evidencia interna n=4 · sintesis del 2026-08-01, retirada del arbol el 2026-08-04"
+        },
+        {
+          "tipo_evidencia": "recomendacion",
+          "calidad": "alta",
+          "procedencia": "Auditoría corregida y auditoría ascendente",
+          "referencia": "evidencia interna n=4 · auditoria del esqueleto del 2026-08-01, retirada del arbol el 2026-08-04"
+        }
+      ],
+      "categoria": "c2",
+      "descripcion_html": "Qué cuenta como bien hecho, con ejemplos delante.<br><br>No hacen falta pruebas de software. Valen encargos reales guardados, ejemplos buenos y malos, una rúbrica o una checklist.<br><br><b>Lo que no vale es tener el criterio solo en la cabeza.</b>",
+      "puntos_clave": [
+        "Los casos salen de trabajo real. Empieza por lo que hiciste esta semana.",
+        "Incluye lo que debe fallar. Un banco con solo casos fáciles no mide nada.",
+        "El criterio de éxito <b>puede y debe escribirse antes</b> de dar autonomía.",
+        "En cualquier oficio: rúbricas, checklists y muestras periódicas de trabajo real.",
+        "Guarda los resultados corregidos. La corrección es lo más valioso que tienes."
+      ],
+      "que_montar": [
+        "Reunir de seis a diez encargos reales.",
+        "Guardar el resultado que consideras bueno.",
+        "Añadir casos límite y usos indebidos.",
+        "Escribir la checklist de aceptación.",
+        "Guardar lo corregido y qué se corrigió.",
+        "Revisar el banco con casos nuevos."
+      ],
+      "industria": "<p>La guía de evaluación de agentes parte de tareas reales representativas y criterios explícitos, y recomienda definir qué es correcto antes de ampliar la autonomía, combinando comprobaciones deterministas con juicio humano.</p><cite>Anthropic, <a href='https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents'>Demystifying evals for AI agents</a></cite>",
+      "casos": "<p><b>Observado:</b> solo <b>A</b> tenía comprobación automática. En los otros tres el criterio no estaba escrito, y en los tres hubo desacuerdos sobre si algo estaba bien. Escribir el criterio ayuda aunque no lo automatices.</p>"
+    },
+    {
+      "id": "observabilidad",
+      "nombre": "Registro, feedback y coste",
+      "resumen": "Qué queda anotado y qué haces con ello.",
+      "anillo": 3,
+      "angulo": 215.3,
+      "icono": "📊",
+      "tipo": "componente",
+      "dominio": "calidad_operacion",
+      "transversal": true,
+      "pregunta_principal": "¿Qué queda anotado y qué haces con ello?",
+      "explicacion": "Qué queda anotado y qué haces con ello.\n\nQué se pidió, qué hizo, qué consultó, qué cambió, cuánto costó y qué corregiste tú.\n\nSin esto no puedes mejorar el harness: no sabes dónde falla.",
+      "ejemplo": "Cada vez que reescribes un borrador queda anotado qué cambiaste. Al mes ves que la mitad de las correcciones son de tono. Eso se convierte en una instrucción nueva.",
+      "prioridad_base": "media",
+      "reglas_aplicabilidad": [],
+      "reglas_prioridad": [
+        {
+          "id": "operacion.produccion",
+          "condicion": {
+            "ejes.madurez": "produccion"
+          },
+          "prioridad": "obligatoria",
+          "porque": "Producción exige salud, alertas, incidentes y rollback.",
+          "procedencia": "Auditoría corregida 2026-08-01 y doctrina de la pieza observabilidad"
+        },
+        {
+          "id": "operacion.longevo",
+          "condicion": {
+            "ejes.horizonte_vida": {
+              "in": [
+                "meses",
+                "anos",
+                "indefinido"
+              ]
+            }
+          },
+          "prioridad": "alta",
+          "porque": "Un horizonte largo requiere operación y ciclo de vida.",
+          "procedencia": "Auditoría corregida 2026-08-01 y doctrina de la pieza observabilidad"
+        }
+      ],
+      "dependencias": [],
+      "desbloquea": [
+        "fuera"
+      ],
+      "preguntas_diagnostico": [
+        "¿Qué evidencia observable existe hoy sobre registro y coste?",
+        "¿Qué aspecto de registro y coste no puede deducirse del repositorio?"
+      ],
+      "preguntas_recorrido": [
+        "¿Podemos reconstruir y operar lo ocurrido?",
+        "¿Qué decisión concreta tomamos y quién puede cambiarla?",
+        "¿Qué prueba o artefacto demostrará el cierre?",
+        "¿Qué riesgo queda y cuándo se revisa?"
+      ],
+      "criterio_cierre": [
+        "Existe una decisión registrada o política explícita.",
+        "Existe al menos un artefacto, evidencia, descarte razonado o deuda con responsable.",
+        "La verificación y los riesgos residuales quedan anotados."
+      ],
+      "evidencias_aceptadas": [
+        "archivo versionado",
+        "prueba ejecutada con resultado",
+        "decisión fechada y responsable",
+        "descarte con motivo y condición de revisión"
+      ],
+      "artefactos_sugeridos": [
+        "docs/operacion.md"
+      ],
+      "condiciones_descarte": [
+        "Solo si una regla declarada demuestra que no aplica; registrar motivo y evidencia."
+      ],
+      "riesgos_omision": [
+        "Dejar sin decidir registro y coste puede crear fallo silencioso, deuda invisible o falsa confianza."
+      ],
+      "referencias": [
+        {
+          "tipo_evidencia": "evidencia_interna_n4",
+          "calidad": "media",
+          "procedencia": "Cuatro perfiles relacionados, autor/asistente compartidos; no independientes",
+          "referencia": "evidencia interna n=4 · sintesis del 2026-08-01, retirada del arbol el 2026-08-04"
+        },
+        {
+          "tipo_evidencia": "recomendacion",
+          "calidad": "alta",
+          "procedencia": "Auditoría corregida y auditoría ascendente",
+          "referencia": "evidencia interna n=4 · auditoria del esqueleto del 2026-08-01, retirada del arbol el 2026-08-04"
+        }
+      ],
+      "categoria": "c3",
+      "descripcion_html": "Qué queda anotado y qué haces con ello.<br><br>Qué se pidió, qué hizo, qué consultó, qué cambió, cuánto costó y qué corregiste tú.<br><br><b>Sin esto no puedes mejorar el harness: no sabes dónde falla.</b>",
+      "puntos_clave": [
+        "Lo más valioso no son los tiempos: es <b>qué aprobaste, corregiste o rechazaste</b>.",
+        "Cierra el ciclo. Cada aprendizaje acaba en instrucción, caso o límite. Si no, es solo un log.",
+        "Anota también lo que quedó incompleto. Los huecos enseñan tanto como los errores.",
+        "Los registros contienen datos. Decide qué se guarda, cuánto y quién lo ve."
+      ],
+      "que_montar": [
+        "Decidir qué se anota: petición, acción, fuentes, cambios y coste.",
+        "Registrar sobre todo lo aprobado, corregido y rechazado.",
+        "Fijar una revisión periódica.",
+        "Definir cómo cada aprendizaje se convierte en regla.",
+        "Decidir retención y acceso de los registros."
+      ],
+      "industria": "<p>Las prácticas de evaluación en uso real recomiendan revisar muestras de trabajo auténtico de forma periódica, y tratar el feedback de quien lo usa como parte del ciclo de mejora, no como un comentario lateral.</p><cite>Anthropic, <a href='https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents'>Demystifying evals for AI agents</a></cite>",
+      "casos": "<p><b>Observado:</b> ninguno de los cuatro tenía un ciclo de feedback formal. En <b>C</b> las correcciones se anotaban a mano y se revisaban de vez en cuando. Fue el único que las convirtió en reglas de forma sistemática.</p>",
+      "accion_preparada": {
+        "titulo": "Abrir la plantilla de correcciones",
+        "hace": [
+          "Crea la plantilla donde queda lo aprobado, lo corregido y lo rechazado.",
+          "Deja escrito cada cuánto se revisa y cómo una corrección repetida se convierte en regla."
+        ],
+        "evidencia": "La plantilla creada y la periodicidad de revisión fijada.",
+        "confirmar_antes": false
+      }
+    },
+    {
+      "id": "harnessdev",
+      "nombre": "Configuración, automatización y permisos",
+      "resumen": "Dónde vive tu harness, en concreto.",
+      "anillo": 4,
+      "angulo": 331.4,
+      "icono": "🏗️",
+      "tipo": "componente",
+      "dominio": "harness_desarrollo",
+      "transversal": false,
+      "pregunta_principal": "¿Dónde vive tu harness, y en qué mecanismo va cada regla?",
+      "explicacion": "Dónde vive tu harness, en concreto.\n\nEn Claude Code esto no es un andamio: es la arquitectura. Instrucciones, reglas, comandos, subagentes, hooks, integraciones y permisos son mecanismos distintos.\n\nElegir mal el mecanismo es el fallo más común.",
+      "ejemplo": "Tu estilo va en instrucciones de proyecto. Lo que haces cada día, en un comando. Lo que no puede saltarse, en un hook. Lo que no debe tocarse, en permisos. Todo dentro del repositorio.",
+      "prioridad_base": "alta",
+      "reglas_aplicabilidad": [],
+      "reglas_prioridad": [
+        {
+          "id": "harness.urgente",
+          "condicion": {
+            "ejes.ritmo": "urgente"
+          },
+          "prioridad": "baja",
+          "porque": "En urgencia se usa briefing mínimo y se registra deuda, sin andamiaje amplio.",
+          "procedencia": "Auditoría corregida 2026-08-01 y doctrina de la pieza harnessdev"
+        }
+      ],
+      "dependencias": [],
+      "desbloquea": [],
+      "preguntas_diagnostico": [
+        "¿Qué evidencia observable existe hoy sobre instrucciones y permisos?",
+        "¿Qué aspecto de instrucciones y permisos no puede deducirse del repositorio?"
+      ],
+      "preguntas_recorrido": [
+        "¿Con qué instrucciones y capacidades trabaja el asistente de desarrollo?",
+        "¿Qué decisión concreta tomamos y quién puede cambiarla?",
+        "¿Qué prueba o artefacto demostrará el cierre?",
+        "¿Qué riesgo queda y cuándo se revisa?"
+      ],
+      "criterio_cierre": [
+        "Existe una decisión registrada o política explícita.",
+        "Existe al menos un artefacto, evidencia, descarte razonado o deuda con responsable.",
+        "La verificación y los riesgos residuales quedan anotados."
+      ],
+      "evidencias_aceptadas": [
+        "archivo versionado",
+        "prueba ejecutada con resultado",
+        "decisión fechada y responsable",
+        "descarte con motivo y condición de revisión"
+      ],
+      "artefactos_sugeridos": [
+        "docs/harness/harnessdev.md"
+      ],
+      "condiciones_descarte": [
+        "Solo si una regla declarada demuestra que no aplica; registrar motivo y evidencia."
+      ],
+      "riesgos_omision": [
+        "Dejar sin decidir instrucciones y permisos puede crear fallo silencioso, deuda invisible o falsa confianza."
+      ],
+      "referencias": [
+        {
+          "tipo_evidencia": "evidencia_interna_n4",
+          "calidad": "media",
+          "procedencia": "Cuatro perfiles relacionados, autor/asistente compartidos; no independientes",
+          "referencia": "evidencia interna n=4 · sintesis del 2026-08-01, retirada del arbol el 2026-08-04"
+        },
+        {
+          "tipo_evidencia": "recomendacion",
+          "calidad": "alta",
+          "procedencia": "Auditoría corregida y auditoría ascendente",
+          "referencia": "evidencia interna n=4 · auditoria del esqueleto del 2026-08-01, retirada del arbol el 2026-08-04"
+        }
+      ],
+      "categoria": "c2",
+      "descripcion_html": "Dónde vive tu harness, en concreto.<br><br>En Claude Code esto no es un andamio: <b>es la arquitectura</b>. Instrucciones, reglas, comandos, subagentes, hooks, integraciones y permisos son mecanismos distintos.<br><br><b>Elegir mal el mecanismo es el fallo más común.</b>",
+      "puntos_clave": [
+        "Regla práctica: <b>orientación</b> en instrucciones, <b>capacidad</b> en comandos, <b>obligación</b> en hooks, <b>frontera</b> en permisos.",
+        "No dupliques una regla en dos sitios. Cuando cambie, tendrás dos verdades.",
+        "Separa lo personal, lo del proyecto y lo de la organización. No todo debe viajar.",
+        "Esto es lo que hace que otra persona clone tu proyecto y tenga tu harness, no tus notas."
+      ],
+      "que_montar": [
+        "Inventariar qué mecanismos usas y para qué.",
+        "Colocar cada regla en un único sitio.",
+        "Separar configuración personal, de proyecto y de organización.",
+        "Versionar lo que deba viajar con el proyecto.",
+        "Comprobar que alguien puede clonar y arrancar sin ayuda."
+      ],
+      "industria": "<p>Claude Code documenta los componentes de extensión y sus diferencias, la estructura del directorio de configuración y el sistema de plugins. La distinción entre lo que orienta, lo que se invoca, lo que obliga y lo que limita es explícita.</p><cite>Claude Code, <a href='https://code.claude.com/docs/en/features-overview'>Features overview</a>, <a href='https://code.claude.com/docs/en/claude-directory'>.claude directory</a> y <a href='https://code.claude.com/docs/en/plugins'>Plugins</a></cite>",
+      "casos": "<p><b>Observado:</b> en los cuatro esta capa creció sin plan y hubo que reordenarla. El síntoma siempre fue el mismo: la misma regla escrita en dos sitios. En <b>D</b>, sin código, esta pieza <b>es</b> casi todo el harness.</p>",
+      "accion_preparada": {
+        "titulo": "Dejar el andamiaje del asistente montado",
+        "hace": [
+          "Crea `.claude/` con el fichero de instrucciones del proyecto.",
+          "Escribe una lista de permisos de partida, conservadora y comentada.",
+          "Deja creado el primer comando propio a partir de la tarea que más repitas.",
+          "Señala qué regla iría en instrucciones, cuál en comando y cuál en permiso."
+        ],
+        "evidencia": "Los ficheros creados y una regla colocada en cada mecanismo.",
+        "confirmar_antes": true
+      }
+    },
+    {
+      "id": "fallos",
+      "nombre": "Fallos conocidos e incidentes",
+      "resumen": "Lo que ya has visto fallar, convertido en defensa.",
+      "anillo": 4,
+      "angulo": 26.6,
+      "icono": "📋",
+      "tipo": "politica",
+      "dominio": "harness_desarrollo",
+      "transversal": false,
+      "pregunta_principal": "¿Qué has visto fallar, y en qué defensa lo has convertido?",
+      "explicacion": "Lo que ya has visto fallar, convertido en defensa.\n\nNo es una lista para leer. Es un ciclo:\n\nincidente → evidencia → patrón → regla o límite → caso de prueba → verificación → revisión.",
+      "ejemplo": "Notaste que en hilos largos se inventaba lo que había dicho el cliente. Lo anotaste, viste que pasaba sin el hilo delante, añadiste la regla de citar el mensaje, guardaste un caso que lo detecta y comprobaste que ya no pasa.",
+      "prioridad_base": "media",
+      "reglas_aplicabilidad": [],
+      "reglas_prioridad": [],
+      "dependencias": [],
+      "desbloquea": [],
+      "preguntas_diagnostico": [
+        "¿Qué evidencia observable existe hoy sobre qué le falla al asistente?",
+        "¿Qué aspecto de qué le falla al asistente no puede deducirse del repositorio?"
+      ],
+      "preguntas_recorrido": [
+        "¿Qué fallos observados deben convertirse en reglas locales?",
+        "¿Qué decisión concreta tomamos y quién puede cambiarla?",
+        "¿Qué prueba o artefacto demostrará el cierre?",
+        "¿Qué riesgo queda y cuándo se revisa?"
+      ],
+      "criterio_cierre": [
+        "Existe una decisión registrada o política explícita.",
+        "Existe al menos un artefacto, evidencia, descarte razonado o deuda con responsable.",
+        "La verificación y los riesgos residuales quedan anotados."
+      ],
+      "evidencias_aceptadas": [
+        "archivo versionado",
+        "prueba ejecutada con resultado",
+        "decisión fechada y responsable",
+        "descarte con motivo y condición de revisión"
+      ],
+      "artefactos_sugeridos": [
+        "docs/harness/fallos.md"
+      ],
+      "condiciones_descarte": [
+        "Solo si una regla declarada demuestra que no aplica; registrar motivo y evidencia."
+      ],
+      "riesgos_omision": [
+        "Dejar sin decidir qué le falla al asistente puede crear fallo silencioso, deuda invisible o falsa confianza."
+      ],
+      "referencias": [
+        {
+          "tipo_evidencia": "evidencia_interna_n4",
+          "calidad": "media",
+          "procedencia": "Cuatro perfiles relacionados, autor/asistente compartidos; no independientes",
+          "referencia": "evidencia interna n=4 · sintesis del 2026-08-01, retirada del arbol el 2026-08-04"
+        },
+        {
+          "tipo_evidencia": "recomendacion",
+          "calidad": "alta",
+          "procedencia": "Auditoría corregida y auditoría ascendente",
+          "referencia": "evidencia interna n=4 · auditoria del esqueleto del 2026-08-01, retirada del arbol el 2026-08-04"
+        }
+      ],
+      "categoria": "c3",
+      "descripcion_html": "Lo que ya has visto fallar, convertido en defensa.<br><br>No es una lista para leer. Es un ciclo:<br><br>incidente → evidencia → patrón → regla o límite → caso de prueba → verificación → revisión.",
+      "puntos_clave": [
+        "Los fallos de otros son <b>candidatos</b> que mirar, no leyes.",
+        "Activa los que hayas visto o los que serían graves en tu caso.",
+        "Guarda la evidencia, no solo la conclusión.",
+        "Revisa las defensas de vez en cuando. Algunas dejan de tener sentido."
+      ],
+      "que_montar": [
+        "Abrir un registro de incidentes con su evidencia.",
+        "Buscar patrones antes de escribir defensas.",
+        "Convertir cada patrón en regla o límite.",
+        "Añadir un caso que detecte ese fallo.",
+        "Comprobar que la defensa funciona.",
+        "Poner fecha de revisión a cada defensa."
+      ],
+      "industria": "<p>Los catálogos públicos de riesgos sirven para anticipar fallos plausibles, pero la lista que de verdad protege es la de los incidentes vistos en el propio trabajo.</p><cite>OWASP, <a href='https://genai.owasp.org/llm-top-10/?cat=253'>Top 10 for LLM Applications 2025</a> · NIST, <a href='https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-generative-artificial-intelligence'>Generative AI Profile</a></cite>",
+      "casos": "<p><b>Aportación propia:</b> los cuatro acumularon un catálogo de fallos del asistente. Con n=4, mismo asistente y mismo autor, <b>no describe lo que le pasa a cualquiera</b>. El patrón que sí se repitió: los fallos aparecían al crecer la tarea, no al principio.</p>",
+      "accion_preparada": {
+        "titulo": "Abrir el registro de incidentes",
+        "hace": [
+          "Crea el registro con las columnas del ciclo: incidente, evidencia, patrón, defensa, caso, revisión.",
+          "Traslada al registro los fallos que la persona ya recuerde haber visto."
+        ],
+        "evidencia": "El fichero creado con al menos una entrada real.",
+        "confirmar_antes": false
+      }
+    },
+    {
+      "id": "epistemica",
+      "nombre": "Nada sin verificar",
+      "resumen": "No dar por bueno lo que no está comprobado.",
+      "anillo": 4,
+      "angulo": 81.8,
+      "icono": "🔍",
+      "tipo": "politica",
+      "dominio": "harness_desarrollo",
+      "transversal": true,
+      "pregunta_principal": "¿Cómo distingues lo comprobado de lo supuesto?",
+      "explicacion": "No dar por bueno lo que no está comprobado.\n\nNi lo que dice la IA, ni lo que crees tú.\n\nHecho, inferencia y desconocido son tres cosas distintas. Y «no lo sé» es una respuesta válida.",
+      "ejemplo": "Cuando el borrador afirma una fecha, dice de dónde la saca. Cuando deduce lo que quiere el cliente, lo marca como suposición. Cuando no tiene base, escribe «pendiente de confirmar».",
+      "prioridad_base": "alta",
+      "reglas_aplicabilidad": [],
+      "reglas_prioridad": [],
+      "dependencias": [],
+      "desbloquea": [],
+      "preguntas_diagnostico": [
+        "¿Qué evidencia observable existe hoy sobre nada sin verificar?",
+        "¿Qué aspecto de nada sin verificar no puede deducirse del repositorio?"
+      ],
+      "preguntas_recorrido": [
+        "¿Qué nivel de evidencia respalda cada afirmación o cambio?",
+        "¿Qué decisión concreta tomamos y quién puede cambiarla?",
+        "¿Qué prueba o artefacto demostrará el cierre?",
+        "¿Qué riesgo queda y cuándo se revisa?"
+      ],
+      "criterio_cierre": [
+        "Existe una decisión registrada o política explícita.",
+        "Existe al menos un artefacto, evidencia, descarte razonado o deuda con responsable.",
+        "La verificación y los riesgos residuales quedan anotados."
+      ],
+      "evidencias_aceptadas": [
+        "archivo versionado",
+        "prueba ejecutada con resultado",
+        "decisión fechada y responsable",
+        "descarte con motivo y condición de revisión"
+      ],
+      "artefactos_sugeridos": [
+        "docs/harness/epistemica.md"
+      ],
+      "condiciones_descarte": [
+        "Solo si una regla declarada demuestra que no aplica; registrar motivo y evidencia."
+      ],
+      "riesgos_omision": [
+        "Dejar sin decidir nada sin verificar puede crear fallo silencioso, deuda invisible o falsa confianza."
+      ],
+      "referencias": [
+        {
+          "tipo_evidencia": "evidencia_interna_n4",
+          "calidad": "media",
+          "procedencia": "Cuatro perfiles relacionados, autor/asistente compartidos; no independientes",
+          "referencia": "evidencia interna n=4 · sintesis del 2026-08-01, retirada del arbol el 2026-08-04"
+        },
+        {
+          "tipo_evidencia": "recomendacion",
+          "calidad": "alta",
+          "procedencia": "Auditoría corregida y auditoría ascendente",
+          "referencia": "evidencia interna n=4 · auditoria del esqueleto del 2026-08-01, retirada del arbol el 2026-08-04"
+        }
+      ],
+      "categoria": "c2",
+      "descripcion_html": "No dar por bueno lo que no está comprobado.<br><br>Ni lo que dice la IA, ni lo que crees tú.<br><br><b>Hecho, inferencia y desconocido son tres cosas distintas. Y «no lo sé» es una respuesta válida.</b>",
+      "puntos_clave": [
+        "Etiqueta lo que afirmas: hecho, inferencia o desconocido.",
+        "Pide evidencia de las acciones, no el relato. «Ya está hecho» no es evidencia.",
+        "Si dos fuentes se contradicen, eso es un hallazgo que reportar, no un problema que resolver solo.",
+        "Verifica en proporción al riesgo. Pretender verificarlo todo acaba en no verificar nada.",
+        "Declara qué has comprobado y qué no."
+      ],
+      "que_montar": [
+        "Distinguir por escrito hecho, inferencia y desconocido.",
+        "Exigir fuente para cada dato.",
+        "Pedir evidencia de las acciones.",
+        "Definir qué se verifica siempre y qué según riesgo.",
+        "Aceptar «no lo sé» como resultado.",
+        "Declarar la cobertura de lo comprobado."
+      ],
+      "industria": "<p>Los marcos de gestión de riesgo sitúan la trazabilidad y la comunicación explícita de incertidumbre entre las prácticas centrales: documentar de dónde sale cada afirmación en vez de presentarlo todo con la misma seguridad.</p><cite>NIST, <a href='https://airc.nist.gov/airmf-resources/airmf/5-sec-core/'>AI Risk Management Framework Core</a></cite>",
+      "casos": "<p><b>Aportación propia:</b> los cuatro desarrollaron alguna forma de esta disciplina, y en los cuatro nació de un susto concreto. Funcionó en cuatro casos. <b>No hay base para decir que vaya por delante de nada.</b></p>"
+    },
+    {
+      "id": "historial",
+      "nombre": "Historial, secretos y portabilidad",
+      "resumen": "Que el harness sobreviva.",
+      "anillo": 4,
+      "angulo": 137,
+      "icono": "🔐",
+      "tipo": "componente",
+      "dominio": "harness_desarrollo",
+      "transversal": true,
+      "pregunta_principal": "¿Sobrevive tu harness al portátil, al borrado y a que tú no estés?",
+      "explicacion": "Que el harness sobreviva.\n\nAl portátil que se rompe, al fichero que se sobrescribe y a la persona que se va.\n\nSi otra persona no puede clonarlo y arrancar, no tienes un harness: tienes una máquina configurada.",
+      "ejemplo": "Todo está en un repositorio con historia. Las claves, fuera. Hay una copia que no vive en tu portátil. Y un README que explica cómo arrancar en diez minutos.",
+      "prioridad_base": "media",
+      "reglas_aplicabilidad": [],
+      "reglas_prioridad": [],
+      "dependencias": [],
+      "desbloquea": [],
+      "preguntas_diagnostico": [
+        "¿Qué evidencia observable existe hoy sobre historial e integridad?",
+        "¿Qué aspecto de historial e integridad no puede deducirse del repositorio?"
+      ],
+      "preguntas_recorrido": [
+        "¿Puede recuperarse y reproducirse el trabajo?",
+        "¿Qué decisión concreta tomamos y quién puede cambiarla?",
+        "¿Qué prueba o artefacto demostrará el cierre?",
+        "¿Qué riesgo queda y cuándo se revisa?"
+      ],
+      "criterio_cierre": [
+        "Existe una decisión registrada o política explícita.",
+        "Existe al menos un artefacto, evidencia, descarte razonado o deuda con responsable.",
+        "La verificación y los riesgos residuales quedan anotados."
+      ],
+      "evidencias_aceptadas": [
+        "archivo versionado",
+        "prueba ejecutada con resultado",
+        "decisión fechada y responsable",
+        "descarte con motivo y condición de revisión"
+      ],
+      "artefactos_sugeridos": [
+        ".gitignore, lockfile y política de recuperación"
+      ],
+      "condiciones_descarte": [
+        "Solo si una regla declarada demuestra que no aplica; registrar motivo y evidencia."
+      ],
+      "riesgos_omision": [
+        "Dejar sin decidir historial e integridad puede crear fallo silencioso, deuda invisible o falsa confianza."
+      ],
+      "referencias": [
+        {
+          "tipo_evidencia": "evidencia_interna_n4",
+          "calidad": "media",
+          "procedencia": "Cuatro perfiles relacionados, autor/asistente compartidos; no independientes",
+          "referencia": "evidencia interna n=4 · sintesis del 2026-08-01, retirada del arbol el 2026-08-04"
+        },
+        {
+          "tipo_evidencia": "recomendacion",
+          "calidad": "alta",
+          "procedencia": "Auditoría corregida y auditoría ascendente",
+          "referencia": "evidencia interna n=4 · auditoria del esqueleto del 2026-08-01, retirada del arbol el 2026-08-04"
+        }
+      ],
+      "categoria": "c3",
+      "descripcion_html": "Que el harness sobreviva.<br><br>Al portátil que se rompe, al fichero que se sobrescribe y a la persona que se va.<br><br><b>Si otra persona no puede clonarlo y arrancar, no tienes un harness: tienes una máquina configurada.</b>",
+      "puntos_clave": [
+        "Versionar es la red básica. Sin historia, cualquier sobrescritura es definitiva.",
+        "Los secretos van fuera, con un ejemplo vacío que documente cuáles hacen falta.",
+        "Copia no es historia. Necesitas volver a un punto y también recuperar si se pierde todo.",
+        "Anota de qué depende. Reproducirlo dentro de un año es parte del diseño."
+      ],
+      "que_montar": [
+        "Poner el harness bajo control de versiones desde el primer día.",
+        "Sacar los secretos y documentar cuáles hacen falta.",
+        "Tener una copia fuera de la máquina de trabajo.",
+        "Escribir cómo se arranca desde cero.",
+        "Comprobar que otra persona puede clonarlo.",
+        "Anotar dependencias y procedencia."
+      ],
+      "industria": "<p>Claude Code trata la configuración del proyecto como contenido versionable que acompaña al repositorio, y los plugins como forma de distribuir capacidades entre personas. Ambas cosas apuntan a que el harness debe poder viajar.</p><cite>Claude Code, <a href='https://code.claude.com/docs/en/claude-directory'>.claude directory</a> y <a href='https://code.claude.com/docs/en/plugins'>Plugins</a></cite>",
+      "casos": "<p><b>Observado, y con coste real:</b> uno de los cuatro perdió trabajo por no tener historia versionada. Se recuperó desde registros auxiliares, no desde una copia. Es también el caso que muestra que <b>«el empaquetado instalable sobra» era una conclusión equivocada</b>.</p>",
+      "accion_preparada": {
+        "titulo": "Dejar el control de versiones montado",
+        "hace": [
+          "Comprueba si el proyecto ya está bajo git y, si no, lo inicializa.",
+          "Escribe un `.gitignore` con los secretos y los temporales del entorno detectado.",
+          "Crea `.env.example` a partir de las variables que encuentre, sin valores.",
+          "Deja el primer commit y explica cómo volver atrás.",
+          "Pregunta si hay copia fuera de la máquina y, si no la hay, lo anota como deuda."
+        ],
+        "evidencia": "El hash del primer commit y la salida de `git status` limpia.",
+        "confirmar_antes": true
+      }
+    },
+    {
+      "id": "fuera",
+      "nombre": "Alcance y ciclo de vida",
+      "resumen": "Qué no hace, y hasta cuándo.",
+      "anillo": 4,
+      "angulo": 192.2,
+      "icono": "🚫",
+      "tipo": "decision",
+      "dominio": "proposito_gobierno",
+      "transversal": true,
+      "pregunta_principal": "¿Qué no hace, y cuándo se revisa o se retira?",
+      "explicacion": "Qué no hace, y hasta cuándo.\n\nRegistrar los descartes con su motivo evita repetir la misma discusión cada mes.\n\nY la pregunta que casi nadie se hace: cuándo hay que revisar esto, y cuándo retirarlo.",
+      "ejemplo": "Está escrito que no toca facturación (riesgo alto, valor bajo), que traducir se pospone hasta tener casos, y que todo se revisa en enero. Cada descarte tiene responsable.",
+      "prioridad_base": "obligatoria",
+      "reglas_aplicabilidad": [],
+      "reglas_prioridad": [
+        {
+          "id": "gobierno.urgente",
+          "condicion": {
+            "ejes.ritmo": "urgente"
+          },
+          "prioridad": "obligatoria",
+          "porque": "La urgencia obliga a declarar alcance, deuda y salida posterior.",
+          "procedencia": "Auditoría corregida 2026-08-01 y doctrina de la pieza fuera"
+        }
+      ],
+      "dependencias": [
+        "observabilidad"
+      ],
+      "desbloquea": [],
+      "preguntas_diagnostico": [
+        "¿Qué evidencia observable existe hoy sobre lo que queda fuera?",
+        "¿Qué aspecto de lo que queda fuera no puede deducirse del repositorio?"
+      ],
+      "preguntas_recorrido": [
+        "¿Qué no se hará, por qué y cuándo se revisará?",
+        "¿Qué decisión concreta tomamos y quién puede cambiarla?",
+        "¿Qué prueba o artefacto demostrará el cierre?",
+        "¿Qué riesgo queda y cuándo se revisa?"
+      ],
+      "criterio_cierre": [
+        "Existe una decisión registrada o política explícita.",
+        "Existe al menos un artefacto, evidencia, descarte razonado o deuda con responsable.",
+        "La verificación y los riesgos residuales quedan anotados."
+      ],
+      "evidencias_aceptadas": [
+        "archivo versionado",
+        "prueba ejecutada con resultado",
+        "decisión fechada y responsable",
+        "descarte con motivo y condición de revisión"
+      ],
+      "artefactos_sugeridos": [
+        "DEUDA_Y_SALIDA.md"
+      ],
+      "condiciones_descarte": [
+        "Solo si una regla declarada demuestra que no aplica; registrar motivo y evidencia."
+      ],
+      "riesgos_omision": [
+        "Dejar sin decidir lo que queda fuera puede crear fallo silencioso, deuda invisible o falsa confianza."
+      ],
+      "referencias": [
+        {
+          "tipo_evidencia": "evidencia_interna_n4",
+          "calidad": "media",
+          "procedencia": "Cuatro perfiles relacionados, autor/asistente compartidos; no independientes",
+          "referencia": "evidencia interna n=4 · sintesis del 2026-08-01, retirada del arbol el 2026-08-04"
+        },
+        {
+          "tipo_evidencia": "recomendacion",
+          "calidad": "alta",
+          "procedencia": "Auditoría corregida y auditoría ascendente",
+          "referencia": "evidencia interna n=4 · auditoria del esqueleto del 2026-08-01, retirada del arbol el 2026-08-04"
+        }
+      ],
+      "categoria": "c1",
+      "descripcion_html": "Qué no hace, y hasta cuándo.<br><br>Registrar los descartes con su motivo evita repetir la misma discusión cada mes.<br><br><b>Y la pregunta que casi nadie se hace: cuándo hay que revisar esto, y cuándo retirarlo.</b>",
+      "puntos_clave": [
+        "Separa cuatro cosas: no se construye, no aplica, se pospone, y deuda aceptada.",
+        "Cada descarte necesita motivo, responsable y <b>condición para reabrirlo</b>.",
+        "Sin condición de reapertura, el descarte se convierte en olvido.",
+        "Pon fecha de revisión al harness entero.",
+        "Prevé la retirada: qué accesos se cierran y qué datos se borran."
+      ],
+      "que_montar": [
+        "Abrir un registro de descartes con motivo y fecha.",
+        "Separar no aplica, no se construye, se pospone y deuda.",
+        "Asignar responsable y condición de reapertura.",
+        "Poner fecha de revisión al harness completo.",
+        "Escribir qué pasa al retirarlo: accesos, secretos y datos."
+      ],
+      "industria": "<p>NIST incluye en el núcleo de su marco la definición de alcance y responsabilidades, la revisión periódica y la <b>retirada segura</b> como parte del ciclo de vida, no como una fase opcional al final.</p><cite>NIST, <a href='https://airc.nist.gov/airmf-resources/airmf/5-sec-core/'>AI Risk Management Framework Core</a></cite>",
+      "casos": "<p><b>Aportación propia:</b> los cuatro registraban descartes con su motivo, y es de lo que más tiempo ahorró según sus autores. Ninguno, en cambio, tenía previsto qué pasaría al retirarlo.</p>",
+      "accion_preparada": {
+        "titulo": "Abrir el registro de descartes",
+        "hace": [
+          "Crea el registro con motivo, responsable y condición de reapertura.",
+          "Vuelca los descartes que ya hayan salido durante el recorrido.",
+          "Fija la fecha de revisión del harness entero."
+        ],
+        "evidencia": "El fichero creado con los descartes ya tomados y su fecha de revisión.",
+        "confirmar_antes": false
+      }
+    }
+  ],
+  "categorias": {
+    "c1": {
+      "nombre": "Siempre aplica",
+      "prioridad_equivalente": "obligatoria",
+      "orden": 0
+    },
+    "c2": {
+      "nombre": "Casi siempre",
+      "prioridad_equivalente": "alta",
+      "orden": 1
+    },
+    "c3": {
+      "nombre": "Según el caso",
+      "prioridad_equivalente": "media",
+      "orden": 2
+    },
+    "c4": {
+      "nombre": "Solo en algunos casos",
+      "prioridad_equivalente": "baja",
+      "orden": 3
+    }
+  }
+}

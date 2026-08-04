@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "harness-lab"
+version = "1.0.0"
+# Se declara solo lo que está probado de verdad. Bajarlo exige instalar esa versión,
+# ejecutar las pruebas en ella y registrar el resultado; no basta con suponerlo.
+# 3.12 es el suelo desde el 2026-08-03: se eligió porque es la versión que una persona
+# encuentra ya instalada sin pedir permisos, y se comprobó ejecutando la batería completa
+# en 3.12.4 sobre Windows. El resultado está registrado en proyectos/harness-lab/REGISTRO.md.
+requires-python = ">=3.12"
+# El recorrido no llama a ninguna API: no necesita un SDK de proveedor.
+# Versiones exactas para que el proyecto arranque igual dentro de un año. Subirlas es una
+# decisión, no un efecto de instalar: se cambia aquí, se ejecutan las pruebas y se registra.
+dependencies = ["jsonschema==4.26.0"]
+
+[project.scripts]
+harness-lab = "harness_lab.cli:main"
+
+[project.optional-dependencies]
+dev = ["pytest==9.1.1"]
+# El extra `arqueologia` se retiró el 2026-08-04 con la herramienta que lo usaba: era lo
+# único del repositorio que llamaba a una API de pago, y analizaba dossiers de proyectos
+# propios que ya no viajan. Ahora ninguna instalación descarga un SDK de proveedor.
+
+[tool.setuptools.packages.find]
+where = ["src"]

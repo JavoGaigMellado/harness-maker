@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://harness-lab.local/schema/diagnostico-1.0.0.json",
+  "title": "Diagnóstico multidimensional del proyecto",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "proyecto", "ejes", "observacion"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "proyecto": {
+      "type": "object", "additionalProperties": false,
+      "required": ["nombre", "proposito", "usuarios", "propietario", "criterio_exito"],
+      "properties": {
+        "nombre": {"type": "string", "minLength": 1},
+        "proposito": {"type": ["string", "null"]},
+        "usuarios": {"type": "array", "items": {"type": "string"}},
+        "propietario": {"type": ["string", "null"]},
+        "criterio_exito": {"type": ["string", "null"]}
+      }
+    },
+    "ejes": {
+      "type": "object", "additionalProperties": false,
+      "required": ["forma_codigo", "patron_ejecucion", "ritmo", "madurez", "fuente_entrada", "datos_sensibles", "herramientas_lectura", "herramientas_escritura", "reversibilidad", "coste_prueba", "capacidad_decision", "horizonte_vida"],
+      "properties": {
+        "forma_codigo": {"enum": ["codigo_propio", "sin_codigo_propio", "hibrido", "desconocido"]},
+        "patron_ejecucion": {"enum": ["llamada_unica", "workflow", "agente", "desconocido"]},
+        "ritmo": {"enum": ["urgente", "evolutivo", "desconocido"]},
+        "madurez": {"enum": ["idea", "prototipo", "uso_interno", "produccion", "desconocido"]},
+        "fuente_entrada": {"enum": ["corpus_cerrado", "entrada_externa", "mixta", "desconocido"]},
+        "datos_sensibles": {"type": ["boolean", "null"]},
+        "herramientas_lectura": {"type": ["boolean", "null"]},
+        "herramientas_escritura": {"type": ["boolean", "null"]},
+        "reversibilidad": {"enum": ["reversible", "irreversible", "mixta", "sin_acciones", "desconocido"]},
+        "coste_prueba": {
+          "type": "object", "additionalProperties": false,
+          "required": ["economico", "minutos", "revision_humana"],
+          "properties": {
+            "economico": {"type": ["number", "null"], "minimum": 0},
+            "minutos": {"type": ["number", "null"], "minimum": 0},
+            "revision_humana": {"type": ["boolean", "null"]}
+          }
+        },
+        "capacidad_decision": {"enum": ["plena", "compartida", "limitada", "desconocido"]},
+        "horizonte_vida": {"enum": ["dias", "semanas", "meses", "anos", "indefinido", "desconocido"]}
+      }
+    },
+    "observacion": {
+      "type": "object", "additionalProperties": false,
+      "required": ["hechos", "inferencias", "desconocidos", "preguntas_pendientes"],
+      "properties": {
+        "hechos": {"type": "array", "items": {"$ref": "#/$defs/hallazgo"}},
+        "inferencias": {"type": "array", "items": {"$ref": "#/$defs/hallazgo"}},
+        "desconocidos": {"type": "array", "items": {"type": "string"}},
+        "preguntas_pendientes": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  },
+  "$defs": {
+    "hallazgo": {
+      "type": "object", "additionalProperties": false,
+      "required": ["campo", "valor", "fuente"],
+      "properties": {"campo": {"type": "string"}, "valor": {}, "fuente": {"type": "string"}}
+    }
+  }
+}

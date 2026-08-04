@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+*.egg-info/
+.DS_Store
+.pytest_cache/
+# Cuál es el recorrido activo es local a cada copia: si viajara por git, quien clona
+# heredaría el recorrido de otro proyecto, que es justo lo que el puntero evita.
+.harness-maker.json
+# Y el recorrido en sí tampoco viaja: las decisiones de cada persona se quedan en su
+# copia. La doctrina y los comandos son iguales para todos; el trabajo, no.
+/mi-harness/
+/mi-harness-anterior-*/

@@ -1,0 +1,52 @@
+# Licencia de uso interno
+
+Copyright (c) 2026 Javier Gaig Mellado. Todos los derechos reservados.
+
+## Qué se permite
+
+Se concede permiso para **usar, ejecutar y modificar** este software y su documentación
+**dentro de la organización que lo recibió**, con el fin de construir el harness de trabajo
+con IA de un proyecto propio.
+
+Eso incluye, expresamente:
+
+- clonar el repositorio y crear copias de trabajo;
+- ejecutar el taller y modificar la copia local para adaptarla a un proyecto;
+- conservar indefinidamente el resultado del recorrido —decisiones, políticas y evidencia—,
+  que pertenece a quien lo escribió y no está cubierto por esta licencia.
+
+## Qué no se permite sin autorización escrita
+
+- **Redistribuir** el software, completo o en parte, fuera de la organización que lo recibió.
+- **Publicarlo** en un repositorio, registro de paquetes o servicio accesible a terceros.
+- **Incorporarlo** a un producto o servicio ofrecido a terceros, gratuito o de pago.
+- Usar el nombre del autor o del proyecto para respaldar un trabajo derivado.
+
+## Sobre lo que produce el taller
+
+Este software escribe archivos en la copia de quien lo usa: diagnóstico, ruta, decisiones y
+razonamiento. **Ese contenido es de quien lo escribió**, no del autor de esta licencia, y
+puede usarse, guardarse o publicarse sin restricción por parte de esta licencia. Aquí solo
+se licencia la herramienta.
+
+El software no llama a ninguna API y no envía nada a ninguna parte, así que usarlo no
+transfiere información a nadie.
+
+## Sin garantía
+
+EL SOFTWARE SE ENTREGA «TAL CUAL», SIN GARANTÍA DE NINGÚN TIPO, EXPRESA O IMPLÍCITA,
+INCLUIDAS LAS DE COMERCIABILIDAD, IDONEIDAD PARA UN PROPÓSITO CONCRETO Y NO INFRACCIÓN. EN
+NINGÚN CASO EL AUTOR SERÁ RESPONSABLE DE RECLAMACIONES, DAÑOS U OTRAS RESPONSABILIDADES
+DERIVADAS DEL SOFTWARE O DE SU USO.
+
+En particular, y porque este software guía decisiones: **las decisiones son de quien las
+toma.** El taller ayuda a ordenarlas y a dejarlas escritas; no responde por ellas.
+
+## Por qué esta licencia y no una abierta
+
+Elegido el 2026-08-04. El reparto es interno y todavía no hay ningún recorrido ejecutado por
+alguien que no sea el autor, así que la herramienta no está comprobada fuera de su casa.
+Cerrar ahora es reversible —abrir más tarde es una decisión de una línea—; abrir ahora no lo
+es, porque no se retira el permiso a una copia ya distribuida.
+
+Para pedir cualquier uso no cubierto aquí, hay que hablar con el autor.

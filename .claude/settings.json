@@ -1,0 +1,77 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.local)",
+      "Read(./.env.*.local)",
+      "Read(./.env.development)",
+      "Read(./.env.production)",
+      "Read(./.env.test)",
+      "Read(./**/*.pem)",
+      "Read(./**/*.key)",
+      "Read(~/.ssh/*)",
+      "Read(~/.aws/*)",
+      "Bash(sudo *)",
+      "Bash(rm -rf *)",
+      "Bash(git push --force*)",
+      "WebFetch",
+      "WebSearch"
+    ],
+    "ask": [
+      "Bash(git push*)",
+      "Bash(git remote *)",
+      "Bash(gh *)",
+      "Bash(rm *)",
+      "Bash(mv *)",
+      "Bash(git reset --hard*)",
+      "Bash(git clean *)",
+      "Bash(pip install*)",
+      "Bash(python -m pip install*)",
+      "Bash(python3 -m pip install*)",
+      "Bash(npm install*)",
+      "Bash(curl *)",
+      "Bash(wget *)"
+    ],
+    "allow": [
+      "Bash(harness-lab validate *)",
+      "Bash(harness-lab generate*)",
+      "Bash(harness-lab plan *)",
+      "Bash(python -m harness_lab validate *)",
+      "Bash(python -m harness_lab generate*)",
+      "Bash(python -m pytest *)",
+      "Bash(pytest*)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)"
+    ],
+    "additionalDirectories": []
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/proteger_generados.py\"",
+            "timeout": 15,
+            "statusMessage": "Comprobando que no sea un generado"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/validar_al_cerrar.py\"",
+            "timeout": 120,
+            "statusMessage": "Validando antes de cerrar"
+          }
+        ]
+      }
+    ]
+  }
+}

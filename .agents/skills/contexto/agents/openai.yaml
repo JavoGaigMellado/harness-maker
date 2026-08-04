@@ -1,0 +1,4 @@
+interface:
+  display_name: "Contexto"
+  short_description: "Define las cinco capas del contexto de trabajo"
+  default_prompt: "Usa $contexto para definir el contexto de este proyecto."

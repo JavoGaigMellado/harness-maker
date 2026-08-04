@@ -1,0 +1,33 @@
+# Saltos de línea iguales en todas partes.
+#
+# El repositorio se clona en Windows, Linux y macOS, y `harness-lab generate` escribe
+# siempre con LF. Sin esta declaración, un checkout en Windows con `core.autocrlf=true`
+# dejaba el árbol de trabajo permanentemente distinto de lo que git guarda: cuatro
+# generados aparecían modificados sin que nadie los tocara.
+#
+# El resumen sha256 de los envoltorios generados ya se calcula sobre el contenido
+# normalizado, así que esto no es lo que sostiene la validación. Es higiene: evita que
+# cada copia en Windows arranque con un árbol sucio y con avisos en cada `git add`.
+* text=auto eol=lf
+
+# Binarios: git no debe tocarlos.
+*.png binary
+*.xlsx binary
+
+# Lo que no viaja al repositorio de reparto.
+#
+# `git archive` respeta estas marcas, y `publicar.py` usa `git archive`, así que lo que no
+# se reparte se declara aquí y en un solo sitio. Una lista dentro del script sería una
+# segunda fuente de verdad que envejecería por su cuenta.
+#
+# `publicar.py` no viaja porque publica: en la copia de quien recibe no tiene nada que
+# hacer y solo invita a confusión. `docs/REPARTO.md` tampoco: es el plan de reparto del
+# mantenedor, no documentación del producto.
+publicar.py export-ignore
+docs/REPARTO.md export-ignore
+
+# La fase 3 no viaja: quien recibe la base no hereda el recorrido de otro. Sin ella, un clon
+# recién hecho estrena el suyo al arrancar, que es lo que quiere quien acaba de llegar. El
+# mapa del propio proyecto se va con ella porque carga su estado y sin él no enseña nada.
+proyectos/ export-ignore
+diagramas/mapa_harness_lab.html export-ignore

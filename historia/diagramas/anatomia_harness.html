@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Anatomía de un harness · taller</title>
+  <style>
+    :root {
+      --ink:#292824; --ink-2:#534f47; --muted:#767168; --bg:#faf9f7; --card:#fff;
+      --band:#f1eee8; --line:#ded9d0; --accent:#9b733c; --accent-soft:#f5eddf;
+      --ok:#42664c; --ok-soft:#eaf2eb; --work:#89621f; --work-soft:#fff3d4;
+      --debt:#78558a; --debt-soft:#f3ebf7; --off:#66625c; --off-soft:#efede9;
+      --danger:#963e36; --danger-soft:#f9eae8; --info:#35677b; --info-soft:#e8f2f6;
+      --serif:Georgia,"Iowan Old Style","Times New Roman",serif;
+      --sans:"Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;
+      --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+      color-scheme:light;
+    }
+    * { box-sizing:border-box }
+    html { scroll-behavior:smooth }
+    body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.55 var(--sans) }
+    button { font:inherit }
+    button,summary,a { -webkit-tap-highlight-color:transparent }
+    button:focus-visible,summary:focus-visible,a:focus-visible { outline:3px solid #276f91; outline-offset:3px }
+    .shell { width:min(1560px,100%); margin:auto; padding:20px clamp(14px,2vw,30px) 40px }
+    .header { display:flex; gap:20px; justify-content:space-between; align-items:flex-start; margin-bottom:16px }
+    h1,h2,h3 { font-family:var(--serif); font-weight:400; line-height:1.15 }
+    h1 { margin:0; font-size:clamp(26px,3vw,38px) }
+    h2 { font-size:26px; margin:0 }
+    h3 { font-size:20px; margin:0 0 10px }
+    .tagline { margin:5px 0 0; color:var(--muted); max-width:78ch }
+    .modes { display:flex; flex-wrap:wrap; gap:6px; padding:4px; border:1px solid var(--line); border-radius:11px; background:var(--card) }
+    .mode { border:0; border-radius:7px; padding:7px 12px; color:var(--muted); background:transparent; cursor:pointer; font-weight:650 }
+    .mode[aria-pressed="true"] { background:var(--accent-soft); color:#66471e }
+    .mode:disabled { cursor:not-allowed; opacity:.48 }
+    .banner { display:none; border:1px solid #dcccae; background:var(--accent-soft); color:#5f4a2c; padding:11px 14px; border-radius:10px; margin:0 0 16px }
+    .banner.show { display:block }
+    .banner strong { color:var(--ink) }
+    .banner code,.path { font:12px var(--mono); overflow-wrap:anywhere }
+    .notice { border:1px solid var(--line); border-left:4px solid var(--info); background:var(--info-soft); border-radius:9px; padding:10px 12px; margin:0 0 12px; color:#274d5b }
+    .notice.warn { border-left-color:var(--work); background:var(--work-soft); color:#654b1f }
+    .notice.error { border-left-color:var(--danger); background:var(--danger-soft); color:#772f2a }
+    .notice[hidden] { display:none }
+    .workspace { display:grid; grid-template-columns:minmax(560px,1fr) minmax(350px,440px); gap:clamp(16px,2vw,28px); align-items:start }
+    .visual-column { min-width:0 }
+    .diagram-card,.panel,.route-card { background:var(--card); border:1px solid rgba(43,43,43,.10); border-radius:15px; box-shadow:0 3px 18px rgba(43,43,43,.055) }
+    .diagram-card { padding:12px; overflow:hidden }
+    .hub { position:relative; width:min(760px,100%); aspect-ratio:1; margin:auto; container-type:inline-size }
+    .rings { position:absolute; inset:0; width:100%; height:100%; overflow:visible }
+    .ring-band { stroke:#e3dacb; stroke-width:.18; transition:stroke .2s,fill .2s }
+    .b1 { fill:#fff }.b2 { fill:#fdfaf5 }.b3 { fill:#f8f4ec }.b4 { fill:#f1ebdf }
+    .ring-progress { fill:none; stroke:var(--ok); stroke-width:.55; stroke-linecap:round; opacity:.85; transform:rotate(-90deg); transform-origin:50px 50px; transition:stroke-dasharray .45s ease }
+    .spoke { stroke:#d3c7b5; stroke-width:.12; stroke-dasharray:.7 1.2; opacity:.62 }
+    .ring-label { font:700 2px var(--sans); letter-spacing:.28px; text-transform:uppercase; fill:#6d6559 }
+    .node { position:absolute; width:12.8cqw; min-width:64px; min-height:58px; translate:-50% -50%; padding:.8cqw .55cqw;
+      border:1px solid #ded7cc; border-top:3px solid var(--muted); border-radius:1.25cqw; background:linear-gradient(165deg,#fff,#fbf8f2);
+      color:var(--ink); text-align:center; cursor:pointer; box-shadow:0 .45cqw 1.3cqw rgba(80,65,42,.11); transition:scale .18s,box-shadow .18s,opacity .18s,filter .18s,border .18s }
+    .node:hover { scale:1.055; z-index:5; box-shadow:0 .7cqw 2cqw rgba(80,65,42,.20) }
+    .node[aria-pressed="true"] { z-index:6; border-color:var(--accent); box-shadow:0 0 0 .28cqw var(--accent-soft),0 .7cqw 2cqw rgba(80,65,42,.18) }
+    .node .icon { display:block; font-size:1.75cqw; line-height:1.1 }
+    .node .name { display:block; font-size:1.34cqw; line-height:1.18; font-weight:700; margin-top:.25cqw }
+    .node .marks { position:absolute; display:flex; gap:2px; right:-.5cqw; top:-.85cqw }
+    .node .mark { min-width:2.2cqw; height:2.2cqw; padding:0 .35cqw; display:grid; place-items:center; border-radius:99px; border:1px solid #fff; background:#615c54; color:#fff; font-size:1.1cqw; font-weight:800; box-shadow:0 1px 4px #7778 }
+    .node.status-pendiente { opacity:.68; filter:saturate(.45) }
+    .node.status-en_curso { border-top-color:var(--work); background:linear-gradient(165deg,#fff,#fff5db) }
+    .node.status-completada { opacity:1; filter:none; border:2px solid var(--ok); border-top:5px solid var(--ok); background:linear-gradient(165deg,#fff,var(--ok-soft)) }
+    .node.status-descartada { opacity:.58; filter:grayscale(1); border-style:dashed; border-color:var(--off) }
+    .node.status-deuda_aceptada { opacity:1; border:2px double var(--debt); border-top:5px solid var(--debt); background:linear-gradient(165deg,#fff,var(--debt-soft)) }
+    .node.out-route { opacity:.25; filter:grayscale(1) }
+    .node.unjustified { outline:2px dashed var(--danger); outline-offset:2px }
+    .node.next { opacity:1; filter:none; animation:pulse 2.8s ease-in-out infinite }
+    @keyframes pulse { 50% { box-shadow:0 0 0 .75cqw rgba(155,115,60,.20),0 .7cqw 2cqw rgba(80,65,42,.18) } }
+    .core { position:absolute; left:50%; top:50%; translate:-50% -50%; width:14cqw; height:14cqw; border-radius:50%; border:1px solid #836944;
+      color:#fff; background:radial-gradient(circle at 38% 30%,#4c4943,#252421 68%); display:grid; place-content:center; text-align:center; padding:1cqw; cursor:pointer; z-index:4; box-shadow:0 1cqw 3cqw #28241d55 }
+    .core .brain { font-size:2cqw }.core .core-name { font-size:1.12cqw; font-weight:800; letter-spacing:.08em; text-transform:uppercase }.core .core-sub { font-size:.82cqw; color:#d3cabb }
+    .legend { display:flex; flex-wrap:wrap; gap:7px 14px; padding:10px 4px 2px; color:var(--ink-2); font-size:12px }
+    .legend span { white-space:nowrap }.legend b { margin-right:4px }
+    .mobile-pieces { display:none }
+    .side { display:grid; gap:16px; min-width:0 }
+    .panel { overflow:hidden }
+    .panel-head { padding:20px 22px 15px; border-bottom:1px solid var(--line) }
+    .title-row { display:flex; align-items:flex-start; gap:11px }.panel-icon { font-size:28px; line-height:1 }.panel-title { min-width:0 }
+    .meta { display:flex; flex-wrap:wrap; gap:6px; margin-top:9px }.pill { display:inline-flex; align-items:center; gap:4px; border:1px solid var(--line); border-radius:99px; padding:2px 7px; font-size:11px; color:var(--ink-2); background:var(--bg) }
+    .panel-body { padding:18px 22px 25px; max-height:min(67vh,720px); overflow:auto; overflow-wrap:anywhere }
+    .panel-body p { margin:0 0 12px }.lead { font-size:16px; color:var(--ink) }.subtle { color:var(--muted) }
+    .project-first { border-left:4px solid var(--accent); background:#fcfaf5; padding:12px 14px; border-radius:8px; margin-bottom:16px }
+    .project-first h3 { font:800 10px var(--sans); letter-spacing:.13em; text-transform:uppercase; color:var(--accent); margin-bottom:8px }
+    .project-first dl { margin:0; display:grid; grid-template-columns:max-content 1fr; gap:4px 10px }.project-first dt { font-weight:700 }.project-first dd { margin:0 }
+    .section { margin-top:18px }.section h3 { font:800 11px var(--sans); letter-spacing:.11em; text-transform:uppercase; color:var(--muted); margin-bottom:8px }
+    ul.clean { padding-left:20px; margin:6px 0 0 }ul.clean li { margin:5px 0 }
+    details { border-top:1px solid var(--line); margin-top:18px; padding-top:2px } summary { cursor:pointer; padding:12px 2px; font-weight:700; color:var(--ink-2) }
+    .prompt { white-space:pre-wrap; word-break:break-word; max-height:290px; overflow:auto; padding:12px; background:#f4f1eb; border:1px solid var(--line); border-radius:8px; font:12px/1.55 var(--mono) }
+    .actions { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 }.action { border:1px solid var(--accent); border-radius:8px; background:var(--accent); color:#fff; padding:8px 12px; cursor:pointer; font-weight:700 }.action.secondary { background:#fff; color:#684a22 }.action:disabled { opacity:.48; cursor:not-allowed }
+    .copy-status { min-height:1.4em; font-size:12px; font-weight:700 }
+    .artifact { display:flex; align-items:center; gap:7px; margin:4px 0 }.artifact a { color:#2b6278; overflow-wrap:anywhere }.artifact .check { font-size:11px; color:var(--muted) }
+    .route-card { padding:18px 20px }
+    .route-head { display:flex; justify-content:space-between; gap:12px; align-items:flex-start }.route-head p { margin:4px 0 0; color:var(--muted); font-size:12px }.counter { white-space:nowrap; font-weight:800; color:var(--ok) }
+    .route-list { list-style:none; padding:0; margin:14px 0 0; max-height:440px; overflow:auto }.route-step { position:relative; display:grid; grid-template-columns:28px 1fr auto; gap:8px; padding:9px 0; border-top:1px solid var(--line) }.route-step:first-child { border-top:0 }.step-no { width:25px; height:25px; display:grid; place-content:center; border:1px solid var(--line); border-radius:50%; font-size:11px; font-weight:800 }.step-name { border:0; padding:0; background:transparent; color:var(--ink); text-align:left; cursor:pointer; font-weight:750 }.step-explain { grid-column:2/-1; font-size:11.5px; color:var(--muted) }.origin-manual { color:var(--debt); font-weight:800 }.route-state { font-size:11px; white-space:nowrap }.changes { margin-top:15px }.changes ol { padding-left:19px }.changes li { margin:9px 0; font-size:12px; color:var(--ink-2) }
+    .empty { padding:15px; border:1px dashed var(--line); border-radius:9px; color:var(--muted) }
+    .footer { margin-top:24px; padding-top:16px; border-top:1px solid var(--line); color:var(--muted); font-size:12px; max-width:110ch }
+    @media (max-width:1120px) { .workspace { grid-template-columns:1fr }.side { grid-template-columns:minmax(0,1fr) minmax(320px,.8fr) }.panel-body { max-height:none } }
+    @media (max-width:780px) { .header { display:block }.modes { margin-top:13px; width:max-content }.workspace,.side { display:block }.diagram-card { display:none }.panel,.route-card { margin-bottom:14px }.mobile-pieces { display:block; margin-bottom:14px }.mobile-ring { margin:13px 0 }.mobile-ring h3 { font:800 11px var(--sans); text-transform:uppercase; letter-spacing:.1em; color:var(--muted) }.mobile-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px }.mobile-node { min-height:54px; border:1px solid var(--line); border-left:4px solid var(--muted); border-radius:8px; background:var(--card); text-align:left; padding:8px; cursor:pointer }.mobile-node.next { outline:3px solid var(--accent-soft) }.mobile-node.status-completada { border-left-color:var(--ok) }.mobile-node.status-descartada { border-style:dashed; opacity:.65 }.mobile-node.status-deuda_aceptada { border-left-color:var(--debt) }.route-list { max-height:none } }
+    @media (max-width:440px) { .mobile-grid { grid-template-columns:1fr }.project-first dl { grid-template-columns:1fr }.project-first dd { margin:0 0 5px } }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; scroll-behavior:auto!important } }
+    @media print { .modes,.banner,.actions,.route-card { display:none!important }.workspace { display:block }.panel-body { max-height:none; overflow:visible }.diagram-card { break-inside:avoid } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="header">
+      <div><h1 id="page-title">Anatomía de un harness</h1><p class="tagline" id="tagline">Cargando la doctrina canónica…</p></div>
+      <div class="modes" role="group" aria-label="Modo del tablero">
+        <button class="mode" id="reading-mode" aria-pressed="true">Modo lectura</button>
+        <button class="mode" id="workshop-mode" aria-pressed="false">Modo taller</button>
+      </div>
+    </header>
+    <div class="banner" id="file-banner" role="note"></div>
+    <div class="notice" id="live-notice" role="status" aria-live="polite" hidden></div>
+
+    <div class="workspace">
+      <section class="visual-column" aria-label="Diagrama de cuatro anillos">
+        <div class="diagram-card">
+          <div class="hub" id="hub">
+            <svg class="rings" viewBox="0 0 100 100" aria-hidden="true">
+              <circle class="ring-band b4" cx="50" cy="50" r="49.2"/><circle class="ring-band b3" cx="50" cy="50" r="39.4"/>
+              <circle class="ring-band b2" cx="50" cy="50" r="31.5"/><circle class="ring-band b1" cx="50" cy="50" r="22"/>
+              <g id="progress-rings"></g><g id="spokes"></g>
+              <path id="arc1" d="M41.2 47.5A9.1 9.1 0 0 1 58 45.7" fill="none"/><path id="arc2" d="M28.3 38.5A24.5 24.5 0 0 1 73.6 43.2" fill="none"/>
+              <path id="arc3" d="M24.6 78.2A38 38 0 0 1 48.7 12.1" fill="none"/><path id="arc4" d="M23.5 81.6A41.2 41.2 0 0 1 47.1 8.9" fill="none"/>
+              <text class="ring-label"><textPath href="#arc1" startOffset="50%" text-anchor="middle">1 · INPUT</textPath></text>
+              <text class="ring-label"><textPath href="#arc2" startOffset="50%" text-anchor="middle">2 · EJECUCIÓN</textPath></text>
+              <text class="ring-label"><textPath href="#arc3" startOffset="50%" text-anchor="middle">3 · VALIDADOR</textPath></text>
+              <text class="ring-label"><textPath href="#arc4" startOffset="50%" text-anchor="middle">4 · ENTORNO</textPath></text>
+            </svg>
+            <button class="core" id="core" aria-label="Ver el núcleo del diagrama"><span class="brain">🧠</span><span class="core-name">El modelo</span><span class="core-sub">y su harness</span></button>
+          </div>
+          <div class="legend" aria-label="Leyenda de estados"><span><b>○</b>Pendiente</span><span><b>◐</b>En curso</span><span><b>✓</b>Completada</span><span><b>⋯</b>Deuda</span><span><b>—</b>Descartada</span><span><b>▲/▼</b>Cambio de prioridad</span><span><b>!</b>Sin justificar</span></div>
+        </div>
+        <div class="mobile-pieces" id="mobile-pieces"></div>
+      </section>
+
+      <div class="side">
+        <aside class="panel" aria-labelledby="panel-title">
+          <div class="panel-head"><div class="title-row"><span class="panel-icon" id="panel-icon">🧠</span><div class="panel-title"><h2 id="panel-title">El modelo y su harness</h2><div class="meta" id="panel-meta"></div></div></div></div>
+          <div class="panel-body" id="panel-body" tabindex="-1"></div>
+        </aside>
+
+        <section class="route-card" id="route-card" aria-labelledby="route-title">
+          <div class="route-head"><div><h2 id="route-title">Tu ruta, decidida por tu proyecto</h2><p id="route-subtitle">Disponible en modo taller.</p></div><div class="counter" id="counter"></div></div>
+          <div id="route-body"></div>
+          <div class="actions"><button class="action secondary" id="export-button" disabled>Exportar mi anatomía</button></div>
+          <p class="subtle" id="export-note">La exportación se habilitará cuando el contrato identifique qué campos son sensibles. El estado actual no permite excluir secretos con garantías.</p>
+        </section>
+      </div>
+    </div>
+    <footer class="footer" id="footer"></footer>
+  </main>
+
+  <script src="../../datos/anatomia.js"></script>
+  <script>
+  (function () {
+    "use strict";
+    var anatomy=window.ANATOMIA, isFile=location.protocol==="file:";
+    var mode=isFile?"reading":"workshop", state=null, lastGoodState=null, selectedId=null;
+    var promptCache={}, promptById={}, knownStateEntries=new Map(), lostEntries=new Map();
+    var lastReplanSignature=null, initialStateRead=true, pollTimer=null;
+    var resolvedStates=new Set(["completada","descartada","deuda_aceptada"]);
+    var statusLabels={pendiente:"Pendiente",en_curso:"En curso",completada:"Completada",descartada:"Descartada",deuda_aceptada:"Deuda aceptada"};
+    var statusMarks={pendiente:"○",en_curso:"◐",completada:"✓",descartada:"—",deuda_aceptada:"⋯"};
+    var ranks={obligatoria:0,alta:1,media:2,baja:3,descartar:4};
+    var $=function(id){return document.getElementById(id)};
+
+    function esc(value){return String(value==null?"":value).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+    function list(items,empty){if(!Array.isArray(items)||!items.length)return '<p class="subtle">'+esc(empty||"No consta.")+'</p>';return '<ul class="clean">'+items.map(function(x){return '<li>'+esc(typeof x==="string"?x:(x.texto||x.descripcion||JSON.stringify(x)))+'</li>'}).join("")+'</ul>'}
+    function declaredRules(){var set=new Set(["peticion_del_usuario","peticion_manual"]); anatomy.reglas_globales.forEach(function(r){set.add(r.id)}); anatomy.piezas.forEach(function(p){set.add("base."+p.id);p.reglas_aplicabilidad.concat(p.reglas_prioridad).forEach(function(r){set.add(r.id)})});return set}
+    var rules=anatomy?declaredRules():new Set();
+    function getPiece(id){return anatomy&&anatomy.piezas.find(function(p){return p.id===id})}
+    function getStep(id){return state&&state.ruta&&Array.isArray(state.ruta.pasos)?state.ruta.pasos.find(function(s){return s.pieza_id===id}):null}
+    function getPieceState(id){return state&&state.piezas&&state.piezas[id]?state.piezas[id]:{estado:"pendiente"}}
+    function effectivePriority(p){var step=mode==="workshop"?getStep(p.id):null;return step&&step.prioridad||p.prioridad_base}
+    function shiftFor(p){var step=mode==="workshop"?getStep(p.id):null;if(!step||ranks[step.prioridad]==null||ranks[p.prioridad_base]==null)return "";return ranks[step.prioridad]<ranks[p.prioridad_base]?"▲":ranks[step.prioridad]>ranks[p.prioridad_base]?"▼":""}
+    function isJustified(step){return !!(step&&step.regla&&step.porque&&rules.has(step.regla))}
+    function currentRoute(){return state&&state.ruta&&Array.isArray(state.ruta.pasos)?state.ruta.pasos:[]}
+    function nextId(){var step=currentRoute().find(function(s){return !resolvedStates.has(getPieceState(s.pieza_id).estado||"pendiente")});return step&&step.pieza_id}
+
+    function setup(){
+      if(!anatomy||!Array.isArray(anatomy.piezas)){showFatal();return}
+      anatomy.piezas.forEach(function(p,i){promptById[p.id]="../../taller/prompts/"+String(i+1).padStart(2,"0")+"_"+p.id+".md"});
+      $("page-title").textContent=anatomy.metadatos.titulo;
+      $("tagline").textContent=anatomy.metadatos.descripcion_producto;
+      $("footer").textContent=anatomy.metadatos.limitacion_evidencia+" · Doctrina "+anatomy.doctrina_version+" · Esquema "+anatomy.schema_version+".";
+      buildDiagram(); bind(); setMode(mode);
+      if(isFile){$("file-banner").innerHTML="<strong>Modo lectura local.</strong> Puedes explorar toda la doctrina con la prioridad base. Para usar el taller: abre esta carpeta en VS Code, instala o inicia Live Preview y abre <code>diagramas/anatomia_harness.html</code> desde su servidor local. En <code>file://</code> no se intenta leer el estado.";$("file-banner").classList.add("show")}
+    }
+    function showFatal(){$("tagline").textContent="No se ha podido cargar datos/anatomia.js. Regenera los derivados con harness-lab generate y vuelve a abrir el archivo.";$("live-notice").textContent="La doctrina canónica no está disponible; el tablero se mantiene detenido para no mostrar datos inventados.";$("live-notice").className="notice error";$("live-notice").hidden=false}
+
+    function buildDiagram(){
+      var hub=$("hub"),spokes=$("spokes"),progress=$("progress-rings"),NS="http://www.w3.org/2000/svg";
+      anatomy.anillos.forEach(function(r){var c=document.createElementNS(NS,"circle"),len=2*Math.PI*r.radio;c.setAttribute("class","ring-progress");c.setAttribute("data-progress",r.id);c.setAttribute("cx",50);c.setAttribute("cy",50);c.setAttribute("r",r.radio);c.setAttribute("stroke-dasharray","0 "+len);progress.appendChild(c)});
+      anatomy.piezas.forEach(function(p){var a=p.angulo*Math.PI/180,r=anatomy.anillos.find(function(x){return x.id===p.anillo}).radio;
+        var line=document.createElementNS(NS,"line");line.setAttribute("class","spoke");line.setAttribute("x1",50+7.3*Math.cos(a));line.setAttribute("y1",50+7.3*Math.sin(a));line.setAttribute("x2",50+(r-4)*Math.cos(a));line.setAttribute("y2",50+(r-4)*Math.sin(a));spokes.appendChild(line);
+        var b=document.createElement("button");b.className="node";b.dataset.id=p.id;b.style.left=(50+r*Math.cos(a))+"%";b.style.top=(50+r*Math.sin(a))+"%";b.innerHTML='<span class="marks"></span><span class="icon">'+esc(p.icono)+'</span><span class="name">'+esc(p.nombre)+'</span>';b.setAttribute("aria-label",p.nombre);b.setAttribute("aria-pressed","false");hub.appendChild(b)});
+      var mobile=$("mobile-pieces");anatomy.anillos.forEach(function(r){var section=document.createElement("section");section.className="mobile-ring";section.innerHTML="<h3>"+esc(r.id+" · "+r.nombre+" — "+r.pregunta)+"</h3><div class=\"mobile-grid\"></div>";var grid=section.lastElementChild;anatomy.piezas.filter(function(p){return p.anillo===r.id}).forEach(function(p){var b=document.createElement("button");b.className="mobile-node";b.dataset.id=p.id;b.textContent=p.icono+" "+p.nombre;grid.appendChild(b)});mobile.appendChild(section)});
+    }
+    function bind(){
+      $("reading-mode").addEventListener("click",function(){setMode("reading")});$("workshop-mode").addEventListener("click",function(){if(!isFile)setMode("workshop")});$("workshop-mode").disabled=isFile;
+      document.addEventListener("click",function(e){var copy=e.target.closest("[data-copy]");if(copy){copyPrompt(copy.dataset.copy,copy);return}var b=e.target.closest("[data-id]");if(b&&getPiece(b.dataset.id))selectPiece(b.dataset.id)});
+      $("core").addEventListener("click",function(){selectedId=null;renderAll();showCore()});
+      document.addEventListener("keydown",function(e){if(e.key==="Escape"){selectedId=null;renderAll();showCore()}});
+    }
+    function setMode(next){
+      mode=next;$("reading-mode").setAttribute("aria-pressed",String(mode==="reading"));$("workshop-mode").setAttribute("aria-pressed",String(mode==="workshop"));
+      if(pollTimer){clearInterval(pollTimer);pollTimer=null}
+      if(mode==="workshop"){pollState();pollTimer=setInterval(pollState,2000)}else{$("live-notice").hidden=true;state=null;lastGoodState=null}
+      renderAll();selectedId?showPiece(selectedId):showCore();
+    }
+
+    async function pollState(){
+      try{var response=await fetch("../../mi-harness/estado.json?tablero="+Date.now(),{cache:"no-store"});if(response.status===404){if(lastGoodState)showNotice("estado.json ya no está disponible. Se conserva el último estado válido mientras se recupera el archivo.","warn");else{state=null;renderAll();showNoState()}return}if(!response.ok)throw new Error("unavailable");var text=await response.text(),parsed=JSON.parse(text);var issue=compatibleState(parsed);if(issue){showNotice(issue,"error");return}acceptState(parsed)}catch(error){if(lastGoodState){showNotice("El estado se está actualizando o no se pudo leer. Se conserva el último estado válido.","warn")}else if(error instanceof SyntaxError){showNotice("El estado está temporalmente incompleto. El tablero esperará una escritura válida.","warn")}else{showNoState()}}
+    }
+    function compatibleState(candidate){if(!candidate||typeof candidate!=="object")return "El archivo de estado no contiene un objeto válido.";if(candidate.schema_version!=="1.0.0")return "Versión de esquema no compatible ("+String(candidate.schema_version||"sin versión")+"). Este tablero admite estado 1.0.0; ejecuta la migración antes de continuar.";if(candidate.anatomia_version&&candidate.anatomia_version!==anatomy.doctrina_version)return "El estado usa anatomía "+candidate.anatomia_version+" y la doctrina cargada es "+anatomy.doctrina_version+". Migra o regenera la ruta.";return null}
+    function acceptState(candidate){
+      var entries=candidate.piezas&&typeof candidate.piezas==="object"?candidate.piezas:{};
+      knownStateEntries.forEach(function(value,id){if(!(id in entries)&&getPiece(id))lostEntries.set(id,value)});Object.keys(entries).forEach(function(id){knownStateEntries.set(id,entries[id]);lostEntries.delete(id)});
+      var replans=candidate.ruta&&Array.isArray(candidate.ruta.replanificaciones)?candidate.ruta.replanificaciones:[];var signature=JSON.stringify(replans);
+      if(!initialStateRead&&lastReplanSignature!==null&&signature!==lastReplanSignature&&replans.length){var c=replans[replans.length-1];showNotice("Tu ruta ha cambiado: "+(c.motivo||"replanificación")+". Regla: "+(c.regla||"sin regla")+". Los pasos ya resueltos se mantienen.","info")}
+      initialStateRead=false;lastReplanSignature=signature;state=candidate;lastGoodState=candidate;renderAll();if(selectedId)showPiece(selectedId);else showCore();
+    }
+    function showNotice(text,type){var n=$("live-notice");n.textContent=text;n.className="notice"+(type&&type!=="info"?" "+type:"");n.hidden=false}
+    function showNoState(){state=null;renderAll();showNotice("No existe mi-harness/estado.json. El único paso disponible es completar el diagnóstico.","warn");showDiagnosis()}
+
+    function renderAll(){renderNodes();renderProgress();renderRoute()}
+    function renderNodes(){var routeIds=new Set(currentRoute().map(function(s){return s.pieza_id})),next=nextId();document.querySelectorAll(".node[data-id],.mobile-node[data-id]").forEach(function(node){var p=getPiece(node.dataset.id),ps=getPieceState(p.id),status=mode==="workshop"?(ps.estado||"pendiente"):"pendiente",step=getStep(p.id),shift=shiftFor(p);node.className=(node.classList.contains("mobile-node")?"mobile-node":"node")+" status-"+status;node.classList.toggle("out-route",mode==="workshop"&&!!state&&routeIds.size>0&&!routeIds.has(p.id));node.classList.toggle("next",mode==="workshop"&&p.id===next);node.classList.toggle("unjustified",mode==="workshop"&&!!step&&!isJustified(step));node.setAttribute("aria-pressed",String(selectedId===p.id));node.setAttribute("aria-label",p.nombre+". "+statusLabels[status]+". Prioridad "+effectivePriority(p)+(shift?" "+(shift==="▲"?"elevada":"reducida"):"")+(p.id===next?". Siguiente pieza":""));var marks=node.querySelector(".marks");if(marks)marks.innerHTML='<span class="mark" title="'+esc(statusLabels[status])+'">'+statusMarks[status]+'</span>'+(shift?'<span class="mark" title="Prioridad '+(shift==="▲"?"elevada":"reducida")+'">'+shift+'</span>':"")+(step&&!isJustified(step)?'<span class="mark" title="Prioridad no justificada">!</span>':"")})}
+    function renderProgress(){anatomy.anillos.forEach(function(r){var pieces=anatomy.piezas.filter(function(p){return p.anillo===r.id}),done=mode==="workshop"?pieces.filter(function(p){return resolvedStates.has(getPieceState(p.id).estado)}).length:0,pct=pieces.length?done/pieces.length:0,len=2*Math.PI*r.radio,c=document.querySelector('[data-progress="'+r.id+'"]');c.setAttribute("stroke-dasharray",(len*pct)+" "+len);c.style.opacity=pct?".9":".12"})}
+    function renderRoute(){
+      var body=$("route-body"),route=currentRoute();if(mode!=="workshop"){ $("route-subtitle").textContent="En modo lectura se muestra la prioridad doctrinal base.";$("counter").textContent="";body.innerHTML='<div class="empty">Abre el modo taller mediante un servidor local para cargar la ruta específica del proyecto.</div>';return}
+      if(!state){$("route-subtitle").textContent="Paso 0 · diagnóstico";$("counter").textContent="0 de 1";body.innerHTML='<div class="empty"><strong>Completa primero el diagnóstico.</strong><p>Abre <span class="path">taller/prompts/00_diagnostico.md</span> con tu asistente de desarrollo. Después genera <span class="path">mi-harness/estado.json</span>.</p><div class="actions"><button class="action" data-copy="diagnostico">Copiar prompt de diagnóstico</button></div><div class="copy-status" data-copy-status="diagnostico" role="status" aria-live="polite"></div></div>';loadPrompt("diagnostico");return}
+      if(!state.diagnostico){$("route-subtitle").textContent="Diagnóstico no realizado";$("counter").textContent="0 de 1";body.innerHTML='<div class="empty">El estado no contiene un diagnóstico. Ejecuta el paso 0 antes de planificar.</div>';return}
+      if(!state.ruta||!Array.isArray(state.ruta.pasos)||!state.ruta.pasos.length){$("route-subtitle").textContent="Todavía no hay ruta";$("counter").textContent="0 de 1";body.innerHTML='<div class="empty">El diagnóstico existe, pero falta la ruta. Ejecuta <span class="path">harness-lab plan</span> y deja que el tablero la lea.</div>';return}
+      var known=route.filter(function(s){return getPiece(s.pieza_id)}),unknown=route.filter(function(s){return !getPiece(s.pieza_id)}),resolved=known.filter(function(s){return resolvedStates.has(getPieceState(s.pieza_id).estado)}).length;
+      $("route-subtitle").textContent=(state.diagnostico.proyecto&&state.diagnostico.proyecto.nombre||"Proyecto")+" · "+(state.ruta.motivo||"ruta vigente");$("counter").textContent=resolved+" de "+known.length;
+      var stateUnknown=Object.keys(state.piezas||{}).filter(function(id){return !getPiece(id)}),warnings="";if(route.length!==anatomy.piezas.length)warnings+='<div class="notice warn">La ruta contiene '+route.length+' pasos; se esperaban '+anatomy.piezas.length+'. Las piezas ausentes siguen visibles, fuera de la ruta vigente.</div>';if(unknown.length)warnings+='<div class="notice error">Hay '+unknown.length+' pieza(s) desconocida(s) en la ruta: '+esc(unknown.map(function(x){return x.pieza_id}).join(", "))+'. No se representan como doctrina.</div>';if(stateUnknown.length)warnings+='<div class="notice error">El estado contiene pieza(s) que no existen en la doctrina: '+esc(stateUnknown.join(", "))+'. Se conservan en el archivo, pero el tablero no inventa una ficha para ellas.</div>';if(lostEntries.size)warnings+='<div class="notice warn">El estado ha perdido '+lostEntries.size+' pieza(s) antes conocidas ('+esc(Array.from(lostEntries.keys()).join(", "))+'). No se han fingido ni borrado: pueden reconstruirse desde <span class="path">mi-harness/piezas/</span> con <span class="path">harness-lab recover</span>.</div>';
+      var html=warnings+'<ol class="route-list">'+known.map(function(step){var p=getPiece(step.pieza_id),ps=getPieceState(p.id),manual=step.origen==="peticion_manual"||step.regla==="peticion_del_usuario"||step.regla==="peticion_manual";return '<li class="route-step"><span class="step-no">'+esc(step.orden||"!")+'</span><button class="step-name" data-id="'+esc(p.id)+'">'+esc(p.nombre)+'</button><span class="route-state">'+statusMarks[ps.estado||"pendiente"]+' '+esc(statusLabels[ps.estado||"pendiente"])+'</span><div class="step-explain"><strong>'+esc(step.prioridad||"sin prioridad")+'</strong> · <span class="'+(manual?"origin-manual":"")+'">'+esc(manual?"Petición manual":step.regla||"Sin regla")+'</span> — '+esc(step.porque||"Prioridad no justificada")+'</div></li>'}).join("")+'</ol>';
+      var changes=state.ruta.replanificaciones||[];html+='<details class="changes" '+(changes.length?'':'hidden')+'><summary>Cambios de ruta ('+changes.length+')</summary><ol>'+changes.map(function(c){var manual=c.regla==="peticion_del_usuario"||c.regla==="peticion_manual";var before=Array.isArray(c.antes_pendiente)?c.antes_pendiente.join(" → "):"";var after=Array.isArray(c.despues_pendiente)?c.despues_pendiente.join(" → "):"";return '<li><strong>'+esc(formatDate(c.fecha))+'</strong> · <span class="'+(manual?"origin-manual":"")+'">'+esc(manual?"Petición manual":c.regla||"Regla doctrinal no indicada")+'</span><br>'+esc(c.motivo||"Sin motivo")+(before||after?'<br><span class="subtle">Antes: '+esc(before||"—")+'<br>Después: '+esc(after||"—")+'</span>':"")+'</li>'}).join("")+'</ol></details>';body.innerHTML=html;
+    }
+
+    function selectPiece(id){selectedId=id;renderNodes();showPiece(id);$("panel-body").focus({preventScroll:true})}
+    function projectBlock(){if(mode!=="workshop"||!state||!state.diagnostico)return "";var p=state.diagnostico.proyecto||{};return '<section class="project-first"><h3>Este proyecto</h3><dl><dt>Proyecto</dt><dd>'+esc(p.nombre||"No consta")+'</dd><dt>Propósito</dt><dd>'+esc(p.proposito||"No consta")+'</dd><dt>Responsable</dt><dd>'+esc(p.propietario||"No consta")+'</dd><dt>Éxito</dt><dd>'+esc(p.criterio_exito||"No consta")+'</dd></dl></section>'}
+    function showCore(){
+      $("panel-icon").textContent="🧠";$("panel-title").textContent=anatomy.centro.nombre;$("panel-meta").innerHTML='<span class="pill">18 piezas</span><span class="pill">4 anillos</span><span class="pill">doctrina '+esc(anatomy.doctrina_version)+'</span>';
+      $("panel-body").innerHTML=projectBlock()+'<p class="lead">'+esc(anatomy.centro.resumen)+'</p><section class="section"><h3>Ejemplo</h3><p>'+esc(anatomy.centro.ejemplo)+'</p></section><section class="section"><h3>Principios</h3>'+list(anatomy.centro.principios)+'</section><details><summary>Cómo leer el mapa</summary>'+anatomy.anillos.map(function(r){return '<section class="section"><h3>'+esc(r.id+" · "+r.nombre+" — "+r.pregunta)+'</h3><p>'+esc(r.descripcion)+'</p></section>'}).join("")+'</details>';
+    }
+    function showDiagnosis(){selectedId=null;$("panel-icon").textContent="🧭";$("panel-title").textContent="Paso 0 · Diagnóstico";$("panel-meta").innerHTML='<span class="pill">Único paso disponible</span>';
+      $("panel-body").innerHTML='<p class="lead">El asistente inspecciona el repositorio y pregunta solo lo que no puede observar.</p><div class="prompt" id="prompt-diagnostico">Cargando prompt generado…</div><div class="actions"><button class="action" data-copy="diagnostico">Copiar prompt</button></div><div class="copy-status" data-copy-status="diagnostico" role="status" aria-live="polite"></div>';loadPrompt("diagnostico")}
+    function showPiece(id){
+      var p=getPiece(id);if(!p)return;var ps=getPieceState(id),status=mode==="workshop"?(ps.estado||"pendiente"):"lectura",step=getStep(id),shift=shiftFor(p),priority=effectivePriority(p);
+      $("panel-icon").textContent=p.icono;$("panel-title").textContent=p.nombre;$("panel-meta").innerHTML='<span class="pill">'+esc(status==="lectura"?"Doctrina":statusLabels[status])+'</span><span class="pill">Prioridad '+esc(priority)+(shift?" "+shift:"")+'</span><span class="pill">'+esc(p.tipo)+'</span><span class="pill">'+esc(p.dominio)+'</span>'+(p.transversal?'<span class="pill">transversal</span>':"");
+      var html=projectBlock();
+      if(mode==="workshop")html+=projectSection(p,ps,step,shift);
+      html+='<details '+(mode==="reading"?'open':'')+'><summary>Doctrina y procedencia</summary><p class="lead">'+esc(p.explicacion)+'</p><section class="section"><h3>Pregunta principal</h3><p>'+esc(p.pregunta_principal)+'</p></section><section class="section"><h3>Ejemplo</h3><p>'+esc(p.ejemplo)+'</p></section><section class="section"><h3>Puntos doctrinales / criterio de cierre</h3>'+list(p.criterio_cierre)+'</section><section class="section"><h3>Evidencia aceptada</h3>'+list(p.evidencias_aceptadas)+'</section><section class="section"><h3>Procedencia y limitaciones</h3>'+p.referencias.map(function(r){return '<p><strong>'+esc(r.tipo_evidencia)+' · '+esc(r.calidad)+'</strong><br>'+esc(r.procedencia)+'<br><span class="path">'+esc(r.referencia)+'</span></p>'}).join("")+'<p class="subtle">'+esc(anatomy.metadatos.limitacion_evidencia)+'</p></section></details>';
+      $("panel-body").innerHTML=html;if(mode==="workshop"&&(!state||status==="pendiente"||status==="en_curso"))loadPrompt(id);if(mode==="workshop"&&state)verifyArtifacts(id)
+    }
+    function projectSection(p,ps,step,shift){
+      if(!state)return '<div class="notice warn">Completa el diagnóstico antes de empezar piezas. La doctrina sigue disponible debajo.</div>';
+      var status=ps.estado||"pendiente",html='<section class="section"><h3>Estado del proyecto</h3><p><strong>'+esc(statusLabels[status])+'</strong></p></section>';
+      if(step){html+='<section class="section"><h3>Por qué aplica y por qué aparece ahora</h3><p><strong>'+esc(step.regla||"Prioridad no justificada")+'</strong>'+(step.origen==="peticion_manual"?' <span class="origin-manual">· petición manual</span>':'')+'<br>'+esc(step.porque||"Falta el motivo del paso.")+'</p>'+(shift?'<p>La prioridad efectiva está '+(shift==="▲"?"elevada":"reducida")+' respecto a la base ('+esc(p.prioridad_base)+').</p>':"")+(isJustified(step)?"":'<div class="notice error">Este paso no cita una regla doctrinal conocida y se muestra como prioridad no justificada.</div>')+'</section>'}else{html+='<div class="notice warn">Esta pieza está fuera de la ruta vigente. Puedes consultar su doctrina, pero no se presenta como siguiente acción.</div>'}
+      if(status==="pendiente"||status==="en_curso")html+='<section class="section"><h3>Prompt para continuar</h3><div class="prompt" id="prompt-'+esc(p.id)+'">Cargando prompt generado…</div><div class="actions"><button class="action" data-copy="'+esc(p.id)+'">Copiar prompt</button></div><div class="copy-status" data-copy-status="'+esc(p.id)+'" role="status" aria-live="polite"></div><p>Abre una conversación con tu asistente de desarrollo, pega el prompt y deja que inspeccione el repositorio. El tablero se actualizará cuando el asistente escriba y valide el estado.</p></section>';
+      if(status==="completada")html+=completedSection(p,ps);
+      if(status==="descartada")html+='<section class="section"><h3>Descarte decidido</h3><p><strong>Motivo:</strong> '+esc(ps.descarte&&ps.descarte.motivo||"No consta: el estado necesita reparación.")+'</p><p><strong>Regla o evidencia:</strong> '+esc(ps.descarte&&ps.descarte.evidencia||step&&step.regla||"No consta")+'</p></section>';
+      if(status==="deuda_aceptada"){var d=ps.deuda||{};html+='<section class="section"><h3>Deuda aceptada</h3><p><strong>Qué falta:</strong> '+esc(d.descripcion||"No consta")+'</p><p><strong>Riesgo:</strong></p>'+list(ps.riesgos,"No consta.")+'<p><strong>Responsable:</strong> '+esc(d.responsable||ps.responsable||"No consta")+'</p><p><strong>Revisión:</strong> '+esc(d.condicion_revision||"No consta")+'</p></section>'}
+      return html
+    }
+    function completedSection(p,ps){var pieceDebt=ps.deuda?[ps.deuda]:[],globalDebt=(state.deuda||[]).filter(function(d){return d.pieza_id===p.id});return '<section class="section"><h3>Resultado</h3><p>'+esc(ps.resumen||"Sin resumen")+'</p></section><section class="section"><h3>Decisiones</h3>'+list(ps.decisiones)+'</section><section class="section"><h3>Pendientes, riesgos y deuda</h3>'+list((ps.riesgos||[]).concat(pieceDebt,globalDebt),"No constan pendientes ni deuda.")+'</section><section class="section"><h3>Evidencias</h3>'+list((ps.evidencias||[]).map(function(e){return (e.tipo||"evidencia")+": "+e.referencia+(e.resultado?" — "+e.resultado:"")}))+'</section><section class="section"><h3>Artefactos</h3><div id="artifacts-'+esc(p.id)+'">'+artifactList(ps.artefactos)+'</div></section><section class="section"><h3>Verificación</h3><p>'+esc(ps.verificacion&&ps.verificacion.estado||"no_verificada")+' — '+esc(ps.verificacion&&ps.verificacion.detalle||"Sin detalle")+'</p></section><section class="section"><h3>Responsable y fecha</h3><p>'+esc(ps.responsable||"No consta")+' · '+esc(formatDate(ps.fechas&&ps.fechas.cerrada||ps.fechas&&ps.fechas.actualizada))+'</p></section>'}
+    function artifactList(items){if(!items||!items.length)return '<p class="notice warn">Completada, pero sin artefactos que enseñar.</p>';return items.map(function(path,i){var safe=safeArtifact(path);return '<div class="artifact">'+(safe?'<a href="'+esc(safe)+'" target="_blank" rel="noopener">'+esc(path)+'</a>':'<span class="path">'+esc(path)+'</span>')+'<span class="check" data-artifact-index="'+i+'">'+(safe?"Comprobando…":"Ruta externa o no verificable desde el tablero")+'</span></div>'}).join("")}
+    function safeArtifact(path){if(typeof path!=="string"||!path||path.startsWith("/")||path.includes("..")||/^[a-z]+:/i.test(path))return null;return "../../"+path.replace(/^\.\//,"")}
+    async function verifyArtifacts(id){var ps=getPieceState(id),host=$("artifacts-"+id);if(!host||!Array.isArray(ps.artefactos))return;ps.artefactos.forEach(async function(path,i){var link=safeArtifact(path),label=host.querySelector('[data-artifact-index="'+i+'"]');if(!link||!label)return;try{var r=await fetch(link+"?comprobar="+Date.now(),{method:"HEAD",cache:"no-store"});label.textContent=r.ok?"Disponible":"No encontrado desde este servidor";label.style.color=r.ok?"var(--ok)":"var(--danger)"}catch(e){label.textContent="No se pudo verificar; la ruta se conserva"}})}
+    function formatDate(value){if(!value)return "Fecha no indicada";var d=new Date(value);return isNaN(d.getTime())?String(value):d.toLocaleString("es-ES",{dateStyle:"medium",timeStyle:"short"})}
+
+    async function loadPrompt(id){
+      var target=$("prompt-"+id),path=id==="diagnostico"?"../../taller/prompts/00_diagnostico.md":promptById[id];if(!path){if(target)target.textContent="No existe un prompt generado para esta pieza.";return null}if(promptCache[id]){if(target)target.textContent=promptCache[id];return promptCache[id]}
+      try{var r=await fetch(path+"?prompt="+Date.now(),{cache:"no-store"});if(!r.ok)throw new Error();var text=await r.text();promptCache[id]=text;if(target)target.textContent=text;return text}catch(e){if(target)target.textContent="Prompt ausente o no accesible. Ejecuta harness-lab generate y validate --generated.";return null}
+    }
+    async function copyPrompt(id,button){var text=promptCache[id]||await loadPrompt(id),statuses=document.querySelectorAll('[data-copy-status="'+id+'"]');function announce(message){statuses.forEach(function(status){status.textContent=message})}if(!text){announce("No se pudo copiar: el prompt no está disponible.");return}try{if(navigator.clipboard&&window.isSecureContext)await navigator.clipboard.writeText(text);else{var area=document.createElement("textarea");area.value=text;area.style.position="fixed";area.style.opacity="0";document.body.appendChild(area);area.select();if(!document.execCommand("copy"))throw new Error();area.remove()}announce("Prompt copiado. Pégalo en una conversación con tu asistente.");button.textContent="Copiado ✓";setTimeout(function(){button.textContent="Copiar prompt"},1800)}catch(e){announce("No se pudo usar el portapapeles. Selecciona y copia el texto del bloque.")}}
+
+    setup();
+  })();
+  </script>
+</body>
+</html>

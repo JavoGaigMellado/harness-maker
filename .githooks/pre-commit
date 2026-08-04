@@ -1,0 +1,31 @@
+#!/bin/sh
+# Comprueba que los ficheros generados estén al día antes de guardar.
+#
+# El guardián de `.claude/hooks/` solo alcanza al asistente: un script, un editor externo
+# o un `git add` a mano podían dejar un generado desincronizado sin que nada avisara.
+# Esto cierra esa puerta, porque git pasa por aquí venga el commit de donde venga.
+#
+# Vive versionado para que viaje con el repositorio. Se activa una vez por copia con:
+#   git config core.hooksPath .githooks
+# `harness-lab init` lo deja activado solo.
+
+# El intérprete se busca, no se supone: `python3` no existe en Windows y el guardián
+# quedaba inservible justo donde más falta hacía. Se prefiere el del entorno del
+# proyecto para que la comprobación valga aunque el paquete no esté instalado fuera.
+if [ -x .venv/bin/python ]; then
+    PY=.venv/bin/python
+elif [ -x .venv/Scripts/python.exe ]; then
+    PY=.venv/Scripts/python.exe
+elif command -v python >/dev/null 2>&1; then
+    PY=python
+else
+    PY=python3
+fi
+
+if ! PYTHONPATH=src "$PY" -m harness_lab validate --generated; then
+    echo ""
+    echo "Hay ficheros generados desincronizados con datos/anatomia.json."
+    echo "Ejecuta  harness-lab generate  y vuelve a intentar el commit."
+    echo "Si sabes lo que haces, sáltatelo con  git commit --no-verify."
+    exit 1
+fi

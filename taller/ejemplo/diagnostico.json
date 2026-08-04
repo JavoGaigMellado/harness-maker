@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0.0",
+  "proyecto": {
+    "nombre": "Ayudante de correo",
+    "proposito": "Redactar borradores de respuesta al correo de proyectos para que una persona los revise, los corrija y decida si los envía.",
+    "usuarios": ["quien gestiona los proyectos y responde ese correo"],
+    "propietario": "la misma persona que responde el correo",
+    "criterio_exito": "Que revisar un borrador cueste menos que escribirlo desde cero, y que no salga nunca nada sin que alguien lo haya leído."
+  },
+  "ejes": {
+    "forma_codigo": "sin_codigo_propio",
+    "patron_ejecucion": "workflow",
+    "ritmo": "evolutivo",
+    "madurez": "uso_interno",
+    "fuente_entrada": "entrada_externa",
+    "datos_sensibles": true,
+    "herramientas_lectura": true,
+    "herramientas_escritura": true,
+    "reversibilidad": "reversible",
+    "coste_prueba": {"economico": 0, "minutos": 2, "revision_humana": true},
+    "capacidad_decision": "plena",
+    "horizonte_vida": "meses"
+  },
+  "observacion": {
+    "hechos": [
+      {"campo": "ejes.forma_codigo", "valor": "sin_codigo_propio", "fuente": "El ayudante vive dentro del asistente, sobre la carpeta del proyecto: no hay programa propio que mantener."},
+      {"campo": "ejes.patron_ejecucion", "valor": "workflow", "fuente": "Hay una secuencia preparada: lee el hilo, mira la ficha, propone tres enfoques, la persona elige, redacta y guarda."},
+      {"campo": "ejes.fuente_entrada", "valor": "entrada_externa", "fuente": "El disparador es un correo escrito por alguien de fuera; su texto se trata como información, nunca como órdenes."},
+      {"campo": "ejes.datos_sensibles", "valor": true, "fuente": "Consulta la ficha del proyecto y el histórico del cliente, que contienen datos personales."},
+      {"campo": "ejes.herramientas_escritura", "valor": true, "fuente": "Deja el borrador escrito en la carpeta de borradores; no envía nada."},
+      {"campo": "ejes.reversibilidad", "valor": "reversible", "fuente": "Todo lo que produce es un borrador revisable: ninguna acción con efectos fuera."},
+      {"campo": "ejes.coste_prueba", "valor": {"economico": 0, "minutos": 2, "revision_humana": true}, "fuente": "Revisar un borrador de correo lleva unos dos minutos de lectura y no cuesta dinero aparte."}
+    ],
+    "inferencias": [
+      {"campo": "ejes.madurez", "valor": "uso_interno", "fuente": "Lo usa a diario una sola persona en su trabajo; no hay nadie más dependiendo de ello."},
+      {"campo": "ejes.capacidad_decision", "valor": "plena", "fuente": "Quien lo usa decide sola qué permisos da y qué reglas escribe: no hay que negociarlo con nadie."}
+    ],
+    "desconocidos": [
+      "Cuántos correos al día llegarán a pasar por aquí cuando se use en serio.",
+      "Si alguien más del equipo acabará usándolo, y con qué acceso a las fichas de cliente."
+    ],
+    "preguntas_pendientes": [
+      "¿Qué pasa el día que haya que responder algo con plazo legal o una queja formal?",
+      "¿Quién revisa las fichas de proyecto y con qué frecuencia se quedan desfasadas?"
+    ]
+  }
+}

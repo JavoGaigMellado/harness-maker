@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://harness-lab.local/schema/estado-taller-1.0.0.json",
+  "title": "Estado persistente del taller",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "anatomia_version", "consentimiento", "diagnostico", "ruta", "piezas", "decisiones_globales", "riesgos_aceptados", "deuda", "migraciones"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "anatomia_version": {"type": "string"},
+    "consentimiento": {
+      "type": "object", "additionalProperties": false,
+      "required": ["reutilizacion_anonimizada", "registrado_en"],
+      "properties": {"reutilizacion_anonimizada": {"type": "boolean", "default": false}, "registrado_en": {"type": ["string", "null"], "format": "date-time"}}
+    },
+    "diagnostico": {"$ref": "https://harness-lab.local/schema/diagnostico-1.0.0.json"},
+    "ruta": {
+      "type": "object", "additionalProperties": false,
+      "required": ["generada_en", "motivo", "pasos", "replanificaciones"],
+      "properties": {
+        "generada_en": {"type": "string", "format": "date-time"},
+        "motivo": {"enum": ["diagnostico", "replanificacion", "peticion_manual"]},
+        "pasos": {"type": "array", "minItems": 18, "maxItems": 18, "items": {"$ref": "#/$defs/paso"}},
+        "replanificaciones": {"type": "array", "items": {"$ref": "#/$defs/replanificacion"}}
+      }
+    },
+    "piezas": {"type": "object", "additionalProperties": {"$ref": "#/$defs/estado_pieza"}},
+    "decisiones_globales": {"type": "array", "items": {"$ref": "#/$defs/decision"}},
+    "riesgos_aceptados": {"type": "array", "items": {"$ref": "#/$defs/riesgo"}},
+    "deuda": {"type": "array", "items": {"$ref": "#/$defs/deuda"}},
+    "migraciones": {"type": "array", "items": {"type": "object", "required": ["de", "a", "fecha"], "properties": {"de": {"type": "string"}, "a": {"type": "string"}, "fecha": {"type": "string", "format": "date-time"}}, "additionalProperties": true}}
+  },
+  "$defs": {
+    "paso": {
+      "type": "object", "additionalProperties": false,
+      "required": ["pieza_id", "orden", "prioridad", "regla", "porque", "origen", "estado_al_planificar"],
+      "properties": {
+        "pieza_id": {"type": "string"}, "orden": {"type": "integer", "minimum": 1},
+        "prioridad": {"enum": ["obligatoria", "alta", "media", "baja", "descartar"]},
+        "regla": {"type": "string", "minLength": 1}, "porque": {"type": "string", "minLength": 1},
+        "origen": {"enum": ["suelo", "regla", "base", "peticion_manual"]},
+        "estado_al_planificar": {"enum": ["pendiente", "en_curso", "completada", "descartada", "deuda_aceptada"]}
+      }
+    },
+    "replanificacion": {
+      "type": "object", "additionalProperties": false,
+      "required": ["fecha", "motivo", "regla", "prefijo_inmutable", "antes_pendiente", "despues_pendiente"],
+      "properties": {"fecha": {"type": "string", "format": "date-time"}, "motivo": {"type": "string"}, "regla": {"type": "string"}, "prefijo_inmutable": {"type": "array", "items": {"type": "string"}}, "antes_pendiente": {"type": "array", "items": {"type": "string"}}, "despues_pendiente": {"type": "array", "items": {"type": "string"}}}
+    },
+    "estado_pieza": {
+      "type": "object", "additionalProperties": false,
+      "required": ["estado", "resumen", "decisiones", "riesgos", "responsable", "evidencias", "artefactos", "verificacion", "descarte", "deuda", "fechas", "markdown_fuente"],
+      "properties": {
+        "estado": {"enum": ["pendiente", "en_curso", "completada", "descartada", "deuda_aceptada"]},
+        "resumen": {"type": "string"}, "decisiones": {"type": "array", "items": {"$ref": "#/$defs/decision"}},
+        "riesgos": {"type": "array", "items": {"type": "string"}}, "responsable": {"type": ["string", "null"]},
+        "evidencias": {"type": "array", "items": {"type": "object", "required": ["tipo", "referencia"], "properties": {"tipo": {"type": "string"}, "referencia": {"type": "string"}, "resultado": {"type": "string"}}, "additionalProperties": false}},
+        "artefactos": {"type": "array", "items": {"type": "string"}},
+        "verificacion": {"type": "object", "required": ["estado", "detalle"], "properties": {"estado": {"enum": ["no_verificada", "verificada", "fallida", "no_aplica"]}, "detalle": {"type": "string"}}, "additionalProperties": false},
+        "descarte": {"oneOf": [{"type": "null"}, {"type": "object", "required": ["motivo"], "properties": {"motivo": {"type": "string", "minLength": 1}, "evidencia": {"type": "string"}}, "additionalProperties": false}]},
+        "deuda": {"oneOf": [{"type": "null"}, {"type": "object", "required": ["descripcion", "responsable", "condicion_revision"], "properties": {"descripcion": {"type": "string", "minLength": 1}, "responsable": {"type": "string", "minLength": 1}, "condicion_revision": {"type": "string", "minLength": 1}}, "additionalProperties": false}]},
+        "fechas": {"type": "object", "required": ["iniciada", "actualizada", "cerrada"], "properties": {"iniciada": {"type": ["string", "null"], "format": "date-time"}, "actualizada": {"type": ["string", "null"], "format": "date-time"}, "cerrada": {"type": ["string", "null"], "format": "date-time"}}, "additionalProperties": false},
+        "markdown_fuente": {"type": ["string", "null"]}
+      },
+      "allOf": [
+        {"if": {"properties": {"estado": {"const": "descartada"}}}, "then": {"properties": {"descarte": {"type": "object"}}}},
+        {"if": {"properties": {"estado": {"const": "deuda_aceptada"}}}, "then": {"properties": {"deuda": {"type": "object"}}}}
+      ]
+    },
+    "decision": {"type": "object", "required": ["id", "texto", "fecha"], "properties": {"id": {"type": "string"}, "texto": {"type": "string", "minLength": 1}, "fecha": {"type": "string", "format": "date-time"}, "pieza_id": {"type": ["string", "null"]}}, "additionalProperties": false},
+    "riesgo": {"type": "object", "required": ["descripcion", "responsable", "fecha"], "properties": {"descripcion": {"type": "string"}, "responsable": {"type": "string"}, "fecha": {"type": "string", "format": "date-time"}, "revision": {"type": ["string", "null"]}}, "additionalProperties": false},
+    "deuda": {"type": "object", "required": ["descripcion", "responsable", "condicion_revision"], "properties": {"descripcion": {"type": "string"}, "responsable": {"type": "string"}, "condicion_revision": {"type": "string"}, "pieza_id": {"type": ["string", "null"]}}, "additionalProperties": false}
+  }
+}

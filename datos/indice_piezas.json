@@ -1,0 +1,97 @@
+{
+  "generated": true,
+  "source": "datos/anatomia.json",
+  "regenerate": "harness-lab generate",
+  "pieces": [
+    {
+      "id": "contexto",
+      "name": "Contexto",
+      "prompt": "taller/prompts/01_contexto.md"
+    },
+    {
+      "id": "memoria",
+      "name": "Memoria y continuidad",
+      "prompt": "taller/prompts/02_memoria.md"
+    },
+    {
+      "id": "prompts",
+      "name": "Instrucciones persistentes",
+      "prompt": "taller/prompts/03_prompts.md"
+    },
+    {
+      "id": "conocimiento",
+      "name": "Conocimiento y fuentes",
+      "prompt": "taller/prompts/04_conocimiento.md"
+    },
+    {
+      "id": "guardrails",
+      "name": "Seguridad, datos y límites",
+      "prompt": "taller/prompts/05_guardrails.md"
+    },
+    {
+      "id": "proveedor",
+      "name": "Plataforma y modelo",
+      "prompt": "taller/prompts/06_proveedor.md"
+    },
+    {
+      "id": "tools",
+      "name": "Herramientas e integraciones",
+      "prompt": "taller/prompts/07_tools.md"
+    },
+    {
+      "id": "salida",
+      "name": "Resultados y artefactos",
+      "prompt": "taller/prompts/08_salida.md"
+    },
+    {
+      "id": "flujo",
+      "name": "Flujos, delegación y supervisión",
+      "prompt": "taller/prompts/09_flujo.md"
+    },
+    {
+      "id": "validar",
+      "name": "Coste de comprobar",
+      "prompt": "taller/prompts/10_validar.md"
+    },
+    {
+      "id": "medidor",
+      "name": "¿Quién revisa al revisor?",
+      "prompt": "taller/prompts/11_medidor.md"
+    },
+    {
+      "id": "eval",
+      "name": "Casos y criterios de éxito",
+      "prompt": "taller/prompts/12_eval.md"
+    },
+    {
+      "id": "observabilidad",
+      "name": "Registro, feedback y coste",
+      "prompt": "taller/prompts/13_observabilidad.md"
+    },
+    {
+      "id": "harnessdev",
+      "name": "Configuración, automatización y permisos",
+      "prompt": "taller/prompts/14_harnessdev.md"
+    },
+    {
+      "id": "fallos",
+      "name": "Fallos conocidos e incidentes",
+      "prompt": "taller/prompts/15_fallos.md"
+    },
+    {
+      "id": "epistemica",
+      "name": "Nada sin verificar",
+      "prompt": "taller/prompts/16_epistemica.md"
+    },
+    {
+      "id": "historial",
+      "name": "Historial, secretos y portabilidad",
+      "prompt": "taller/prompts/17_historial.md"
+    },
+    {
+      "id": "fuera",
+      "name": "Alcance y ciclo de vida",
+      "prompt": "taller/prompts/18_fuera.md"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "_nota": "Fixture «antes» de la migración. Es el recorrido de una persona planificado con una doctrina anterior: la versión de anatomía no es la vigente y dos piezas ya están cerradas. La lista de pasos se completa en la prueba a partir de la anatomía real, para que el fixture no envejezca cada vez que cambie una regla.",
+  "schema_version": "1.0.0",
+  "anatomia_version": "2026.07.01",
+  "consentimiento": {
+    "reutilizacion_anonimizada": false,
+    "registrado_en": null
+  },
+  "diagnostico": null,
+  "ruta": {
+    "generada_en": "2026-07-01T09:00:00Z",
+    "motivo": "diagnostico",
+    "pasos": [],
+    "replanificaciones": []
+  },
+  "piezas": {},
+  "decisiones_globales": [],
+  "riesgos_aceptados": [],
+  "deuda": [],
+  "migraciones": []
+}

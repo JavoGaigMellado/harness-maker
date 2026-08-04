@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harness-Maker · construye tu sistema de trabajo con IA</title>
+<style>
+  :root{
+    --ink:#2b2b2b; --ink2:#524d43; --muted:#8a857c;
+    --bg:#faf9f7; --card:#ffffff; --band:#f2f0ec; --line:#e2ded6;
+    --accent:#b08d57; --accent-soft:#f6f0e6;
+    --border:rgba(43,43,43,.09);
+    /* categorías */
+    --c1:#b08d57;  --c1-bg:#f6f0e6;  --c1-fg:#8a6a3d;   /* imprescindible */
+    --c2:#97a27e;  --c2-bg:#eef1e9;  --c2-fg:#56643f;   /* más adelante   */
+    --c3:#c08a6d;  --c3-bg:#f7ede7;  --c3-fg:#8a5638;   /* depende        */
+    --c4:#a9a297;  --c4-bg:#f1efec;  --c4-fg:#6e675e;   /* descartado     */
+    --done:#78ad75; --done-bg:#edf8eb; --done-fg:#356b39; --done-line:#b9dcb5;
+    --verify:#6f8fb3; --verify-bg:#edf3f9; --verify-fg:#3d648a; --verify-line:#c8d9ea;
+    /* el ejemplo: única nota fría de la paleta, para que se distinga siempre */
+    --ej:#5d7d8a; --ej-bg:#eef3f5; --ej-line:#d6e2e7; --ej-ink:#3f5964;
+    --ext:#7c6a4d; --pro:#8a6a9a;
+    --serif:Georgia,"Iowan Old Style","Times New Roman",serif;
+    --sans:"Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    color-scheme:light;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+       font-size:15px;line-height:1.62;-webkit-font-smoothing:antialiased;overflow:hidden}
+  .wrap{--hub:max(400px, min(860px, calc(100vh - 178px), calc(100vw - 520px)));
+        max-width:1600px;margin:0 auto;padding:18px clamp(14px,2vw,30px) 0;
+        height:100%;display:flex;flex-direction:column}
+
+  /* ───────── cabecera ───────── */
+  .hdr{flex:none;display:flex;align-items:flex-start;gap:14px;position:relative;z-index:30}
+  .hdr-txt{min-width:0;flex:1}
+  h1{font-family:var(--serif);font-size:clamp(23px,2.6vw,30px);font-weight:400;letter-spacing:-.012em;
+     margin:0;line-height:1.14}
+  .project-capability{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;
+    gap:10px;color:var(--ink2);line-height:1.25;margin:6px 0 0;padding:7px 9px;
+    min-height:36px;border:1px solid var(--done-line);border-left:3px solid var(--done);
+    border-radius:10px;background:linear-gradient(100deg,var(--done-bg),#f8fbf6 72%,#fff)}
+  .project-capability .cap-label{display:inline-flex;align-items:center;gap:6px;font-size:9px;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--done-fg);font-weight:850;white-space:nowrap}
+  .project-capability .cap-label b{font-size:10px;letter-spacing:0;background:#fff;border:1px solid var(--done-line);
+    border-radius:12px;padding:2px 6px;font-variant-numeric:tabular-nums}
+  #project-capability-text{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    color:var(--ink);font-size:13.5px;font-weight:720;letter-spacing:-.005em}
+  .project-capability .cap-action{color:var(--done-fg);font-size:10.5px;font-weight:650;white-space:nowrap}
+  @media (max-width:1320px){.project-capability .cap-action{display:none}}
+  .info-btn{flex:none;width:26px;height:26px;border-radius:50%;border:1px solid var(--line);
+    background:var(--card);color:var(--muted);font-family:var(--serif);font-size:14px;font-style:italic;
+    cursor:pointer;line-height:1;transition:border-color .15s,color .15s,background .15s;margin-top:3px}
+  .info-btn:hover,.info-btn.on{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+  .info-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .info-pop{position:absolute;right:0;top:36px;width:min(560px,86vw);background:var(--card);
+    border:1px solid var(--line);border-radius:12px;padding:16px 18px;font-size:12.5px;
+    line-height:1.62;color:var(--ink2);box-shadow:0 10px 34px rgba(43,43,43,.15);
+    opacity:0;visibility:hidden;transform:translateY(-5px);
+    transition:opacity .16s,transform .16s,visibility .16s;text-align:justify;hyphens:auto}
+  .info-pop.open{opacity:1;visibility:visible;transform:none}
+  .info-pop b{color:var(--ink)}
+  .info-pop p{margin:0 0 9px}
+  .info-pop p:last-child{margin:0}
+
+  .split{flex:1;min-height:0;display:grid;
+         grid-template-columns:var(--hub) minmax(330px,440px);
+         gap:clamp(14px,2.2vw,34px);align-items:center;justify-content:center;padding-bottom:16px}
+
+  @media (max-width:1240px){
+    body{overflow:auto}
+    .wrap{height:auto;padding-bottom:44px}
+    .split{grid-template-columns:1fr;align-items:start;margin-top:16px}
+    .pane{height:auto!important;max-height:none;position:static}
+  }
+
+  /* ───────── hub ───────── */
+  .hub{position:relative;width:var(--hub);height:var(--hub);max-width:100%;margin:0 auto;
+       container-type:inline-size}
+  .hub svg.rings{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+  .rings .band{stroke:#e6ded0;stroke-width:.16;cursor:pointer;
+               transition:stroke .18s,stroke-width .18s,fill .18s;
+               filter:drop-shadow(0 .18px .5px rgba(120,100,70,.10))}
+  .rings .b1{fill:#ffffff} .rings .b2{fill:#fdfaf5}
+  .rings .b3{fill:#f8f4ec} .rings .b4{fill:#f1ebdf}
+  .rings .band:hover{stroke:var(--accent);stroke-width:.42}
+  .rings .band.sel{stroke:var(--accent);stroke-width:.55}
+  .rings .b1.sel{fill:#fefaf3} .rings .b2.sel{fill:#fdf7ea}
+  .rings .b3.sel{fill:#faf2e1} .rings .b4.sel{fill:#f5ecd9}
+  .rings .halo{fill:none;stroke:var(--accent);pointer-events:none}
+  .rings .spoke{stroke:#d9cfbc;stroke-width:.11;stroke-dasharray:.9 1.5;
+                pointer-events:none;opacity:.65;transition:opacity .2s,stroke .2s}
+  .rings .spoke.lit{stroke:var(--accent);opacity:1;stroke-dasharray:none;stroke-width:.2}
+  .rings .rlabel{font-size:1.95px;letter-spacing:.42px;text-transform:uppercase;
+                 fill:#6b6357;font-weight:800;font-family:"Segoe UI",Arial,sans-serif;
+                 cursor:pointer;transition:fill .18s}
+  .rings .rlabel:hover{fill:var(--accent)}
+  .rings .rl-hi{fill:var(--accent)}
+
+  .node{position:absolute;width:9.8cqw;
+    background:linear-gradient(168deg,#ffffff 0%,#fdfbf7 100%);
+    border:1px solid #e8e0d2;border-top:0.3cqw solid var(--accent);border-radius:1.34cqw;
+    padding:0.78cqw 0.7cqw 0.84cqw;cursor:pointer;font-family:inherit;text-align:center;
+    box-shadow:0 0.15cqw 0.35cqw rgba(120,100,70,.07), 0 0.55cqw 1.5cqw rgba(120,100,70,.10);
+    opacity:0;transform:translate(-50%,-50%) scale(.9);
+    transition:opacity .5s cubic-bezier(.2,.8,.3,1),transform .5s cubic-bezier(.2,.8,.3,1),
+               box-shadow .18s,border-color .18s,filter .18s}
+  .node.r1{width:9.3cqw}
+  .node.in{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  .node.dim{opacity:.13;filter:grayscale(.85)}
+  .node.in:hover{box-shadow:0 0.3cqw 0.7cqw rgba(120,100,70,.10), 0 1cqw 2.6cqw rgba(120,100,70,.22);
+                 transform:translate(-50%,-50%) scale(1.055);z-index:6;border-color:#dcd0bb}
+  .node:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  .node.in.on{border-color:var(--accent);z-index:7;
+    box-shadow:0 0 0 0.22cqw var(--accent-soft),0 0 0 0.34cqw rgba(176,141,87,.28),
+               0 1cqw 2.6cqw rgba(120,100,70,.22);
+    transform:translate(-50%,-50%) scale(1.055)}
+  .node .nic{font-size:1.5cqw;line-height:1;margin-bottom:0.26cqw;
+             filter:drop-shadow(0 .1cqw .2cqw rgba(43,43,43,.12))}
+  .node .nt{font-size:1.24cqw;font-weight:600;line-height:1.2;letter-spacing:-.005em}
+
+  .core{position:absolute;left:50%;top:50%;
+    width:13.5cqw;height:13.5cqw;border-radius:50%;color:#fff;border:0;
+    background:radial-gradient(circle at 38% 30%,#4a463f 0%,#2b2b2b 62%,#1e1d1b 100%);
+    cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;z-index:8;
+    box-shadow:0 0.5cqw 1.6cqw rgba(43,43,43,.28), 0 1.4cqw 3.6cqw rgba(43,43,43,.22),
+               inset 0 0 0 0.13cqw rgba(176,141,87,.55);
+    opacity:0;transform:translate(-50%,-50%) scale(.86);
+    transition:opacity .55s cubic-bezier(.2,.8,.3,1),transform .3s cubic-bezier(.2,.8,.3,1),
+               box-shadow .18s}
+  .core.in{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  .core.in:hover{transform:translate(-50%,-50%) scale(1.045)}
+  .core:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+  .core .cic{font-size:1.85cqw;line-height:1}
+  .core .clab{font-size:1.22cqw;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+              line-height:1.15;max-width:11cqw;margin-top:0.4cqw}
+  .core .csub{font-size:0.95cqw;color:#cfc7b8;line-height:1.3;max-width:9.8cqw;margin-top:0.35cqw}
+  .core.in.on{box-shadow:0 0 0 0.3cqw rgba(176,141,87,.85),0 0 0 0.75cqw rgba(176,141,87,.2),
+              0 1.4cqw 3.6cqw rgba(43,43,43,.28)}
+
+  .hub-fallback{display:none;flex-direction:column;gap:8px}
+  .hf-stage{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+            font-weight:600;margin:14px 0 2px}
+  .hf-item{display:flex;align-items:center;gap:11px;width:100%;background:var(--card);
+    border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;
+    padding:10px 13px;cursor:pointer;font-family:inherit;text-align:left}
+  .hf-item .nic{font-size:16px;flex:none}
+  .hf-item .nt{font-size:13.5px;font-weight:600;flex:1}
+  .hf-item .nw{font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;font-weight:600;
+               padding:2px 7px;border-radius:5px;flex:none}
+  @media (max-width:780px){ .hub{display:none} .hub-fallback{display:flex} }
+
+
+  /* ───────── panel ───────── */
+  .pane{background:var(--card);border:1px solid var(--border);border-radius:14px;
+        height:var(--hub);display:flex;flex-direction:column;overflow:hidden;
+        box-shadow:0 3px 16px rgba(43,43,43,.06)}
+  .pane-head{padding:20px 24px 16px;border-bottom:1px solid var(--line);flex:none}
+  .ph-top{display:flex;align-items:center;gap:13px}
+  .ph-ic{font-size:27px;line-height:1.1;flex:none}
+  .ph-main{min-width:0;flex:1;display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+  .ph-status:empty{display:none}
+  .pane-head h2{font-family:var(--serif);font-size:27px;font-weight:400;margin:0;line-height:1.14;
+                letter-spacing:-.015em;color:var(--ink)}
+  .ph-cmd:empty{display:none}
+  .head-cmd{display:inline-flex;align-items:center;gap:5px;background:#302f2c;border-radius:8px;
+            padding:4px 5px 4px 10px;box-shadow:0 2px 7px rgba(43,43,43,.12)}
+  .head-cmd code{background:none;color:#f5ead7;font-size:12px;padding:0;line-height:1}
+  .head-cmd button{border:0;border-radius:5px;background:#494741;color:#ddd2c0;cursor:pointer;
+                   font-family:inherit;font-size:9px;font-weight:700;letter-spacing:.06em;
+                   padding:4px 7px;text-transform:uppercase;transition:background .14s,color .14s}
+  .head-cmd button:hover{background:#5b574e;color:#fff}
+  .head-cmd button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .ph-meta{display:flex;align-items:center;gap:8px;margin:11px 0 0;font-size:11px;color:var(--muted);
+           letter-spacing:.03em}
+  .ph-meta .dot{width:7px;height:7px;border-radius:50%;flex:none}
+  .ph-meta .sep{color:#cec8c0}
+  .ph-meta .ring{cursor:pointer;text-decoration:none;color:var(--muted);border-bottom:1px dotted #cec8c0}
+  .ph-meta .ring:hover{color:var(--accent);border-bottom-color:var(--accent)}
+  .pane-body{padding:18px 24px 30px;overflow-y:auto;flex:1;min-height:0}
+
+  .desc{font-size:16.5px;line-height:1.6;color:var(--ink);margin:0;
+        text-align:justify;hyphens:auto}
+  .desc b{font-weight:700}
+
+  /* el hilo del ejemplo */
+  .ej{background:var(--ej-bg);border:1px solid var(--ej-line);border-left:3px solid var(--ej);
+      border-radius:10px;padding:11px 14px;margin:15px 0 0}
+  .ej-lbl{display:block;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+          font-weight:700;color:var(--ej);margin-bottom:5px}
+  .ej p{margin:0;font-size:14px;line-height:1.55;color:var(--ej-ink);text-align:justify;hyphens:auto}
+  .ej p b{color:#2c414a}
+  .ej + .fold, .ej + .fix, .ej + .risk{margin-top:16px}
+
+  details.fold{border-top:1px solid var(--band);margin:0}
+  details.fold:first-of-type{margin-top:16px}
+  details.fold:last-of-type{border-bottom:1px solid var(--band)}
+  details.fold summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;
+    padding:12px 2px;font-size:13px;font-weight:600;color:var(--ink2);transition:color .14s}
+  details.fold summary::-webkit-details-marker{display:none}
+  details.fold summary:hover{color:var(--accent)}
+  details.fold summary .chev{font-size:9px;color:var(--accent);transition:transform .2s;flex:none;width:10px}
+  details.fold[open] summary .chev{transform:rotate(90deg)}
+  details.fold summary .cnt{margin-left:auto;font-size:10.5px;color:var(--muted);font-weight:500;
+                            font-variant-numeric:tabular-nums}
+  details.fold .foldbody{padding:2px 0 16px}
+  details.fold.field summary{font-size:11px;letter-spacing:.11em;text-transform:uppercase;
+                             color:var(--muted);font-weight:700}
+  details.fold.field[open] summary{color:var(--ink2)}
+  details.fold.pending > summary{margin:3px -7px;padding:10px 9px;border:1px solid #edcec7;
+    border-radius:8px;background:#fff6f4;color:#965448}
+  details.fold.pending > summary .chev,details.fold.pending > summary .cnt{color:#965448}
+  details.fold.pending[open] > summary{color:#965448}
+
+  ul.pts{list-style:none;margin:0;padding:0}
+  ul.pts li{position:relative;padding-left:18px;margin-bottom:11px;font-size:14px;line-height:1.55;
+            color:var(--ink2);text-align:justify;hyphens:auto}
+  ul.pts li:last-child{margin-bottom:0}
+  ul.pts li::before{content:"";position:absolute;left:1px;top:8px;width:6px;height:6px;
+                    border-radius:50%;background:var(--accent);opacity:.5}
+  ul.pts li b{color:var(--ink)}
+  ul.tpl{list-style:none;margin:0;padding:0}
+  ul.tpl li{position:relative;padding-left:18px;margin-bottom:9px;font-size:13.5px;color:var(--ink2);
+            line-height:1.5;text-align:justify;hyphens:auto}
+  ul.tpl li:last-child{margin-bottom:0}
+  ul.tpl li::before{content:"";position:absolute;left:2px;top:7px;width:6px;height:6px;
+                    border-radius:2px;background:var(--accent);opacity:.55}
+  ul.tpl li.tpl-key{color:var(--c1-fg)}
+  ul.tpl li.tpl-key::before{opacity:1;border-radius:50%;box-shadow:0 0 0 2.5px var(--c1-bg)}
+
+  .chips{display:flex;flex-direction:column;gap:7px;margin:16px 0 0}
+  .chip{display:flex;align-items:center;gap:10px;width:100%;text-align:left;font-family:inherit;
+    background:var(--bg);border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:9px;padding:9px 12px;cursor:pointer;transition:background .14s,box-shadow .14s}
+  .chip:hover{background:var(--card);box-shadow:0 2px 9px rgba(43,43,43,.08)}
+  .chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .chip .cic{font-size:15px;flex:none}
+  .chip .ct{font-size:13.5px;font-weight:600;flex:1;color:var(--ink)}
+  .chip .cw{font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;font-weight:600;
+            padding:2px 7px;border-radius:5px;flex:none}
+  .chips-lbl{font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);
+             font-weight:600;margin:18px 0 0}
+  /* leyenda de los cuatro proyectos, visible nada más entrar */
+  .abcd{background:var(--bg);border:1px solid var(--line);border-radius:10px;
+        padding:11px 14px 12px;margin:15px 0 0}
+  .abcd .chips-lbl{margin:0 0 7px}
+  .abcd ul{margin:0;padding-left:16px}
+  .abcd li{font-size:13px;line-height:1.5;color:var(--ink2);margin-bottom:4px;
+           text-align:justify;hyphens:auto}
+  .abcd li:last-child{margin-bottom:0}
+  .abcd b{color:var(--ink)}
+
+  .srcblock{border-radius:10px;padding:12px 14px;margin:0 0 10px;font-size:13px;line-height:1.58}
+  .srcblock .sh{display:flex;align-items:center;gap:8px;font-size:9.5px;letter-spacing:.15em;
+                text-transform:uppercase;font-weight:700;margin-bottom:7px}
+  .srcblock .sh .dot{width:7px;height:7px;border-radius:50%;flex:none}
+  .srcblock p{margin:0 0 7px;color:var(--ink2);text-align:justify;hyphens:auto}
+  .srcblock p:last-child{margin-bottom:0}
+  .srcblock ul{margin:0 0 7px;padding-left:17px;color:var(--ink2)}
+  .srcblock li{margin-bottom:4px;text-align:justify;hyphens:auto}
+  .srcblock b{color:var(--ink)}
+  .srcblock.ext{background:#f8f5f0;border:1px solid #e9e2d5}
+  .srcblock.ext .sh{color:var(--ext)} .srcblock.ext .dot{background:var(--ext)}
+  .srcblock.pro{background:#f7f3f9;border:1px solid #e7ddee}
+  .srcblock.pro .sh{color:var(--pro)} .srcblock.pro .dot{background:var(--pro)}
+  .srcblock cite{display:block;font-style:normal;font-size:10.5px;color:var(--muted);margin-top:6px;
+                 line-height:1.45}
+  .srcblock a{color:var(--accent);text-decoration:none;border-bottom:1px solid #e3d6bd}
+  table.mini{width:100%;border-collapse:collapse;font-size:12px;margin:0 0 8px}
+  table.mini th,table.mini td{text-align:left;padding:5px 7px;border-bottom:1px solid var(--line);
+                              vertical-align:top;line-height:1.45}
+  table.mini th{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+                font-weight:600}
+  table.mini td:first-child{font-weight:600;color:var(--ink)}
+
+  .risk{display:flex;gap:9px;background:var(--c3-bg);border:1px solid #ecd9cd;border-radius:10px;
+        padding:11px 13px;font-size:13px;color:#7a4d33;line-height:1.5;margin:15px 0 0;
+        text-align:justify;hyphens:auto}
+  .risk .arw{font-weight:700;flex:none}
+  code{font-family:var(--mono);font-size:.87em;background:var(--band);padding:1.5px 5px;
+       border-radius:4px;color:var(--ink2)}
+  pre.code{font-family:var(--mono);font-size:11px;background:var(--band);border:1px solid var(--line);
+    border-radius:8px;padding:10px 12px;margin:0 0 11px;overflow-x:auto;line-height:1.6;color:var(--ink2)}
+
+  footer{border-top:1px solid var(--line);margin-top:34px;padding-top:18px;font-size:11.5px;
+         color:var(--muted);line-height:1.65;max-width:100ch}
+
+  /* ───────── recorrido: interruptor, pestañas y contenido propio ───────── */
+  .vista{display:inline-flex;gap:2px;background:var(--band);border:1px solid var(--line);
+         border-radius:20px;padding:2px;margin:9px 0 0;vertical-align:middle}
+  .vista button{font-family:inherit;font-size:11.5px;color:var(--muted);background:none;border:0;
+    border-radius:18px;padding:4px 13px;cursor:pointer;transition:background .14s,color .14s}
+  .vista button.on{background:var(--card);color:var(--ink);font-weight:700;
+                   box-shadow:0 1px 4px rgba(43,43,43,.08)}
+  .vista button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  .tabs{flex:none;display:flex;gap:22px;padding:0 24px;border-bottom:1px solid var(--line)}
+  .tab{font-family:inherit;font-size:12.5px;font-weight:600;color:var(--muted);background:none;
+    border:0;border-bottom:2px solid transparent;margin-bottom:-1px;padding:11px 0 10px;
+    cursor:pointer;display:inline-flex;align-items:center;gap:7px;
+    transition:color .14s,border-color .14s}
+  .tab:hover{color:var(--ink2)}
+  .tab.on{color:var(--ink);border-bottom-color:var(--accent)}
+  .tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .tab .pip{width:6px;height:6px;border-radius:50%;background:var(--c2);flex:none}
+
+  .est{display:inline-flex;align-items:center;gap:7px;font-size:10.5px;font-weight:700;
+       letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin:0 0 15px}
+  .ph-status .est{margin:0;padding:3px 10px;font-size:9.5px}
+  .est.hecha{background:var(--done-bg);color:var(--done-fg);border:1px solid var(--done-line)}
+  .est.descartada{background:var(--c4-bg);color:var(--c4-fg)}
+  .est.deuda{background:var(--c3-bg);color:var(--c3-fg)}
+  .est.verificar{background:var(--verify-bg);color:var(--verify-fg);border:1px solid var(--verify-line)}
+  .est.pendiente{background:var(--c1-bg);color:var(--c1-fg)}
+
+  .cmd{display:flex;align-items:center;gap:10px;background:#2b2b2b;border-radius:10px;
+       padding:10px 10px 10px 14px;margin:0 0 15px}
+  .cmd code{flex:1;background:none;color:#f2e9d9;font-size:14px;padding:0;letter-spacing:.01em}
+  .cmd button{font-family:inherit;font-size:10.5px;font-weight:700;letter-spacing:.08em;
+    text-transform:uppercase;color:#2b2b2b;background:#e2d4b8;border:0;border-radius:6px;
+    padding:6px 12px;cursor:pointer;flex:none;transition:background .14s}
+  .cmd button:hover{background:#f0e5cd}
+  .cmd button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  .campo{margin:0 0 15px}
+  .campo-lbl{font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);
+             font-weight:600;margin:0 0 7px}
+  .defs{margin:0;border-top:1px solid var(--band)}
+  .def{display:grid;grid-template-columns:minmax(88px,34%) 1fr;gap:12px;padding:9px 0;
+       border-bottom:1px solid var(--band);font-size:13px;line-height:1.5}
+  .def dt{font-weight:700;color:var(--ink);margin:0}
+  .def dd{color:var(--ink2);margin:0}
+  @media (max-width:440px){.def{grid-template-columns:1fr;gap:2px}}
+  .rutas{display:flex;flex-wrap:wrap;gap:6px}
+  .ruta{font-family:var(--mono);font-size:11.5px;background:var(--band);color:var(--ink2);
+        border:1px solid var(--line);border-radius:6px;padding:3px 9px}
+  .vacio{font-size:13.5px;color:var(--ink2);line-height:1.6;margin:0 0 15px;
+         text-align:justify;hyphens:auto}
+  .vacio b{color:var(--ink)}
+  .prompt-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--band)}
+  .prompt-list li{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:9px;
+                  align-items:baseline;padding:7px 0;border-bottom:1px solid var(--band);
+                  font-size:12.5px;line-height:1.4;color:var(--ink2)}
+  .prompt-list .pn{font-family:var(--mono);font-size:10px;color:var(--muted)}
+  .prompt-list .pt{font-weight:650;color:var(--ink)}
+  .prompt-list code{font-size:10.5px;white-space:nowrap}
+  .ring-kpi{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:center;
+            background:var(--bg);border:1px solid var(--line);border-radius:11px;
+            padding:13px 15px;margin:0 0 14px}
+  .ring-kpi strong{grid-row:1/3;font-family:var(--serif);font-size:34px;line-height:1;
+                   font-weight:400;color:var(--done-fg);letter-spacing:-.04em}
+  .ring-kpi .kl{font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+                font-weight:750;color:var(--muted);align-self:end}
+  .ring-kpi p{font-size:12.5px;line-height:1.45;color:var(--ink2);margin:0;align-self:start}
+  .criteria-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+  .activity-summary{border:1px solid #dedbd4;border-left:3px solid var(--accent);border-radius:10px;
+    background:linear-gradient(105deg,#fbfaf7,#fff);padding:10px 12px;margin:0 0 13px}
+  .activity-summary .asl{display:block;font-size:9px;line-height:1.2;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--accent);font-weight:800;margin:0 0 4px}
+  .activity-summary p{font-size:13px;line-height:1.45;color:var(--ink2);margin:0}
+  .activity-summary + details.fold{margin-top:0}
+  .criterion{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:8px;align-items:start;
+    border:1px solid var(--line);border-radius:8px;padding:8px 9px;background:var(--bg)}
+  .criterion .ci{font-size:12px;font-weight:850;line-height:1.5;text-align:center}
+  .criterion .ct{font-size:12.5px;line-height:1.45;color:var(--ink2)}
+  .criterion .cs{font-size:8.5px;line-height:1.45;letter-spacing:.08em;text-transform:uppercase;
+    font-weight:800;border-radius:5px;padding:2px 6px;white-space:nowrap}
+  .criterion.definido{border-color:#d8e8d5;background:#f6fbf5}
+  .criterion.definido .ci,.criterion.definido .cs{color:var(--done-fg)}
+  .criterion.definido .cs{background:var(--done-bg)}
+  .criterion.parcial,.criterion.no_definido{border-color:#edcec7;background:#fff6f4}
+  .criterion.parcial .ci,.criterion.no_definido .ci,
+  .criterion.parcial .cs,.criterion.no_definido .cs{color:#965448}
+  .criterion.parcial .cs,.criterion.no_definido .cs{background:#f9e4df}
+  .criterion.no_aplica{border-color:#e1ddd6;background:#f6f4f1}
+  .criterion.no_aplica .ci,.criterion.no_aplica .cs{color:var(--muted)}
+  .criterion.no_aplica .cs{background:#ebe8e3}
+  .impact-list{margin:0;padding:0;list-style:none}
+  .impact-list li{font-size:12.5px;line-height:1.5;color:var(--ink2);padding:7px 0;
+                  border-bottom:1px solid var(--band)}
+  .impact-list li:last-child{border-bottom:0}
+  .impact-list b{color:var(--ink)}
+  .avance{display:flex;flex-direction:column;gap:9px;margin:0 0 16px}
+  .avance-fila{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink2)}
+  .avance-fila .nm{flex:none;width:92px}
+  .avance-fila .barra{flex:1;height:5px;border-radius:3px;background:var(--band);overflow:hidden}
+  .avance-fila .barra i{display:block;height:100%;background:var(--done);border-radius:3px;
+                        transition:width .6s ease}
+  .avance-fila .cifra{font-variant-numeric:tabular-nums;color:var(--muted);font-size:11px;
+                      flex:none;width:34px;text-align:right}
+  .project-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin:0 0 12px}
+  .project-kpi{border:1px solid var(--line);border-radius:9px;background:var(--bg);padding:9px 10px}
+  .project-kpi strong{display:block;font-family:var(--serif);font-size:22px;font-weight:400;
+    line-height:1;color:var(--ink)}
+  .project-kpi span{display:block;margin-top:4px;font-size:8.5px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted);font-weight:750}
+  .project-kpi.is-ready{border-color:var(--done-line);background:var(--done-bg)}
+  .project-kpi.is-ready strong,.project-kpi.is-ready span{color:var(--done-fg)}
+  .project-kpi.is-debt{border-color:#e4c8b8;background:var(--c3-bg)}
+  .project-kpi.is-debt strong,.project-kpi.is-debt span{color:var(--c3-fg)}
+  .project-kpi.is-verify{border-color:var(--verify-line);background:var(--verify-bg)}
+  .project-kpi.is-verify strong,.project-kpi.is-verify span{color:var(--verify-fg)}
+  .route-now{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;align-items:center;
+    border:1px solid #e6d6bc;border-left:3px solid var(--accent);border-radius:9px;
+    background:var(--accent-soft);padding:9px 11px;margin:0 0 14px}
+  .route-now .rl{grid-row:1/3;font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--c1-fg);font-weight:800}
+  .route-now strong{font-size:13px;line-height:1.35;color:var(--ink)}
+  .route-now small{font-size:11px;line-height:1.35;color:var(--muted)}
+
+  /* ───────── estados del recorrido sobre el dibujo ───────── */
+  .rings .rlabel.completo{fill:var(--done-fg)}
+  .node.apagada.in:not(.dim){opacity:.4}
+  .node.apagada.in .nic{filter:grayscale(1);opacity:.7}
+  .node.apagada.in .nt{color:var(--muted)}
+  .node.descartada.in{opacity:.44;border-style:dashed}
+  .node.descartada.in .nic{filter:grayscale(1)}
+  .node.descartada.in .nt{color:var(--muted);text-decoration:line-through;
+                          text-decoration-color:#c9c2b7}
+  /* derecha: cómo ha quedado · izquierda: si su prioridad se ha movido */
+  .node .pin,.node .mark{position:absolute;top:-0.45cqw;border-radius:50%;display:flex;
+    align-items:center;justify-content:center;line-height:1;font-weight:700;
+    border:0.14cqw solid var(--card)}
+  .node .pin{right:-0.45cqw;width:1.6cqw;height:1.6cqw;font-size:0.9cqw}
+  .node.completada.in{opacity:1;filter:none;border-color:var(--done-line);
+    border-top-color:var(--done);background:linear-gradient(160deg,#fbfffa 0%,var(--done-bg) 100%);
+    box-shadow:0 0.15cqw 0.35cqw rgba(53,107,57,.08),0 0.55cqw 1.5cqw rgba(53,107,57,.13)}
+  .node.completada.in .nt{color:var(--done-fg);font-weight:700}
+  .node.completada.in.on{border-color:var(--done);box-shadow:0 0 0 .2cqw var(--done-bg),
+    0 0 0 .33cqw rgba(120,173,117,.28),0 1cqw 2.6cqw rgba(53,107,57,.18)}
+  .hf-item.completada{border-color:var(--done-line);border-left-color:var(--done);
+    background:var(--done-bg)}
+  .hf-item.completada .nt{color:var(--done-fg)}
+  .node.deuda.in{opacity:1;border-color:#e4c8b8;border-top-color:var(--c3);
+    background:linear-gradient(160deg,#fffdfa 0%,var(--c3-bg) 100%)}
+  .node.deuda.in .nt{color:var(--c3-fg);font-weight:700}
+  .hf-item.deuda{border-color:#e4c8b8;border-left-color:var(--c3);background:var(--c3-bg)}
+  .hf-item.deuda .nt{color:var(--c3-fg)}
+  .node.verificar.in{opacity:1;border-color:var(--verify-line);border-top-color:var(--verify);
+    background:linear-gradient(160deg,#fcfdff 0%,var(--verify-bg) 100%)}
+  .node.verificar.in .nt{color:var(--verify-fg);font-weight:700}
+  .hf-item.verificar{border-color:var(--verify-line);border-left-color:var(--verify);
+    background:var(--verify-bg)}
+  .hf-item.verificar .nt{color:var(--verify-fg)}
+  .node .pin.hecha{background:var(--done);color:#fff}
+  .node .pin.deuda{background:var(--c3);color:#fff}
+  .node .pin.verificar{background:var(--verify);color:#fff}
+  .node .mark{left:-0.45cqw;width:1.4cqw;height:1.4cqw;font-size:0.72cqw;
+              background:var(--card);color:var(--muted)}
+  .node .mark.sube{color:var(--c1-fg);border-color:var(--c1-bg);background:var(--c1-bg)}
+  .node .mark.baja{color:var(--c4-fg);border-color:var(--c4-bg);background:var(--c4-bg)}
+  .rings .spoke.hecha:not(.lit){stroke:var(--done);opacity:.9;stroke-dasharray:none;stroke-width:.17}
+  .node.siguiente.in{opacity:1;filter:none;z-index:6;border-color:#d3bd98;
+    background:linear-gradient(155deg,#fffefa 0%,#f9f2e7 100%);
+    animation:latido-guia 2.8s ease-in-out infinite}
+  .node.siguiente.in .nic{filter:drop-shadow(0 .1cqw .22cqw rgba(138,106,61,.20))}
+  .node.siguiente.in .nt{color:var(--ink);font-weight:750}
+  .node.siguiente.in:hover{z-index:8}
+  .rings .spoke.siguiente:not(.lit){stroke:var(--accent);opacity:.78;stroke-dasharray:none;
+    stroke-width:.2;animation:latido-ruta 2.8s ease-in-out infinite}
+  .hf-item.siguiente{border-color:#d3bd98;background:linear-gradient(155deg,#fffefa 0%,#f9f2e7 100%);
+    box-shadow:0 0 0 2px rgba(246,240,230,.9),0 6px 16px rgba(138,106,61,.10)}
+  @keyframes latido-guia{
+    0%,100%{box-shadow:0 0 0 .12cqw rgba(246,240,230,.8),
+      0 0 0 .24cqw rgba(176,141,87,.14),0 .55cqw 1.5cqw rgba(120,100,70,.13)}
+    50%{box-shadow:0 0 0 .2cqw rgba(246,240,230,.95),
+      0 0 0 .36cqw rgba(176,141,87,.28),0 .75cqw 1.9cqw rgba(120,100,70,.20)}}
+  @keyframes latido-ruta{0%,100%{opacity:.5}50%{opacity:.82}}
+  @media (prefers-reduced-motion:reduce){
+    .node.siguiente.in{animation:none;box-shadow:0 0 0 .18cqw var(--accent-soft),
+                                    0 0 0 .32cqw rgba(176,141,87,.24)}
+    .rings .spoke.siguiente:not(.lit){animation:none}}
+  .rings .prog{fill:none;stroke:var(--done);stroke-width:.42;stroke-linecap:round;opacity:.9;
+    transform:rotate(-90deg);transform-origin:50px 50px;pointer-events:none;
+    transition:stroke-dasharray .7s cubic-bezier(.2,.8,.3,1)}
+
+  @media print{ .pane{position:static;max-height:none} details.fold{display:none} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hdr">
+    <div class="hdr-txt">
+      <h1>Harness-Maker</h1>
+      <p class="project-capability"><span class="cap-label">Capacidad actual <b id="project-capability-progress">0/18</b></span>
+        <span id="project-capability-text">Diagnostica el proyecto para empezar a construir tu harness.</span>
+        <span class="cap-action">Háblale para afinarlo.</span></p>
+      <div class="vista" id="vista" role="group" aria-label="Qué harness estás mirando">
+        <button data-fuente="propio" class="on"><span id="nombre-proyecto-propio">Proyecto</span></button>
+        <button data-fuente="ejemplo">Ver el ejemplo</button>
+      </div>
+    </div>
+    <button class="info-btn" id="info-btn" aria-label="De dónde sale esto" title="De dónde sale esto">i</button>
+    <div class="info-pop" id="info-pop">
+      <p>Anatomía general de un harness de trabajo con IA: el universo de decisiones que conviene
+        considerar para usar bien la IA en un trabajo concreto, sea cual sea ese trabajo. Las piezas
+        son <b>preguntas universales</b>, no tareas obligatorias: una puede resultar necesaria,
+        opcional, posterior o no aplicable — pero conviene evaluarla y justificar la decisión.</p>
+      <p>Las fuentes son la documentación pública de quienes construyen estas herramientas
+        (Anthropic, Claude Code, OpenAI, OWASP, MCP, NIST, Chroma, METR) y el análisis de cuatro
+        proyectos reales, citados en anónimo.</p>
+      <p><b>Límites de la evidencia interna:</b> los cuatro proyectos comparten autor y asistente,
+        así que <b>n=4 y no independiente</b>. Sirve para formular hipótesis, no para demostrar
+        causalidades. Lo que viene de ahí va etiquetado como observación.</p>
+    </div>
+  </header>
+
+  <div class="split">
+    <div>
+      <div class="hub" id="hub">
+        <svg class="rings" viewBox="0 0 100 100">
+          <circle class="band b4" data-ring-band="4" cx="50" cy="50" r="49.5"><title>4 · Continuidad</title></circle>
+          <circle class="band b3" data-ring-band="3" cx="50" cy="50" r="40"><title>3 · Confianza</title></circle>
+          <circle class="band b2" data-ring-band="2" cx="50" cy="50" r="30.5"><title>2 · Capacidades</title></circle>
+          <circle class="band b1" data-ring-band="1" cx="50" cy="50" r="21"><title>1 · Orientación</title></circle>
+
+          <g id="spokes"></g>
+          <circle class="halo" cx="50" cy="50" r="7.9" stroke-width=".2" opacity=".30"></circle>
+          <circle class="halo" cx="50" cy="50" r="9.1" stroke-width=".15" opacity=".16"></circle>
+
+          <path id="arc1" d="M 38.09,36.77 A 17.8,17.8 0 0,1 61.91,36.77" fill="none"></path>
+          <path id="arc2" d="M 31.87,29.86 A 27.1,27.1 0 0,1 68.13,29.86" fill="none"></path>
+          <path id="arc3" d="M 27.18,24.66 A 34.1,34.1 0 0,1 72.82,24.66" fill="none"></path>
+          <path id="arc4" d="M 20.24,16.95 A 44.47,44.47 0 0,1 79.76,16.95" fill="none"></path>
+          <text class="rlabel" id="rl1" data-ring-band="1"><textPath href="#arc1" startOffset="50%" text-anchor="middle">1 · ORIENTACIÓN</textPath></text>
+          <text class="rlabel" id="rl2" data-ring-band="2"><textPath href="#arc2" startOffset="50%" text-anchor="middle">2 · CAPACIDADES</textPath></text>
+          <text class="rlabel" id="rl3" data-ring-band="3"><textPath href="#arc3" startOffset="50%" text-anchor="middle">3 · CONFIANZA</textPath></text>
+          <text class="rlabel" id="rl4" data-ring-band="4"><textPath href="#arc4" startOffset="50%" text-anchor="middle">4 · CONTINUIDAD</textPath></text>
+        </svg>
+
+        <button class="core" data-key="core">
+          <span class="cic"></span>
+          <span class="clab"></span>
+          <span class="csub"></span>
+        </button>
+      </div>
+      <div class="hub-fallback" id="hubfb"></div>
+    </div>
+
+    <aside class="pane">
+      <div class="pane-head">
+        <div class="ph-top"><span class="ph-ic" id="pane-ic">🎯</span><div class="ph-main"><h2 id="pane-title">—</h2><span class="ph-status" id="pane-status"></span><span class="ph-cmd" id="pane-command"></span></div></div>
+        <p class="ph-meta" id="pane-meta"></p>
+      </div>
+      <div class="tabs" id="tabs">
+        <button class="tab on" data-vista="proyecto"><span id="nombre-proyecto-activo">Proyecto</span><span class="pip" hidden></span></button>
+        <button class="tab" data-vista="info">Información</button>
+      </div>
+      <div class="pane-body" id="pane-body"></div>
+    </aside>
+  </div>
+
+</div>
+
+<script src="../datos/anatomia.js"></script>
+<script src="../taller/ejemplo/estado.js"></script>
+<script src="../proyectos/harness-lab/estado.js"></script>
+<!-- El recorrido propio, si esa persona ya lo tiene. Si no existe, el archivo falta y no pasa nada. -->
+<script src="../mi-harness/estado.js"></script>
+<script src="../mi-harness/cobertura.js"></script>
+<script src="../proyectos/harness-lab/cobertura.js"></script>
+<script>
+(function () {
+  "use strict";
+
+/* ══════════ DATOS ══════════
+   El contenido vive en datos/anatomia.json y llega por datos/anatomia.js.
+   Aquí solo se adapta a las estructuras que usa el render. */
+
+var A = window.ANATOMIA;
+if (!A) {
+  document.getElementById("pane-body").innerHTML =
+    '<p class="desc">No se ha podido cargar <code>datos/anatomia.js</code>. ' +
+    'Abre el diagrama sin sacarlo de la carpeta <code>diagramas/</code> del repositorio.</p>';
+  return;
+}
+
+var RINGS = {};
+A.anillos.forEach(function (r) {
+  RINGS[r.id] = { nom: r.id + " · " + r.nombre, q: r.pregunta, r: r.radio,
+                  desc: r.descripcion_html, ej: r.ejemplo, pts: r.puntos_clave };
+});
+
+var P = A.piezas.map(function (p) {
+  return { k: p.id, ring: p.anillo, ang: p.angulo, ic: p.icono, t: p.nombre,
+           desc: p.descripcion_html, ej: p.ejemplo, pts: p.puntos_clave,
+           ext: p.industria, pro: p.casos, tpl: p.que_montar,
+           deps: p.dependencias || [], unlocks: p.desbloquea || [] };
+});
+
+var CORE = { desc: A.centro.resumen_html, ej: A.centro.ejemplo, pts: A.centro.principios,
+             ext: A.centro.industria, pro: A.centro.casos, risk: A.centro.limitacion_evidencia };
+
+/* Rótulos que también salen del canónico, para no tener el texto dos veces. */
+document.querySelector(".core .cic").textContent = A.centro.icono;
+document.querySelector(".core .clab").textContent = A.centro.nombre;
+document.querySelector(".core .csub").textContent = A.centro.subtitulo;
+A.anillos.forEach(function (r) {
+  var rotulo = r.id + " · " + r.nombre;
+  var texto = document.querySelector("#rl" + r.id + " textPath");
+  if (texto) texto.textContent = rotulo;
+  var banda = document.querySelector('.band[data-ring-band="' + r.id + '"] title');
+  if (banda) banda.textContent = rotulo;
+});
+
+  /* ══════════ RENDER ══════════ */
+
+  var hub = document.getElementById("hub");
+  var fb = document.getElementById("hubfb");
+  var spokes = document.getElementById("spokes");
+  var byKey = {};
+  var NS = "http://www.w3.org/2000/svg";
+
+  P.forEach(function (p) {
+    var a = p.ang * Math.PI / 180, rr = RINGS[p.ring].r;
+    var ln = document.createElementNS(NS, "line");
+    ln.setAttribute("class", "spoke");
+    ln.setAttribute("data-spoke", p.k);
+    ln.setAttribute("x1", 50 + 7.4 * Math.cos(a));
+    ln.setAttribute("y1", 50 + 7.4 * Math.sin(a));
+    ln.setAttribute("x2", 50 + (rr - 4.2) * Math.cos(a));
+    ln.setAttribute("y2", 50 + (rr - 4.2) * Math.sin(a));
+    spokes.appendChild(ln);
+  });
+
+  P.forEach(function (p, i) {
+    byKey[p.k] = p;
+    var a = p.ang * Math.PI / 180;
+    var b = document.createElement("button");
+    b.className = "node r" + p.ring;
+    b.setAttribute("data-key", p.k);
+    b.setAttribute("data-ring", p.ring);
+    b.style.left = (50 + RINGS[p.ring].r * Math.cos(a)) + "%";
+    b.style.top  = (50 + RINGS[p.ring].r * Math.sin(a)) + "%";
+    b.innerHTML = '<div class="nic">' + p.ic + '</div><div class="nt">' + p.t + '</div>';
+    b.title = p.t;
+    hub.appendChild(b);
+    setTimeout(function () { b.classList.add("in"); }, 210 + p.ring * 90 + (i % 5) * 45);
+    b.addEventListener("mouseenter", function () { litSpoke(p.k, true); });
+    b.addEventListener("mouseleave", function () { litSpoke(p.k, false); });
+  });
+
+  var selectedKey = null;
+  function litSpoke(k, on) {
+    if (!on && k === selectedKey) return;
+    var s = spokes.querySelector('[data-spoke="' + k + '"]');
+    if (s) s.classList.toggle("lit", on);
+  }
+
+  [1, 2, 3, 4].forEach(function (r) {
+    var h = document.createElement("div");
+    h.className = "hf-stage";
+    h.textContent = RINGS[r].nom + " · " + RINGS[r].q;
+    fb.appendChild(h);
+    P.filter(function (p) { return p.ring === r; }).forEach(function (p) {
+      var b = document.createElement("button");
+      b.className = "hf-item";
+      b.setAttribute("data-key", p.k);
+      b.innerHTML = '<span class="nic">' + p.ic + '</span><span class="nt">' + p.t +
+                    '</span><span class="nw">Sin empezar</span>';
+      fb.appendChild(b);
+    });
+  });
+
+  /* ══════════ PANEL ══════════ */
+
+  var pIc = document.getElementById("pane-ic");
+  var pTitle = document.getElementById("pane-title");
+  var pStatus = document.getElementById("pane-status");
+  var pCommand = document.getElementById("pane-command");
+  var pMeta = document.getElementById("pane-meta");
+  var pBody = document.getElementById("pane-body");
+
+  function fold(title, count, inner, kind) {
+    return '<details class="fold' + (kind ? ' ' + kind : '') + '"><summary><span class="chev">▶</span>' + title +
+           (count ? '<span class="cnt">' + count + '</span>' : '') +
+           '</summary><div class="foldbody">' + inner + '</div></details>';
+  }
+  function bullets(list, cls, keyIdx) {
+    var h = '<ul class="' + (cls || "pts") + '">';
+    list.forEach(function (x, i) {
+      h += '<li' + (keyIdx === i ? ' class="tpl-key"' : '') + '>' + x + '</li>';
+    });
+    return h + '</ul>';
+  }
+  function ejBlock(txt) {
+    return '<div class="ej"><span class="ej-lbl">En el ejemplo del correo</span><p>' + txt + '</p></div>';
+  }
+  function chips(ring) {
+    var arr = P.filter(function (p) { return p.ring === ring; });
+    var h = '<div class="chips-lbl">Las ' + arr.length + ' piezas de este anillo</div><div class="chips">';
+    arr.forEach(function (p) {
+      h += '<button class="chip" data-key="' + p.k + '">' +
+           '<span class="cic">' + p.ic + '</span><span class="ct">' + p.t + '</span></button>';
+    });
+    return h + '</div>';
+  }
+  function sources(ext, pro) {
+    return fold("De dónde sale esto", "",
+      '<div class="srcblock ext"><div class="sh"><span class="dot"></span>Lo que dice la industria</div>' + ext + '</div>' +
+      '<div class="srcblock pro"><div class="sh"><span class="dot"></span>Casos reales, en anónimo</div>' + pro + '</div>');
+  }
+
+  function clearOn() {
+    document.querySelectorAll(".node.on,.hf-item.on,.core.on").forEach(function (n) {
+      n.classList.remove("on");
+    });
+    spokes.querySelectorAll(".spoke.lit").forEach(function (s) { s.classList.remove("lit"); });
+    [1, 2, 3, 4].forEach(function (r) {
+      document.getElementById("rl" + r).classList.remove("rl-hi");
+    });
+  }
+
+  /* ── Pestaña «Información»: el contenido del diagrama base, intacto ── */
+
+  function cuerpoInfoCore() {
+    /* la leyenda A/B/C/D abre el bloque `pro`: se saca fuera para que se vea
+       antes que las fichas, sin tocar el contenido */
+    var corte = CORE.pro.indexOf("</ul>");
+    var leyenda = corte > 0 ? CORE.pro.slice(0, corte + 5) : "";
+    var restoPro = corte > 0 ? CORE.pro.slice(corte + 5) : CORE.pro;
+    return '<p class="desc">' + CORE.desc + '</p>' +
+      '<div class="ej"><span class="ej-lbl">El ejemplo que hila todo el diagrama</span><p>' + CORE.ej + '</p></div>' +
+      (leyenda ? '<div class="abcd">' + leyenda + '</div>' : '') +
+      fold("Cómo se lee el diagrama", "", bullets(CORE.pts)) +
+      sources(CORE.ext, restoPro) +
+      fold("De dónde salen estas piezas", "", '<p style="font-size:13.5px;color:var(--ink2);margin:0;line-height:1.55">' + CORE.risk + '</p>');
+  }
+
+  function cuerpoInfoRing(r) {
+    var R = RINGS[r];
+    return '<p class="desc">' + R.desc + '</p>' + ejBlock(R.ej) +
+      fold("Los puntos clave", R.pts.length, bullets(R.pts)) + chips(r);
+  }
+
+  function cuerpoInfoPieza(p) {
+    var html = '<p class="desc">' + p.desc + '</p>' + ejBlock(p.ej);
+    if (p.risk) html += '<div class="risk"><span class="arw">⚠</span><span>' + p.risk + '</span></div>';
+    html += fold("Los puntos clave", p.pts.length, bullets(p.pts));
+    if (p.tpl && p.tpl.length) html += fold("Qué montar, en concreto", p.tpl.length,
+      bullets(p.tpl, "tpl", typeof p.tplKey === "number" ? p.tplKey : -1));
+    return html + sources(p.ext, p.pro);
+  }
+
+  /* ── Cabeceras ── */
+
+  function cabeceraCore() {
+    var est = estadoActivo(), pr = est && est.diagnostico ? est.diagnostico.proyecto : null;
+    pIc.textContent = A.centro.icono;
+    pTitle.textContent = vista === "proyecto" && pr ? pr.nombre : A.centro.nombre;
+    pStatus.innerHTML = "";
+    pCommand.innerHTML = fuente === "propio" ? cmdCabecera(comandoCore(est)) : "";
+    pMeta.innerHTML = vista === "proyecto" && pr
+      ? '<span>El proyecto</span><span class="sep">·</span><span>Objetivo y recorrido</span>'
+      : '<span>El centro</span><span class="sep">·</span><span>' + A.centro.subtitulo + '</span>';
+  }
+  function cabeceraRing(r) {
+    var R = RINGS[r];
+    pIc.textContent = ["", "🧭", "⚙️", "✅", "♻️"][r];
+    pTitle.textContent = R.nom.replace(/^\d+ · /, "");
+    pStatus.innerHTML = "";
+    pCommand.innerHTML = "";
+    pMeta.innerHTML = '<span>Anillo ' + r + '</span><span class="sep">·</span><span>' + R.q + '</span>';
+  }
+  function cabeceraPieza(p) {
+    var est = estadoActivo(), st = piezaDe(est, p.k);
+    var et = etiquetaDe(st, p.k);
+    pIc.textContent = p.ic;
+    pTitle.textContent = p.t;
+    pStatus.innerHTML = vista === "proyecto" ? '<span class="est ' + et.c + '">' + et.t + '</span>' : "";
+    pCommand.innerHTML = fuente === "propio" ? cmdCabecera(invocacionPieza(p)) : "";
+    pMeta.innerHTML = '<span class="ring" data-ring-band="' + p.ring + '">' +
+      RINGS[p.ring].nom.replace(/^\d+ · /, "") + '</span>';
+  }
+
+  /* ── Selección: qué se está mirando ── */
+
+  var seleccion = { tipo: "core", id: null };
+
+  function showCore() {
+    seleccion = { tipo: "core", id: null };
+    selectedKey = null;
+    selectRing(null);
+    clearOn();
+    document.querySelector(".core").classList.add("on");
+    pintar();
+  }
+
+  function showRing(r) {
+    seleccion = { tipo: "ring", id: r };
+    selectedKey = null;
+    clearOn();
+    document.getElementById("rl" + r).classList.add("rl-hi");
+    pintar();
+  }
+
+  function show(key) {
+    var p = byKey[key];
+    if (!p) return showCore();
+    seleccion = { tipo: "pieza", id: key };
+    selectedKey = key;
+    clearOn();
+    document.querySelectorAll('.node[data-key="' + key + '"],.hf-item[data-key="' + key + '"]')
+      .forEach(function (n) { n.classList.add("on"); });
+    var rl = document.getElementById("rl" + p.ring);
+    if (rl) rl.classList.add("rl-hi");
+    litSpoke(p.k, true);
+    pintar();
+  }
+
+  function pintar(mantenerScroll) {
+    var t = seleccion.tipo, pieza = t === "pieza" ? byKey[seleccion.id] : null;
+    actualizarNucleo();
+    if (t === "core") cabeceraCore();
+    else if (t === "ring") cabeceraRing(seleccion.id);
+    else cabeceraPieza(pieza);
+
+    var alto = pBody.scrollTop;
+    pBody.innerHTML = vista === "info"
+      ? (t === "core" ? cuerpoInfoCore() : t === "ring" ? cuerpoInfoRing(seleccion.id) : cuerpoInfoPieza(pieza))
+      : (t === "core" ? cuerpoProyCore() : t === "ring" ? cuerpoProyRing(seleccion.id) : cuerpoProyPieza(pieza));
+    pBody.scrollTop = mantenerScroll ? alto : 0;
+    actualizarPestanas();
+    actualizarCapacidadProyecto();
+  }
+
+  /* ══════════ EL RECORRIDO ══════════ */
+
+  var vista = "proyecto";   // proyecto | info
+  var fuente = "propio";    // propio | ejemplo
+  var proyectoFijo = new URLSearchParams(location.search).get("proyecto");
+  var estadoFijo = proyectoFijo === "harness-lab" ? (window.HARNESS_LAB_ESTADO || null) : null;
+  var coberturaFija = proyectoFijo === "harness-lab" ? (window.HARNESS_LAB_COBERTURA || null) : null;
+  /* Con `file://` no hay fetch: el envoltorio generado de mi-harness es la única vía de leerlo.
+     Sirve de semilla; con servidor, cargarPropio() lo refresca igual que antes. */
+  var ESTADO = {
+    propio: estadoFijo || window.MI_HARNESS_ESTADO || null,
+    ejemplo: window.EJEMPLO_ESTADO || null,
+    sinFetch: location.protocol === "file:",
+    fijo: !!estadoFijo
+  };
+  var COBERTURA = {
+    propio: coberturaFija || window.MI_HARNESS_COBERTURA || null,
+    ejemplo: null
+  };
+
+  var ETIQUETA = {
+    completada:     { c: "hecha",       t: "Resuelta" },
+    descartada:     { c: "descartada",  t: "Descartada" },
+    deuda_aceptada: { c: "deuda",       t: "Con deuda" },
+    en_curso:       { c: "pendiente",   t: "En curso" },
+    pendiente:      { c: "pendiente",   t: "Sin empezar" }
+  };
+
+  function estadoActivo() { return fuente === "ejemplo" ? ESTADO.ejemplo : ESTADO.propio; }
+  function coberturaActiva() { return fuente === "ejemplo" ? COBERTURA.ejemplo : COBERTURA.propio; }
+  function nombreProyecto(est) {
+    return est && est.diagnostico && est.diagnostico.proyecto && est.diagnostico.proyecto.nombre
+      ? est.diagnostico.proyecto.nombre : "Proyecto";
+  }
+  function actualizarNucleo() {
+    var est = estadoActivo(), pr = est && est.diagnostico ? est.diagnostico.proyecto : null;
+    var nucleo = document.querySelector(".core");
+    var titulo = document.querySelector(".core .clab");
+    var subtitulo = document.querySelector(".core .csub");
+    if (!nucleo || !titulo || !subtitulo) return;
+    titulo.textContent = pr ? pr.nombre : A.centro.nombre;
+    subtitulo.textContent = pr ? "tu trabajo con IA" : A.centro.subtitulo;
+    nucleo.setAttribute("aria-label", pr ? "Abrir el objetivo de " + pr.nombre : A.centro.nombre);
+    nucleo.title = pr ? "Abrir el objetivo y el recorrido de " + pr.nombre : A.centro.nombre;
+  }
+  function origenEstadoActivo() {
+    if (fuente === "ejemplo") return "taller/ejemplo/estado.json";
+    return ESTADO.fijo ? "proyectos/harness-lab/estado.json" : "mi-harness/estado.json";
+  }
+  function piezaDe(est, id) { return est && est.piezas ? est.piezas[id] : null; }
+  function pasoDe(est, id) {
+    var pasos = est && est.ruta ? est.ruta.pasos : [];
+    for (var i = 0; i < pasos.length; i++) if (pasos[i].pieza_id === id) return pasos[i];
+    return null;
+  }
+  function resuelta(st) { return !!st && st.estado !== "pendiente" && st.estado !== "en_curso"; }
+  function coberturaPendiente(id, st) {
+    var p = byKey[id], criterios = p ? criteriosDe(p, st) : [];
+    return criterios.some(function (c) { return c.estado === "parcial" || c.estado === "no_definido"; });
+  }
+  function lista(st, id) {
+    return !!st && st.estado === "completada" && !!st.verificacion &&
+      st.verificacion.estado === "verificada" && !coberturaPendiente(id, st);
+  }
+  function requiereAtencion(st, id) {
+    if (!st || st.estado === "pendiente" || st.estado === "en_curso" || st.estado === "deuda_aceptada")
+      return true;
+    if (st.estado === "completada") return !lista(st, id);
+    return st.estado === "descartada" && coberturaPendiente(id, st);
+  }
+  function incoherenciasDe(est) {
+    var pasos = est && est.ruta ? est.ruta.pasos : [];
+    return pasos.map(function (paso) { return paso.pieza_id; }).filter(function (id) {
+      return requiereAtencion(piezaDe(est, id), id);
+    });
+  }
+  function metricasEstado(est) {
+    var m = { total: 0, listas: 0, abiertas: 0, deudas: 0, verificar: 0, descartadas: 0 };
+    var pasos = est && est.ruta ? est.ruta.pasos : [];
+    m.total = pasos.length || P.length;
+    pasos.forEach(function (paso) {
+      var id = paso.pieza_id, st = piezaDe(est, id), e = st ? st.estado : "pendiente";
+      if (lista(st, id)) m.listas++;
+      else if (e === "deuda_aceptada") m.deudas++;
+      else if (e === "descartada") m.descartadas++;
+      else if (e === "completada" && coberturaPendiente(id, st)) m.deudas++;
+      else if (e === "completada") m.verificar++;
+      else m.abiertas++;
+    });
+    return m;
+  }
+  function etiquetaDe(st, id) {
+    var e = st ? st.estado : "pendiente";
+    if (e === "completada" && coberturaPendiente(id, st)) return { c: "deuda", t: "Con deuda" };
+    if (e === "completada" && !lista(st, id)) return { c: "verificar", t: "Por verificar" };
+    return ETIQUETA[e] || ETIQUETA.pendiente;
+  }
+  function colorEtiqueta(et) {
+    return et.c === "hecha" ? "done" : et.c === "descartada" ? "c4" :
+      et.c === "deuda" ? "c3" : et.c === "verificar" ? "verify" : "c1";
+  }
+  function siguienteDe(est) {
+    var pasos = est && est.ruta ? est.ruta.pasos : [];
+    for (var i = 0; i < pasos.length; i++)
+      if (!resuelta(piezaDe(est, pasos[i].pieza_id))) return pasos[i].pieza_id;
+    return null;
+  }
+  function comandoCore(est) {
+    if (siguienteDe(est)) return "/lote";
+    if (incoherenciasDe(est).length) return "/incoherencias";
+    return "/auditoria-final";
+  }
+  function cmd(txt) {
+    return '<div class="cmd"><code>' + txt + '</code>' +
+           '<button class="copiar" data-cmd="' + txt + '">Copiar</button></div>';
+  }
+  function cmdCabecera(txt) {
+    return '<span class="head-cmd"><code>' + txt + '</code>' +
+           '<button class="copiar" data-cmd="' + txt + '" aria-label="Copiar ' + txt + '">Copiar</button></span>';
+  }
+  function invocacionPieza(p) {
+    return "/" + p.k;
+  }
+  function invocacionDiagnostico() {
+    return "/diagnostico";
+  }
+  function campo(lbl, inner) {
+    return fold(lbl, "", inner, "field");
+  }
+  function rutas(lista) {
+    return '<div class="rutas">' + lista.map(function (x) {
+      return '<span class="ruta">' + x + '</span>';
+    }).join("") + '</div>';
+  }
+  function parrafo(txt) { return '<p class="vacio" style="margin:0">' + txt + '</p>'; }
+  function acortar(txt, max) {
+    var limpio = String(txt || "").replace(/\s+/g, " ").trim();
+    return limpio.length > max ? limpio.slice(0, max - 1).replace(/\s+\S*$/, "") + "…" : limpio;
+  }
+  function unirNatural(lista) {
+    if (lista.length < 2) return lista[0] || "";
+    return lista.slice(0, -1).join(", ") + " y " + lista[lista.length - 1];
+  }
+  function definiciones(lista) {
+    var filas = (lista || []).map(function (d) {
+      var texto = d.texto || "", corte = texto.indexOf(" — ");
+      return corte > 0 ? { clave: texto.slice(0, corte), valor: texto.slice(corte + 3) } : null;
+    });
+    if (!filas.length || filas.some(function (x) { return !x; }))
+      return bullets((lista || []).map(function (d) { return d.texto; }));
+    return '<dl class="defs">' + filas.map(function (x) {
+      return '<div class="def"><dt>' + x.clave + '</dt><dd>' + x.valor + '</dd></div>';
+    }).join("") + '</dl>';
+  }
+
+  function inventarioPrompts() {
+    var items = [{ n: "00", titulo: "Diagnóstico multidimensional", cmd: "/diagnostico" }];
+    P.forEach(function (p, i) {
+      items.push({ n: String(i + 1).padStart(2, "0"), titulo: p.t, cmd: invocacionPieza(p) });
+    });
+    items.push({ n: "99", titulo: "Cierre y replanificación", cmd: "/cierre" });
+    items.push({ n: "100", titulo: "Auditoría final profunda", cmd: "/auditoria-final" });
+    items.push({ n: "101", titulo: "Resolver incoherencias", cmd: "/incoherencias" });
+    return '<div class="route-now"><span class="rl">Lote</span><strong><code>/lote</code> · varias actividades</strong>' +
+      '<small>Recorre todas las actividades abiertas y pregunta lo necesario en ventanas consecutivas.</small></div>' +
+      '<div class="route-now"><span class="rl">Revisión</span><strong><code>/incoherencias</code> · todos los flecos</strong>' +
+      '<small>Resuelve deudas, verificaciones y contradicciones sin volver a cada comando.</small></div>' +
+      fold("Los 22 prompts", items.length,
+      '<ol class="prompt-list">' + items.map(function (item) {
+        return '<li><span class="pn">' + item.n + '</span><span class="pt">' + item.titulo +
+          '</span><code>' + item.cmd + '</code></li>';
+      }).join("") + '</ol>', "field");
+  }
+
+  function tieneCapacidad(est, ids) {
+    return ids.some(function (id) {
+      var st = piezaDe(est, id);
+      return lista(st, id);
+    });
+  }
+  function capacidadActual(est) {
+    if (!est) return "Todavía no conoce el proyecto.";
+    var frases = [];
+    if (tieneCapacidad(est, ["contexto"])) frases.push("entiende el proyecto");
+    else if (tieneCapacidad(est, ["memoria", "prompts", "conocimiento"]))
+      frases.push("conserva el contexto y sus reglas");
+    if (tieneCapacidad(est, ["prompts", "conocimiento", "guardrails"]))
+      frases.push("trabaja con reglas y límites claros");
+    if (tieneCapacidad(est, ["salida"]) && tieneCapacidad(est, ["validar"]))
+      frases.push("entrega resultados verificados");
+    else if (tieneCapacidad(est, ["salida"])) frases.push("entrega resultados trazables");
+    else if (tieneCapacidad(est, ["proveedor", "tools", "flujo"]))
+      frases.push("usa herramientas con supervisión");
+    if (tieneCapacidad(est, ["observabilidad", "fallos"])) frases.push("aprende de los fallos");
+    else if (tieneCapacidad(est, ["historial", "harnessdev"])) frases.push("conserva lo construido");
+    else if (tieneCapacidad(est, ["epistemica", "fuera"])) frases.push("controla su alcance y sus evidencias");
+    if (!frases.length) return "Conoce el proyecto; aún no tiene una capacidad cerrada.";
+    return "Ya " + unirNatural(frases) + ".";
+  }
+  function actualizarCapacidadProyecto() {
+    var destino = document.getElementById("project-capability-text");
+    if (destino) destino.textContent = capacidadActual(estadoActivo());
+    var progreso = document.getElementById("project-capability-progress");
+    var est = estadoActivo(), m = metricasEstado(est);
+    if (progreso) {
+      progreso.textContent = m.listas + "/" + m.total;
+      progreso.title = m.listas + " listas y verificadas; " + (m.abiertas + m.deudas + m.verificar) +
+        " pendientes; " + m.descartadas + " descartadas";
+    }
+  }
+
+  function criteriosDe(p, st) {
+    var cobertura = coberturaActiva();
+    var pieza = cobertura && cobertura.piezas ? cobertura.piezas[p.k] : null;
+    if (pieza && pieza.criterios) return pieza.criterios;
+    var estado = st && st.estado;
+    var supuesto = estado === "completada" ? "definido" : estado === "descartada" ? "no_aplica" :
+      estado === "deuda_aceptada" ? "parcial" : "no_definido";
+    return (p.tpl || []).map(function (criterio) {
+      return { criterio: criterio, estado: supuesto, evidencias: [] };
+    });
+  }
+  function matrizCriterios(p, st) {
+    var criterios = criteriosDe(p, st);
+    if (!criterios.length) return "";
+    var etiqueta = {
+      definido: { icono: "✓", texto: "Definido" },
+      parcial: { icono: "!", texto: "Falta concretar" },
+      no_definido: { icono: "·", texto: "Sin definir" },
+      no_aplica: { icono: "—", texto: "No aplica" }
+    };
+    var listos = criterios.filter(function (c) {
+      return c.estado === "definido" || c.estado === "no_aplica";
+    }).length;
+    var pendientes = criterios.length - listos;
+    var filas = criterios.map(function (c) {
+      var e = etiqueta[c.estado] || etiqueta.no_definido;
+      return '<li class="criterion ' + c.estado + '"><span class="ci">' + e.icono +
+        '</span><span class="ct">' + c.criterio + '</span><span class="cs">' + e.texto +
+        '</span></li>';
+    }).join("");
+    return fold("Definición punto por punto",
+      pendientes ? pendientes + " por definir" : listos + "/" + criterios.length + " definidos",
+      '<ul class="criteria-list">' + filas + '</ul>', pendientes ? "field pending" : "field");
+  }
+
+  function resumenActividad(st) {
+    var texto = st && st.resumen
+      ? st.resumen : "Esta actividad todavía no tiene una definición registrada.";
+    return '<section class="activity-summary"><span class="asl">En una mirada</span><p>' +
+      texto + '</p></section>';
+  }
+
+  function relacionesDe(p, est) {
+    var necesita = (p.deps || []).map(function (id) { return byKey[id] ? byKey[id].t : id; });
+    var afecta = (p.unlocks || []).concat(P.filter(function (otra) {
+      return (otra.deps || []).indexOf(p.k) >= 0;
+    }).map(function (otra) { return otra.k; })).filter(function (id, i, todos) {
+      return id !== p.k && todos.indexOf(id) === i;
+    }).map(function (id) { return byKey[id] ? byKey[id].t : id; });
+    var impactos = (est.decisiones_globales || []).filter(function (d) {
+      return d.pieza_id === p.k && String(d.id || "").indexOf("impacto-") === 0;
+    }).map(function (d) { return d.texto; });
+    var filas = [];
+    if (necesita.length) filas.push('<li><b>Necesita:</b> ' + unirNatural(necesita) + '.</li>');
+    if (afecta.length) filas.push('<li><b>Puede afectar a:</b> ' + unirNatural(afecta) + '.</li>');
+    impactos.forEach(function (x) { filas.push('<li><b>Impacto registrado:</b> ' + x + '</li>'); });
+    if (!filas.length) filas.push('<li>No tiene una dependencia ni un impacto cruzado registrado.</li>');
+    return fold("Relación con el resto", filas.length,
+      '<ul class="impact-list">' + filas.join("") + '</ul>', "field");
+  }
+
+  function avisoSinServidor() {
+    if (!ESTADO.sinFetch) return "";
+    return '<p class="vacio" style="font-size:12.5px;color:var(--muted)">Este diagrama está abierto ' +
+           'como archivo, así que todavía no puede leer tu avance: ábrelo con <b>Live Preview</b> ' +
+           'desde VS Code y se irá encendiendo solo. Los comandos funcionan igual desde ya, y el ' +
+           '<b>ejemplo</b> se puede recorrer entero con el interruptor de arriba.</p>';
+  }
+
+  function sinEstado(p) {
+    var h = '<p class="vacio">Todavía no sabemos nada de tu trabajo. Empieza por el diagnóstico: ' +
+            'mira tu proyecto, te pregunta solo lo que no pueda averiguar por su cuenta y calcula ' +
+            'tu recorrido.</p>' + cmd(invocacionDiagnostico());
+    if (p) h += '<p class="vacio">Y si quieres ir directo a esta pieza, sin recorrido calculado:</p>' + cmd(invocacionPieza(p));
+    return h + avisoSinServidor();
+  }
+
+  function ubicacionesDe(st) {
+    var lista = [origenEstadoActivo()];
+    if (st && st.artefactos) lista = lista.concat(st.artefactos);
+    if (st && st.markdown_fuente) lista.push(st.markdown_fuente);
+    return lista.filter(function (x, i, todas) { return x && todas.indexOf(x) === i; });
+  }
+
+  function detalleRecorrido(p, paso, est) {
+    if (!paso) return "";
+    return fold("Recorrido y prioridad", "", definiciones([
+      { texto: "Motivo — " + paso.porque },
+      { texto: "Posición — Paso " + paso.orden + " de " + est.ruta.pasos.length },
+      { texto: "Prioridad — " + paso.prioridad },
+      { texto: "Regla aplicada — " + paso.regla }
+    ]), "field");
+  }
+
+  function detalleVerificacion(st, titulo) {
+    if (!st || !st.verificacion || !st.verificacion.detalle || st.verificacion.estado === "no_aplica")
+      return "";
+    var nombre = st.verificacion.estado === "verificada" ? "Verificada" :
+      st.verificacion.estado === "fallida" ? "Fallida" : "Pendiente";
+    return campo(titulo, definiciones([
+      { texto: "Estado — " + nombre },
+      { texto: "Detalle — " + st.verificacion.detalle }
+    ]));
+  }
+
+  function cuerpoProyPieza(p) {
+    var est = estadoActivo();
+    if (!est) return sinEstado(p);
+    var paso = pasoDe(est, p.k), st = piezaDe(est, p.k);
+    var e = st ? st.estado : "pendiente";
+    var h = resumenActividad(st) + matrizCriterios(p, st);
+    if (p.k === "prompts") h += inventarioPrompts();
+
+    if (!resuelta(st)) {
+      if (st && st.decisiones && st.decisiones.length)
+        h += campo("Definición actual", definiciones(st.decisiones));
+      h += campo("Guardado en", rutas(ubicacionesDe(st)));
+      h += detalleVerificacion(st, "Comprobación y cierre");
+      if (st && st.riesgos && st.riesgos.length)
+        h += fold("Riesgos abiertos", st.riesgos.length, bullets(st.riesgos));
+      h += relacionesDe(p, est) + detalleRecorrido(p, paso, est);
+      return h;
+    }
+
+    if (st.decisiones && st.decisiones.length)
+      h += campo("Qué se ha definido", definiciones(st.decisiones));
+    else h += campo("Qué se ha definido", parrafo(st.resumen));
+    if (e === "descartada" && st.descarte)
+      h += campo("Decisión", parrafo(st.descarte.motivo));
+    h += campo("Guardado en", rutas(ubicacionesDe(st)));
+    h += detalleVerificacion(st, "Comprobación");
+    if (st.deuda)
+      h += campo("Deuda aceptada", definiciones([
+        { texto: "Qué queda — " + st.deuda.descripcion },
+        { texto: "Responsable — " + st.deuda.responsable },
+        { texto: "Cuándo revisar — " + st.deuda.condicion_revision }
+      ]));
+    if (st.riesgos && st.riesgos.length)
+      h += fold("Riesgos", st.riesgos.length, bullets(st.riesgos));
+    h += relacionesDe(p, est) + detalleRecorrido(p, paso, est);
+    return h;
+  }
+
+  function cuerpoProyCore() {
+    var est = estadoActivo();
+    if (!est) return sinEstado();
+    var pr = est.diagnostico.proyecto;
+    var m = metricasEstado(est), total = m.total;
+    var sig = siguienteDe(est), revisar = incoherenciasDe(est);
+
+    var definicion = [];
+    if (pr.proposito) definicion.push({ texto: "Objetivo — " + pr.proposito });
+    if (pr.criterio_exito) definicion.push({ texto: "Criterio de éxito — " + pr.criterio_exito });
+    if (pr.usuarios && pr.usuarios.length)
+      definicion.push({ texto: "Para quién — " + pr.usuarios.join("; ") });
+    if (pr.propietario) definicion.push({ texto: "Responsable — " + pr.propietario });
+    var h = definicion.length ? campo("Definición del proyecto", definiciones(definicion)) : "";
+    h += '<div class="project-kpis"><div class="project-kpi is-ready"><strong>' + m.listas + '/' + total +
+      '</strong><span>listas</span></div><div class="project-kpi"><strong>' + m.abiertas +
+      '</strong><span>abiertas</span></div><div class="project-kpi is-debt"><strong>' + m.deudas +
+      '</strong><span>con deuda</span></div><div class="project-kpi is-verify"><strong>' + m.verificar +
+      '</strong><span>por verificar</span></div><div class="project-kpi"><strong>' + m.descartadas +
+      '</strong><span>descartadas</span></div></div>';
+    h += '<div class="route-now"><span class="rl">Ahora</span><strong>' +
+      (sig ? byKey[sig].t : revisar.length ? '<code>/incoherencias</code> · ' + revisar.length +
+        ' actividades por revisar' : "Recorrido listo") + '</strong><small>' +
+      (sig ? "Primera actividad abierta según la ruta trazable." : revisar.length ?
+        "Resuelve deudas, verificaciones y contradicciones en una sola ejecución." :
+        "Todo lo aplicable está completado y verificado.") + '</small></div>';
+
+    h += '<div class="avance">' + A.anillos.map(function (r) {
+      var pz = P.filter(function (p) { return p.ring === r.id; });
+      var ok = pz.filter(function (p) { return lista(piezaDe(est, p.k), p.k); }).length;
+      return '<div class="avance-fila"><span class="nm">' + r.nombre + '</span>' +
+             '<span class="barra"><i style="width:' + Math.round(ok / pz.length * 100) + '%"></i></span>' +
+             '<span class="cifra">' + ok + '/' + pz.length + '</span></div>';
+    }).join("") + '</div>';
+
+    h += campo("Estado guardado en", rutas([origenEstadoActivo()]));
+    if (est.deuda && est.deuda.length)
+      h += campo("Frentes abiertos", bullets(est.deuda.map(function (d) { return d.descripcion; })));
+    if (est.decisiones_globales && est.decisiones_globales.length)
+      h += fold("Decisiones de fondo", est.decisiones_globales.length,
+        bullets(est.decisiones_globales.map(function (d) { return d.texto; })));
+    if (est.riesgos_aceptados && est.riesgos_aceptados.length)
+      h += fold("Riesgos aceptados", est.riesgos_aceptados.length,
+        bullets(est.riesgos_aceptados.map(function (r) { return r.descripcion; })));
+    return h;
+  }
+
+  function cuerpoProyRing(r) {
+    var est = estadoActivo();
+    if (!est) return sinEstado();
+    var pz = P.filter(function (p) { return p.ring === r; });
+    var ok = pz.filter(function (p) { return lista(piezaDe(est, p.k), p.k); }).length;
+    var claves = pz.map(function (p) {
+      var st = piezaDe(est, p.k);
+      return st && st.resumen ? '<li><b>' + p.t + ':</b> ' + acortar(st.resumen, 145) + '</li>' : null;
+    }).filter(Boolean);
+    var resumenes = pz.map(function (p) {
+      var st = piezaDe(est, p.k);
+      return st && st.resumen ? acortar(st.resumen, 82) : null;
+    }).filter(Boolean);
+    var lectura = resumenes.length
+      ? resumenes.slice(0, 2).join(" · ") +
+        (resumenes.length > 2 ? " · y " + (resumenes.length - 2) + " punto" +
+          (resumenes.length - 2 === 1 ? "" : "s") + " más." : "")
+      : "Este nivel todavía no tiene conocimiento registrado del proyecto.";
+    var h = '<div class="ring-kpi"><strong>' + ok + '/' + pz.length +
+      '</strong><span class="kl">Listas</span><p>' + lectura + '</p></div>';
+    if (claves.length) h += fold("Lo que sabe el proyecto", claves.length,
+      '<ul class="impact-list">' + claves.join("") + '</ul>', "field");
+    h += '<div class="chips">';
+    pz.forEach(function (p) {
+      var st = piezaDe(est, p.k), et = etiquetaDe(st, p.k), color = colorEtiqueta(et);
+      h += '<button class="chip" data-key="' + p.k + '">' +
+           '<span class="cic">' + p.ic + '</span><span class="ct">' + p.t + '</span>' +
+           '<span class="cw" style="background:var(--' + color + '-bg);color:var(--' + color + '-fg)">' +
+           et.t + '</span></button>';
+    });
+    return h + '</div>';
+  }
+
+  function actualizarPestanas() {
+    var est = estadoActivo(), hay = false;
+    if (est) hay = seleccion.tipo !== "pieza" || resuelta(piezaDe(est, seleccion.id));
+    var nombrePropio = document.getElementById("nombre-proyecto-propio");
+    var nombreActivo = document.getElementById("nombre-proyecto-activo");
+    if (nombrePropio) nombrePropio.textContent = nombreProyecto(ESTADO.propio);
+    if (nombreActivo) nombreActivo.textContent = nombreProyecto(est);
+    document.querySelectorAll("#tabs .tab").forEach(function (b) {
+      b.classList.toggle("on", b.getAttribute("data-vista") === vista);
+    });
+    var pip = document.querySelector('#tabs .tab[data-vista="proyecto"] .pip');
+    if (pip) pip.hidden = !hay;
+  }
+
+  /* ── Los estados sobre el dibujo ── */
+
+  A.anillos.forEach(function (r) {
+    var banda = hub.querySelector('.band[data-ring-band="' + r.id + '"]');
+    if (!banda) return;
+    var c = document.createElementNS(NS, "circle");
+    c.setAttribute("class", "prog");
+    c.setAttribute("id", "prog" + r.id);
+    c.setAttribute("cx", 50); c.setAttribute("cy", 50);
+    c.setAttribute("r", banda.getAttribute("r"));
+    c.setAttribute("stroke-dasharray", "0 999");
+    spokes.parentNode.insertBefore(c, spokes);
+  });
+
+  function pintarDiagrama() {
+    var est = estadoActivo(), sig = est ? siguienteDe(est) : null;
+    P.forEach(function (p) {
+      var nodo = hub.querySelector('.node[data-key="' + p.k + '"]');
+      var nodoMovil = fb.querySelector('.hf-item[data-key="' + p.k + '"]');
+      var radio = spokes.querySelector('[data-spoke="' + p.k + '"]');
+      if (!nodo) return;
+      nodo.classList.remove("apagada", "descartada", "completada", "deuda", "verificar", "siguiente");
+      nodo.querySelectorAll(".pin,.mark").forEach(function (x) { x.remove(); });
+      nodo.removeAttribute("aria-current");
+      if (nodoMovil) {
+        nodoMovil.classList.remove("completada", "deuda", "verificar", "siguiente");
+        nodoMovil.removeAttribute("aria-current");
+      }
+      if (radio) radio.classList.remove("hecha", "siguiente");
+      if (!est) return;
+
+      var st = piezaDe(est, p.k), e = st ? st.estado : "pendiente";
+      var listo = lista(st, p.k), et = etiquetaDe(st, p.k);
+      if (nodoMovil) {
+        var estadoMovil = nodoMovil.querySelector(".nw");
+        var colorMovil = colorEtiqueta(et);
+        if (estadoMovil) {
+          estadoMovil.textContent = et.t;
+          estadoMovil.style.background = "var(--" + colorMovil + "-bg)";
+          estadoMovil.style.color = "var(--" + colorMovil + "-fg)";
+        }
+      }
+      if (listo) {
+        nodo.classList.add("completada");
+        if (nodoMovil) nodoMovil.classList.add("completada");
+      }
+      else if (e === "descartada") nodo.classList.add("descartada");
+      else if (e === "deuda_aceptada" || et.c === "deuda") {
+        nodo.classList.add("deuda");
+        if (nodoMovil) nodoMovil.classList.add("deuda");
+      }
+      else if (e === "completada") {
+        nodo.classList.add("verificar");
+        if (nodoMovil) nodoMovil.classList.add("verificar");
+      }
+      else if (!resuelta(st)) nodo.classList.add(p.k === sig ? "siguiente" : "apagada");
+
+      if (p.k === sig) {
+        nodo.setAttribute("aria-current", "step");
+        if (nodoMovil) {
+          nodoMovil.classList.add("siguiente");
+          nodoMovil.setAttribute("aria-current", "step");
+        }
+        if (radio) radio.classList.add("siguiente");
+      }
+
+      function insignia(clase, texto) {
+        var s = document.createElement("span");
+        s.className = clase;
+        s.textContent = texto;
+        nodo.appendChild(s);
+      }
+
+      /* Derecha: cómo ha quedado. El verde es lo único que dice «esto ya está». */
+      if (listo) { insignia("pin hecha", "✓"); if (radio) radio.classList.add("hecha"); }
+      else if (e === "deuda_aceptada" || et.c === "deuda") insignia("pin deuda", "!");
+      else if (e === "completada") insignia("pin verificar", "↻");
+
+    });
+
+    A.anillos.forEach(function (r) {
+      var arco = document.getElementById("prog" + r.id);
+      if (!arco) return;
+      var pz = P.filter(function (p) { return p.ring === r.id; });
+      var ok = est ? pz.filter(function (p) { return lista(piezaDe(est, p.k), p.k); }).length : 0;
+      var vuelta = 2 * Math.PI * parseFloat(arco.getAttribute("r"));
+      arco.setAttribute("stroke-dasharray", (vuelta * ok / pz.length) + " " + vuelta);
+      var etiqueta = document.getElementById("rl" + r.id);
+      if (etiqueta) etiqueta.classList.toggle("completo", !!est && ok === pz.length);
+    });
+  }
+
+  /* ── Carga del estado propio: solo con servidor, y sin romperse nunca ── */
+
+  function cargarPropio() {
+    if (ESTADO.sinFetch || ESTADO.fijo) return;
+    var sello = Date.now();
+    Promise.all([
+      fetch("../mi-harness/estado.json?t=" + sello, { cache: "no-store" })
+        .then(function (r) { return r.ok ? r.json() : null; }),
+      fetch("../mi-harness/cobertura.json?t=" + sello, { cache: "no-store" })
+        .then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+    ]).then(function (datos) {
+        var cambio = false;
+        if (datos[0] && JSON.stringify(datos[0]) !== JSON.stringify(ESTADO.propio)) {
+          ESTADO.propio = datos[0]; cambio = true;
+        }
+        if (datos[1] && JSON.stringify(datos[1]) !== JSON.stringify(COBERTURA.propio)) {
+          COBERTURA.propio = datos[1]; cambio = true;
+        }
+        if (cambio && fuente === "propio") { pintarDiagrama(); pintar(true); }
+      })
+      .catch(function () { /* a medio escribir: se conserva el último estado válido */ });
+  }
+
+  /* ══════════ FILTRADO POR ANILLO ══════════ */
+
+  var activeR = null;
+
+  function applyDim() {
+    hub.querySelectorAll(".node").forEach(function (n) {
+      var okR = !activeR || n.getAttribute("data-ring") === String(activeR);
+      n.classList.toggle("dim", !okR);
+    });
+    spokes.querySelectorAll(".spoke").forEach(function (s) {
+      var p = byKey[s.getAttribute("data-spoke")];
+      var ok = p && (!activeR || p.ring === activeR);
+      s.style.opacity = ok ? "" : ".12";
+    });
+    [1, 2, 3, 4].forEach(function (r) {
+      var band = hub.querySelector('.band[data-ring-band="' + r + '"]');
+      if (band) band.classList.toggle("sel", activeR === r);
+    });
+  }
+  function selectRing(r) { activeR = r; applyDim(); }
+
+  /* ══════════ CLICS ══════════ */
+
+  var mode = "core";
+
+  document.addEventListener("click", function (e) {
+    var copiar = e.target.closest(".copiar");
+    if (copiar) {
+      var texto = copiar.getAttribute("data-cmd");
+      var antes = copiar.textContent;
+      var avisar = function (ok) {
+        copiar.textContent = ok ? "Copiado" : "Copia a mano";
+        setTimeout(function () { copiar.textContent = antes; }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto).then(function () { avisar(true); }, function () { avisar(false); });
+      } else { avisar(false); }
+      return;
+    }
+
+    var tab = e.target.closest("#tabs .tab");
+    if (tab) { vista = tab.getAttribute("data-vista"); pintar(); return; }
+
+    var cambio = e.target.closest("#vista button");
+    if (cambio) {
+      fuente = cambio.getAttribute("data-fuente");
+      document.querySelectorAll("#vista button").forEach(function (b) {
+        b.classList.toggle("on", b === cambio);
+      });
+      if (fuente === "ejemplo" && vista === "info") vista = "proyecto";
+      pintarDiagrama();
+      pintar();
+      return;
+    }
+
+    var band = e.target.closest("[data-ring-band]");
+    if (band) {
+      var r = parseInt(band.getAttribute("data-ring-band"), 10);
+      if (activeR === r && mode === "ring") { mode = "core"; selectRing(null); showCore(); }
+      else { mode = "ring"; selectRing(r); showRing(r); }
+      return;
+    }
+    var c = e.target.closest("[data-key]");
+    if (!c) return;
+    var k = c.getAttribute("data-key");
+    if (k === "core") { mode = "core"; showCore(); return; }
+    mode = "pieza";
+    show(k);
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") { mode = "core"; showCore();
+      infoPop.classList.remove("open"); infoBtn.classList.remove("on"); }
+  });
+
+  /* ══════════ INFORMACIÓN ══════════ */
+
+  var infoBtn = document.getElementById("info-btn");
+  var infoPop = document.getElementById("info-pop");
+  infoBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    var open = infoPop.classList.toggle("open");
+    infoBtn.classList.toggle("on", open);
+  });
+  document.addEventListener("click", function (e) {
+    if (!infoPop.contains(e.target) && e.target !== infoBtn) {
+      infoPop.classList.remove("open");
+      infoBtn.classList.remove("on");
+    }
+  });
+
+  showCore();
+  pintarDiagrama();
+  cargarPropio();
+  setInterval(function () { if (!document.hidden) cargarPropio(); }, 2000);
+  setTimeout(function () { document.querySelector(".core").classList.add("in"); }, 90);
+})();
+</script>
+</body>
+</html>
