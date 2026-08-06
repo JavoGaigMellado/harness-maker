@@ -1083,11 +1083,13 @@ A.anillos.forEach(function (r) {
     var cobertura = coberturaActiva();
     var pieza = cobertura && cobertura.piezas ? cobertura.piezas[p.k] : null;
     if (pieza && pieza.criterios) return pieza.criterios;
-    var estado = st && st.estado;
-    var supuesto = estado === "completada" ? "definido" : estado === "descartada" ? "no_aplica" :
-      estado === "deuda_aceptada" ? "parcial" : "no_definido";
+    // Sin cobertura registrada no se sabe nada de cada punto, y deducirlo del estado de la pieza
+    // era inventar: una actividad cerrada pintaba «5/5 definidos» con cinco vistos buenos que
+    // nadie había puesto. `cobertura.json` no lo crea el programa —solo lo escriben las
+    // actividades—, así que la copia de cualquiera empieza sin él y ese era el caso normal, no
+    // el raro. Se enseña lo que la actividad pide, sin estado.
     return (p.tpl || []).map(function (criterio) {
-      return { criterio: criterio, estado: supuesto, evidencias: [] };
+      return { criterio: criterio, estado: "sin_registrar", evidencias: [] };
     });
   }
   function matrizCriterios(p, st) {
@@ -1097,21 +1099,27 @@ A.anillos.forEach(function (r) {
       definido: { icono: "✓", texto: "Definido" },
       parcial: { icono: "!", texto: "Falta concretar" },
       no_definido: { icono: "·", texto: "Sin definir" },
-      no_aplica: { icono: "—", texto: "No aplica" }
+      no_aplica: { icono: "—", texto: "No aplica" },
+      sin_registrar: { icono: "·", texto: "" }
     };
+    var sinRegistrar = criterios.every(function (c) { return c.estado === "sin_registrar"; });
     var listos = criterios.filter(function (c) {
       return c.estado === "definido" || c.estado === "no_aplica";
     }).length;
-    var pendientes = criterios.length - listos;
+    var pendientes = sinRegistrar ? 0 : criterios.length - listos;
     var filas = criterios.map(function (c) {
       var e = etiqueta[c.estado] || etiqueta.no_definido;
       return '<li class="criterion ' + c.estado + '"><span class="ci">' + e.icono +
-        '</span><span class="ct">' + c.criterio + '</span><span class="cs">' + e.texto +
-        '</span></li>';
+        '</span><span class="ct">' + c.criterio + '</span>' +
+        (e.texto ? '<span class="cs">' + e.texto + '</span>' : '') + '</li>';
     }).join("");
+    var nota = sinRegistrar
+      ? '<p class="vacio" style="margin:0 0 8px">Nadie ha registrado punto por punto cómo va esto: ' +
+        'lo de abajo es lo que la actividad pide, no lo que está hecho.</p>' : '';
     return fold("Definición punto por punto",
-      pendientes ? pendientes + " por definir" : listos + "/" + criterios.length + " definidos",
-      '<ul class="criteria-list">' + filas + '</ul>', pendientes ? "field pending" : "field");
+      sinRegistrar ? "sin registrar" :
+        pendientes ? pendientes + " por definir" : listos + "/" + criterios.length + " definidos",
+      nota + '<ul class="criteria-list">' + filas + '</ul>', pendientes ? "field pending" : "field");
   }
 
   function resumenActividad(st) {

@@ -1174,6 +1174,23 @@ def test_a_closed_activity_leads_with_what_was_decided():
     assert '"Decisiones de fondo"' in workshop
 
 
+def test_coverage_that_nobody_recorded_is_not_invented():
+    """Sin `cobertura.json` no se sabe cómo va cada punto, y deducirlo del estado era inventarlo.
+
+    Ninguna orden del programa crea ese archivo: lo escriben las actividades cuando existe. Así que
+    la copia de cualquiera empieza sin él, y ahí una actividad cerrada pintaba «5/5 definidos» con
+    cinco vistos buenos que nadie había puesto. Se vio en un recorrido real, no aquí: esta copia sí
+    tiene cobertura y por eso nunca lo enseñó.
+    """
+    workshop=Path("diagramas/diagrama_taller.html").read_text(encoding="utf-8")
+    assert 'estado: "sin_registrar"' in workshop
+    assert '"definido" : estado === "descartada"' not in workshop, "vuelve a deducirse del estado"
+    assert 'sinRegistrar ? "sin registrar"' in workshop
+    assert "no lo que está hecho" in workshop
+    # Y el recuento no puede contar como pendiente lo que nadie ha mirado.
+    assert "var pendientes = sinRegistrar ? 0 :" in workshop
+
+
 def test_a_venv_that_starts_but_has_no_pip_is_not_a_usable_venv(tmp_path):
     """Arrancar no es la capacidad que hace falta: la siguiente orden es `pip install`.
 
