@@ -144,7 +144,14 @@ siga realmente pendiente; registrar y explicar la causa concreta.
      incidencias; el estado de los sistemas se vuelve a leer en vivo`.
    - El criterio es que quien lo lea dentro de tres meses pueda actuar sin abrir nada más. Si el
      contenido es una lista larga, dar el criterio, cuántos son y dónde vive la lista completa;
-     nunca solo el criterio.
+     nunca solo el criterio. La excepción son los inventarios, que van enteros.
+   - **Un inventario de fuentes no admite resumen.** Si el proyecto usa ficheros como fuente —una
+     base de conocimiento, un corpus, un juego de plantillas—, van enumerados uno a uno con su
+     ruta, y cada uno entra además en `artefactos`. La carpeta no vale: `app/kb/` no dice qué
+     documentos hay dentro, y `cinco documentos inyectados enteros` tampoco. Un recorrido real
+     cerró *Conocimiento* con esas dos frases, y su ficha no permitía saber qué se estaba
+     inyectando ni comprobar si seguía siendo lo mismo. Lo mismo vale para cualquier criterio que
+     empiece por «listar»: se responde enumerando.
 3. Revisar cada respuesta completa contra las 18 actividades, no solo contra la actividad abierta.
    Informar siempre `Impacto en el resto: ninguno` o enumerar las actividades afectadas y el motivo.
    Aplicar las rondas de impacto anteriores antes de persistir. Una posible relación todavía no

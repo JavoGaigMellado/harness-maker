@@ -337,6 +337,10 @@
        border-bottom:1px solid var(--band);font-size:13px;line-height:1.5}
   .def dt{font-weight:700;color:var(--ink);margin:0}
   .def dd{color:var(--ink2);margin:0}
+  /* Decisión escrita como «Norma: porqué»: la norma no cabe en la columna de etiqueta, así que
+     se apila y el porqué queda debajo, más pequeño. Lo que se lee primero es la norma. */
+  .def.norma{grid-template-columns:1fr;gap:3px}
+  .def.norma dd{font-size:11.5px;line-height:1.5;color:var(--muted)}
   @media (max-width:440px){.def{grid-template-columns:1fr;gap:2px}}
   .rutas{display:flex;flex-wrap:wrap;gap:6px}
   .ruta{font-family:var(--mono);font-size:11.5px;background:var(--band);color:var(--ink2);
@@ -1014,14 +1018,32 @@ A.anillos.forEach(function (r) {
     return lista.slice(0, -1).join(", ") + " y " + lista[lista.length - 1];
   }
   function definiciones(lista) {
+    // La norma primero y su porqué después, siempre, se haya escrito como se haya escrito.
+    //
+    // `Etiqueta — contenido` es lo que pide la doctrina y sale en dos columnas. Pero de 332
+    // decisiones escritas en recorridos reales, 174 llegaron como «Norma: porqué» —incluidas las
+    // 35 del ejemplo que viaja en el producto—, y bastaba una sin el guion para que la vista
+    // degradara el bloque entero a párrafos. La norma quedaba enterrada dentro del texto justo
+    // en la pantalla que existe para leerla. Exigir el formato no arregla lo ya escrito; saber
+    // leer las dos formas, sí.
     var filas = (lista || []).map(function (d) {
-      var texto = d.texto || "", corte = texto.indexOf(" — ");
-      return corte > 0 ? { clave: texto.slice(0, corte), valor: texto.slice(corte + 3) } : null;
+      var texto = (d.texto || "").trim(), corte = texto.indexOf(" — ");
+      if (corte > 0) return { clave: texto.slice(0, corte), valor: texto.slice(corte + 3), tipo: "def" };
+      // Sin guion, la norma acaba donde acabe antes: en los dos puntos que abren la explicación
+      // o en el punto de la primera frase. Cortar siempre por los dos puntos hacía que la norma
+      // se tragara tres frases cuando la explicación tardaba en llegar.
+      var puntos = texto.indexOf(": "), frase = texto.indexOf(". ");
+      corte = puntos < 0 ? frase : frase < 0 ? puntos : Math.min(puntos, frase);
+      if (corte > 0) return {
+        clave: texto.slice(0, corte + (corte === frase ? 1 : 0)),
+        valor: texto.slice(corte + 2), tipo: "def norma"
+      };
+      return { clave: texto, valor: "", tipo: "def norma" };
     });
-    if (!filas.length || filas.some(function (x) { return !x; }))
-      return bullets((lista || []).map(function (d) { return d.texto; }));
+    if (!filas.length) return "";
     return '<dl class="defs">' + filas.map(function (x) {
-      return '<div class="def"><dt>' + x.clave + '</dt><dd>' + x.valor + '</dd></div>';
+      return '<div class="' + x.tipo + '"><dt>' + x.clave + '</dt>' +
+        (x.valor ? '<dd>' + x.valor + '</dd>' : '') + '</div>';
     }).join("") + '</dl>';
   }
 

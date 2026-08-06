@@ -1174,6 +1174,38 @@ def test_a_closed_activity_leads_with_what_was_decided():
     assert '"Decisiones de fondo"' in workshop
 
 
+def test_the_rule_is_read_first_however_it_was_written():
+    """La ficha separa la norma de su porqué aunque la decisión no traiga el guion.
+
+    De 332 decisiones escritas en recorridos reales, 174 llegaron como «Norma: porqué» —incluidas
+    las 35 del ejemplo que viaja en el producto—, y bastaba una sin ` — ` para que el bloque
+    entero cayera a párrafos. Exigir el formato no arregla lo ya escrito: hay que saber leerlo.
+    """
+    workshop=Path("diagramas/diagrama_taller.html").read_text(encoding="utf-8")
+    assert 'var puntos = texto.indexOf(": "), frase = texto.indexOf(". ");' in workshop
+    assert "corte = puntos < 0 ? frase : frase < 0 ? puntos : Math.min(puntos, frase);" in workshop
+    # Y una decisión sin separador ya no arrastra a las demás a lista plana.
+    assert "filas.some(function (x) { return !x; })" not in workshop
+    assert ".def.norma{grid-template-columns:1fr" in workshop
+
+
+def test_a_source_inventory_may_not_be_summarised():
+    """Listar las fuentes es enumerarlas, no contarlas.
+
+    Un recorrido real cerró *Conocimiento* con «cinco documentos inyectados enteros» y el
+    artefacto `app/kb/`, y con eso no se puede saber qué se inyecta ni comprobar que siga siendo
+    lo mismo. La regla anterior lo permitía: dejaba resumir una lista larga con el criterio,
+    cuántos son y dónde vive. Los inventarios quedan fuera de esa licencia.
+    """
+    for skill in ("conocimiento", "memoria", "guardrails"):
+        texto=Path(f".claude/skills/{skill}/SKILL.md").read_text(encoding="utf-8")
+        plano=" ".join(texto.split())
+        assert "Un inventario de fuentes no admite resumen" in plano, skill
+        assert "van enumerados uno a uno con su ruta" in plano, skill
+        assert "La carpeta no vale" in plano, skill
+        assert "La excepción son los inventarios, que van enteros." in plano, skill
+
+
 def test_coverage_that_nobody_recorded_is_not_invented():
     """Sin `cobertura.json` no se sabe cómo va cada punto, y deducirlo del estado era inventarlo.
 
