@@ -112,7 +112,7 @@ exista: una API, memoria o automatización innecesaria se marca `no aplica` con 
 convierte en trabajo.
 
 Las actividades se recorren de una en una, y es a propósito. Existió un comando que resolvía varias
-en la misma ejecución y se retiró el 2026-08-04: contestar dieciocho actividades a ritmo de
+en la misma ejecución y se retiró el 2026-08-05: contestar dieciocho actividades a ritmo de
 cuestionario producía definiciones sobre cómo está organizado el harness en vez de sobre el trabajo
 de quien lo usa, que es lo único que sirve dentro de tres meses. El mapa siempre señala la actividad
 concreta que toca.

@@ -693,8 +693,9 @@ A.anillos.forEach(function (r) {
   var pMeta = document.getElementById("pane-meta");
   var pBody = document.getElementById("pane-body");
 
-  function fold(title, count, inner, kind) {
-    return '<details class="fold' + (kind ? ' ' + kind : '') + '"><summary><span class="chev">▶</span>' + title +
+  function fold(title, count, inner, kind, abierto) {
+    return '<details class="fold' + (kind ? ' ' + kind : '') + '"' + (abierto ? ' open' : '') +
+           '><summary><span class="chev">▶</span>' + title +
            (count ? '<span class="cnt">' + count + '</span>' : '') +
            '</summary><div class="foldbody">' + inner + '</div></details>';
   }
@@ -737,7 +738,7 @@ A.anillos.forEach(function (r) {
 
   function cuerpoInfoCore() {
     /* Aquí se sacaba fuera una leyenda de los cuatro casos —«A», «B», «C», «D»— para poder
-       seguirlos de ficha en ficha. Se retiró el 2026-08-04: los dossiers que la sostenían no están
+       seguirlos de ficha en ficha. Se retiró el 2026-08-05: los dossiers que la sostenían no están
        en el árbol, así que a quien usa el taller esas letras no le dicen nada. La procedencia sigue
        contada, y sin etiquetas que memorizar. */
     return '<p class="desc">' + CORE.desc + '</p>' +
@@ -993,6 +994,11 @@ A.anillos.forEach(function (r) {
   function campo(lbl, inner) {
     return fold(lbl, "", inner, "field");
   }
+  // Lo que se viene a leer no puede estar detrás de un clic. Todo lo demás de la ficha empieza
+  // plegado a propósito; el contenido de la actividad, no.
+  function campoAbierto(lbl, inner) {
+    return fold(lbl, "", inner, "field", true);
+  }
   function rutas(lista) {
     return '<div class="rutas">' + lista.map(function (x) {
       return '<span class="ruta">' + x + '</span>';
@@ -1115,24 +1121,9 @@ A.anillos.forEach(function (r) {
       texto + '</p></section>';
   }
 
-  function relacionesDe(p, est) {
-    var necesita = (p.deps || []).map(function (id) { return byKey[id] ? byKey[id].t : id; });
-    var afecta = (p.unlocks || []).concat(P.filter(function (otra) {
-      return (otra.deps || []).indexOf(p.k) >= 0;
-    }).map(function (otra) { return otra.k; })).filter(function (id, i, todos) {
-      return id !== p.k && todos.indexOf(id) === i;
-    }).map(function (id) { return byKey[id] ? byKey[id].t : id; });
-    var impactos = (est.decisiones_globales || []).filter(function (d) {
-      return d.pieza_id === p.k && String(d.id || "").indexOf("impacto-") === 0;
-    }).map(function (d) { return d.texto; });
-    var filas = [];
-    if (necesita.length) filas.push('<li><b>Necesita:</b> ' + unirNatural(necesita) + '.</li>');
-    if (afecta.length) filas.push('<li><b>Puede afectar a:</b> ' + unirNatural(afecta) + '.</li>');
-    impactos.forEach(function (x) { filas.push('<li><b>Impacto registrado:</b> ' + x + '</li>'); });
-    if (!filas.length) filas.push('<li>No tiene una dependencia ni un impacto cruzado registrado.</li>');
-    return fold("Relación con el resto", filas.length,
-      '<ul class="impact-list">' + filas.join("") + '</ul>', "field");
-  }
+  // «Relación con el resto» se retiró el 2026-08-06: repetía en cada ficha las dependencias que
+  // el mapa ya dibuja, y su tercera línea —los impactos registrados— casi siempre decía «no tiene
+  // ninguno». Ocupaba sitio delante del contenido sin añadir nada que no se viera antes.
 
   function avisoSinServidor() {
     if (!ESTADO.sinFetch) return "";
@@ -1172,10 +1163,10 @@ A.anillos.forEach(function (r) {
       return "";
     var nombre = st.verificacion.estado === "verificada" ? "Verificada" :
       st.verificacion.estado === "fallida" ? "Fallida" : "Pendiente";
-    return campo(titulo, definiciones([
-      { texto: "Estado — " + nombre },
-      { texto: "Detalle — " + st.verificacion.detalle }
-    ]));
+    // Plegada, con el estado en el encabezado. Distinguir «lo decidí» de «lo comprobé» cabe en
+    // una palabra; el detalle es para quien lo pregunte, y quitarlo entero dejaría igual una
+    // actividad verificada y una que nadie ha probado.
+    return fold(titulo, nombre, parrafo(st.verificacion.detalle), "field");
   }
 
   function cuerpoProyPieza(p) {
@@ -1183,7 +1174,10 @@ A.anillos.forEach(function (r) {
     if (!est) return sinEstado(p);
     var paso = pasoDe(est, p.k), st = piezaDe(est, p.k);
     var e = st ? st.estado : "pendiente";
-    var h = resumenActividad(st) + matrizCriterios(p, st);
+    // La lista punto por punto solo se enseña mientras dice algo, que es qué falta por definir.
+    // En una actividad cerrada, «5/5 definidos» ocupa el sitio de lo único que se viene a leer.
+    var h = resumenActividad(st);
+    if (!resuelta(st)) h += matrizCriterios(p, st);
     if (p.k === "prompts") h += inventarioPrompts();
 
     if (!resuelta(st)) {
@@ -1193,13 +1187,13 @@ A.anillos.forEach(function (r) {
       h += detalleVerificacion(st, "Comprobación y cierre");
       if (st && st.riesgos && st.riesgos.length)
         h += fold("Riesgos abiertos", st.riesgos.length, bullets(st.riesgos));
-      h += relacionesDe(p, est) + detalleRecorrido(p, paso, est);
+      h += detalleRecorrido(p, paso, est);
       return h;
     }
 
     if (st.decisiones && st.decisiones.length)
-      h += campo("Qué se ha definido", definiciones(st.decisiones));
-    else h += campo("Qué se ha definido", parrafo(st.resumen));
+      h += campoAbierto("Qué se ha definido", definiciones(st.decisiones));
+    else h += campoAbierto("Qué se ha definido", parrafo(st.resumen));
     if (e === "descartada" && st.descarte)
       h += campo("Decisión", parrafo(st.descarte.motivo));
     h += campo("Guardado en", rutas(ubicacionesDe(st)));
@@ -1212,7 +1206,7 @@ A.anillos.forEach(function (r) {
       ]));
     if (st.riesgos && st.riesgos.length)
       h += fold("Riesgos", st.riesgos.length, bullets(st.riesgos));
-    h += relacionesDe(p, est) + detalleRecorrido(p, paso, est);
+    h += detalleRecorrido(p, paso, est);
     return h;
   }
 

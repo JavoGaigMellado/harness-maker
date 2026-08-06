@@ -114,7 +114,7 @@ detalles técnicos quedan al final y solo aparecen cuando el perfil los pide o s
 `AskUserQuestion` admite como máximo cuatro preguntas por ventana, no por comando. Las actividades
 cuentan primero todo lo necesario y abren ventanas consecutivas, y muestran los recuentos reales
 antes y después. El comando que resolvía varias actividades en una ejecución se retiró el
-2026-08-04: el ritmo de cuestionario producía definiciones sobre la estructura del harness en vez de
+2026-08-05: el ritmo de cuestionario producía definiciones sobre la estructura del harness en vez de
 sobre el trabajo de la persona.
 
 El uso real mostró un tercer límite: detectar un impacto y reabrir otra actividad no basta si la

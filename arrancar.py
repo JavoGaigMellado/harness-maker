@@ -48,6 +48,37 @@ def ejecutar(comando: list[str], titulo: str) -> bool:
     return False
 
 
+def venv_utilizable(python: Path) -> bool:
+    """Que el ejecutable arranque no basta: hay que poder instalar con él.
+
+    Un arranque interrumpido a mitad deja `.venv` a medias, y hay dos formas de quedarse a
+    medias, no una. La primera comprobación miraba solo que el archivo existiera; la segunda,
+    que el python arrancara. Ninguna cubre el corte más probable: `venv` coloca el intérprete
+    y después ejecuta `ensurepip`, así que un Ctrl+C en medio deja un python que arranca
+    perfectamente y no tiene pip. Ese entorno pasaba en verde, el arrancador decía «ya existe»
+    y se estrellaba en el paso siguiente con «No module named pip», que ni nombra la causa ni
+    dice que hay que borrar `.venv`.
+
+    Se prueba directamente lo que se va a usar —pip— porque arrancar es condición de eso: si
+    pip responde, el intérprete arrancó. Una sola llamada en el camino bueno.
+    """
+    if not python.exists():
+        return False
+    return subprocess.run([str(python), "-m", "pip", "--version"], capture_output=True).returncode == 0
+
+
+def diagnostico_venv(python: Path) -> str:
+    """Por qué no sirve el `.venv` que hay. Solo se llama cuando ya se sabe que no sirve.
+
+    Decir «está a medias» sin decir de qué manera obliga a la persona a investigarlo, y el
+    arreglo es el mismo en los dos casos. Se distingue igualmente para que el mensaje no
+    afirme algo que no ha comprobado.
+    """
+    if subprocess.run([str(python), "-c", ""], capture_output=True).returncode != 0:
+        return "su python existe pero no arranca"
+    return "su python arranca pero se quedó sin pip"
+
+
 def main() -> int:
     print("Preparando Harness-Maker")
     print("")
@@ -60,10 +91,22 @@ def main() -> int:
         return 1
 
     python = interprete_venv()
-    if python.exists():
-        print(f"OK  Entorno virtual: ya existe en .venv")
+    if venv_utilizable(python):
+        print("OK  Entorno virtual: ya existe en .venv")
+    elif python.exists():
+        print(f"MAL El .venv está a medias: {diagnostico_venv(python)}.")
+        aviso("Suele pasar cuando un arranque anterior se interrumpió a mitad.")
+        aviso("Bórralo y repite:  Remove-Item -Recurse -Force .venv   (en Linux o macOS, rm -rf .venv)")
+        return 1
     else:
+        # Los dos pasos que siguen son, con diferencia, los más lentos: en Windows, con antivirus
+        # de por medio, crear el entorno e instalar puede pasar del minuto. La salida se captura
+        # para no inundar la consola, así que sin este aviso el arrancador se queda mudo justo
+        # cuando más tarda y parece colgado. Alguien lo interrumpió por eso, y un Ctrl+C aquí
+        # deja el `.venv` a medias.
         print("... Creando el entorno virtual en .venv")
+        aviso("Esto y la instalación tardan uno o dos minutos la primera vez. No lo interrumpas:")
+        aviso("un corte a mitad deja el entorno inservible y hay que borrarlo a mano.")
         if not ejecutar([sys.executable, "-m", "venv", str(VENV)], "no se pudo crear .venv"):
             return 1
         print("OK  Entorno virtual creado")

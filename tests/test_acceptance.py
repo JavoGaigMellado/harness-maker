@@ -1,7 +1,10 @@
 import argparse
+import importlib.util
 import json
+import os
 import re
 import subprocess
+import sys
 from copy import deepcopy
 from pathlib import Path
 
@@ -24,6 +27,13 @@ FIX=Path(__file__).parent/"fixtures"
 FASE3 = Path("proyectos/harness-lab").is_dir()
 solo_con_fase3 = pytest.mark.skipif(
     not FASE3, reason="proyectos/harness-lab/ es fase 3 y no viaja a la copia de reparto"
+)
+
+# `publicar.py` es la herramienta del mantenedor y tampoco viaja: en la copia de quien recibe no
+# tiene nada que hacer. Su prueba se salta igual que las de fase 3, en vez de dar rojo al arrancar.
+PUBLICADOR = (ROOT/"publicar.py").is_file()
+solo_con_publicador = pytest.mark.skipif(
+    not PUBLICADOR, reason="publicar.py es del mantenedor y no viaja a la copia de reparto"
 )
 
 
@@ -100,6 +110,9 @@ def test_recovery_from_accumulative_markdown(tmp_path):
     recovered,notes=recover_from_markdown(state,tmp_path)
     assert recovered["piezas"]["prompts"]["estado"]=="completada"
     assert any("recuperada" in x for x in notes)
+    # La ruta se guarda con `/` también en Windows: si el separador lo pusiera el sistema
+    # operativo, el mismo recorrido recuperado saldría distinto según dónde se recuperase.
+    assert "\\" not in recovered["piezas"]["prompts"]["markdown_fuente"]
 
 
 def test_canonical_and_generated_are_synchronized():
@@ -162,7 +175,7 @@ def test_claude_skills_cover_the_whole_workshop():
         assert "Simple y guiado" in content
         assert "Rondas de impacto dentro del mismo comando" in content
     # No hay comando que resuelva varias actividades de una vez, y `found==expected` de arriba ya lo
-    # exige. Se retiró el 2026-08-04: el ritmo de cuestionario producía definiciones sobre cómo está
+    # exige. Se retiró el 2026-08-05: el ritmo de cuestionario producía definiciones sobre cómo está
     # organizado el harness en vez de sobre el trabajo de la persona.
     assert not Path(".claude/skills/lote").exists()
     inconsistencies=Path(".claude/skills/incoherencias/SKILL.md").read_text(encoding="utf-8")
@@ -323,7 +336,8 @@ def test_harness_lab_map_is_a_valid_full_snapshot():
     assert '.node.verificar.in' in workshop
     assert 'return { c: "verificar", t: "Por verificar" }' in workshop
     assert 'insignia("pin verificar", "↻")' in workshop
-    assert 'function relacionesDe' in workshop
+    # `relacionesDe` se retiró el 2026-08-06; su ausencia la vigila
+    # test_a_closed_activity_leads_with_what_was_decided.
     assert 'id="cats"' not in workshop and "A.categorias" not in workshop
     assert "Así lo resolvió el ejemplo del correo" not in workshop
     skill=Path(".agents/skills/contexto/SKILL.md").read_text(encoding="utf-8")
@@ -1117,3 +1131,64 @@ def test_the_diagnostic_does_not_re_ask_which_project_it_is():
     assert "no volver a preguntar cuál es" in plano.lower()
     assert "ni ofrecer candidatos ni buscarlos" in plano
     assert "harness-lab init --reiniciar --repo" in plano
+
+
+@solo_con_publicador
+def test_the_distribution_repo_is_born_on_the_branch_the_remote_expects(tmp_path, monkeypatch):
+    """La rama del reparto la fija el publicador, no la configuración de quien publica.
+
+    `init.defaultBranch` es del ordenador: en el que se escribió esto vale `master`. Un remoto
+    tiene una sola rama por defecto, así que si el nombre lo decidiera esa opción, el mismo árbol
+    publicado desde dos ordenadores dejaría a la mitad de la gente clonando un árbol vacío.
+    """
+    spec=importlib.util.spec_from_file_location("publicar",ROOT/"publicar.py")
+    publicar=importlib.util.module_from_spec(spec); spec.loader.exec_module(publicar)
+    # Configuración hostil: si el script la heredara, la rama saldría con este nombre.
+    config=tmp_path/"gitconfig"; config.write_text("[init]\n\tdefaultBranch = ni-de-broma\n",encoding="utf-8")
+    monkeypatch.setenv("GIT_CONFIG_GLOBAL",str(config)); monkeypatch.setenv("GIT_CONFIG_NOSYSTEM","1")
+    destino=tmp_path/"reparto"
+    publicar.crear_repositorio(destino)
+    # `symbolic-ref` y no `rev-parse`: aquí todavía no hay ningún commit y la rama no ha nacido.
+    rama=subprocess.run(["git","symbolic-ref","--short","HEAD"],cwd=destino,capture_output=True,text=True)
+    assert rama.stdout.strip()==publicar.RAMA_REPARTO=="main", f"nació en {rama.stdout.strip()!r}"
+
+
+def test_a_closed_activity_leads_with_what_was_decided():
+    """Una actividad cerrada se abre por lo que se decidió, no por un recuento de cruces.
+
+    Con «5/5 definidos» y cinco líneas «Definido» por delante, la ficha afirmaba que todo estaba
+    resuelto y no decía nada de qué se resolvió, que es lo único que sirve dentro de tres meses.
+    La lista punto por punto se queda donde sí informa: mientras falta algo por definir.
+    """
+    workshop=Path("diagramas/diagrama_taller.html").read_text(encoding="utf-8")
+    assert "if (!resuelta(st)) h += matrizCriterios(p, st);" in workshop
+    # Y lo que se viene a leer no puede estar detrás de un clic.
+    assert 'campoAbierto("Qué se ha definido"' in workshop
+    assert "function campoAbierto" in workshop and "(abierto ? ' open' : '')" in workshop
+    # La comprobación se conserva —separa «decidido» de «comprobado»— pero plegada y en una palabra.
+    assert 'fold(titulo, nombre, parrafo(st.verificacion.detalle), "field")' in workshop
+    # «Relación con el resto» repetía lo que el mapa ya dibuja. Los impactos registrados no se
+    # pierden: siguen saliendo en las decisiones de fondo del centro.
+    assert "function relacionesDe" not in workshop
+    assert 'fold("Relación con el resto"' not in workshop
+    assert '"Decisiones de fondo"' in workshop
+
+
+def test_a_venv_that_starts_but_has_no_pip_is_not_a_usable_venv(tmp_path):
+    """Arrancar no es la capacidad que hace falta: la siguiente orden es `pip install`.
+
+    `venv` coloca el intérprete y después ejecuta `ensurepip`. Un corte entre esos dos pasos
+    —y el propio arrancador avisa de que la gente los interrumpe porque tardan— deja un python
+    que arranca y no tiene pip. La comprobación anterior lo daba por bueno, el arranque decía
+    «ya existe» y moría después con «No module named pip», sin nombrar la causa ni el arreglo.
+    """
+    spec=importlib.util.spec_from_file_location("arrancar",ROOT/"arrancar.py")
+    arrancar=importlib.util.module_from_spec(spec); spec.loader.exec_module(arrancar)
+    roto=tmp_path/"venv-roto"
+    subprocess.run([sys.executable,"-m","venv","--without-pip",str(roto)],capture_output=True,check=True)
+    python=roto/("Scripts/python.exe" if os.name=="nt" else "bin/python")
+    assert python.exists(), "el entorno de prueba no llegó a crearse"
+    # Justo el estado que se escapaba: el intérprete responde, así que «¿arranca?» decía que sí.
+    assert subprocess.run([str(python),"-c",""],capture_output=True).returncode==0
+    assert arrancar.venv_utilizable(python) is False, "un .venv sin pip no sirve para instalar"
+    assert "pip" in arrancar.diagnostico_venv(python), "el mensaje tiene que nombrar la causa"
