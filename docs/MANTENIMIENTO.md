@@ -51,10 +51,13 @@ consumirlo: ya no tiene datos propios. Lo que cambió en el volcado:
 - **Campos nuevos por pieza** (esquema `2.0.0`): `categoria`, `descripcion_html`, `puntos_clave`,
   `que_montar`, `industria`, `casos` y, en cinco piezas, `accion_preparada`.
 - **Un solo eje de aplicabilidad**: la categoría del diagrama determina `prioridad_base`
-  —`c1`→obligatoria, `c2`→alta, `c3`→media, `c4`→baja— y el suelo pasa a ser exactamente el conjunto
-  de piezas marcadas «siempre aplica», siete hoy.
+  —`c1`→obligatoria, `c2`→alta, `c3`→media, `c4`→baja— y el suelo es exactamente el conjunto de
+  piezas con `categoria: c1`: contexto, prompts, guardrails, proveedor, salida, validar y fuera.
+  Corregido el 2026-08-12: esta línea decía «las piezas marcadas “siempre aplica”, siete hoy», y no
+  existe ni ha existido un campo `siempre_aplica`. El número y el comportamiento eran correctos; el
+  nombre del campo, no. Lo destapó recorrer el taller sobre un proyecto real.
 - **Reglas retiradas**: `proveedor.no_code` y `salida.no_code` degradaban esas piezas para quien no
-  programa, que es justo el caso por el que el diagrama las marca «siempre aplica».
+  programa, que es justo el caso por el que son `c1`.
 - **Desempate en el planificador**: a igual prioridad gana la regla específica sobre la base o el
   suelo, para que la ruta explique por qué le toca a esta persona y no solo que es obligatoria.
 

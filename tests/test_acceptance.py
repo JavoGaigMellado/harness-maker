@@ -127,7 +127,9 @@ def test_canonical_and_generated_are_synchronized():
     # igual y ese sí es fijo, porque `taller/ejemplo/` viaja siempre.
     recorridos_de_persona={MI_HARNESS_DIR,HARNESS_LAB_DIR}
     fijas={p for p in expected_outputs() if p.parent not in recorridos_de_persona}
-    assert len(fijas)==48, f"salidas fijas: {len(fijas)}"
+    # 49 desde el 2026-08-12: el ejemplo estrena `cobertura.js` junto a su `estado.js`, porque
+    # desde ese día lleva sus 99 criterios evaluados y el diagrama tiene que poder leerlos.
+    assert len(fijas)==49, f"salidas fijas: {len(fijas)}"
 
 
 def test_claude_skills_cover_the_whole_workshop():
@@ -282,8 +284,10 @@ def test_harness_lab_map_is_a_valid_full_snapshot():
     assert "proyectos/harness-lab/cobertura.js" in workshop
     assert 'id="nombre-proyecto-activo">Proyecto<' in workshop
     assert 'id="nombre-proyecto-propio">Proyecto<' in workshop
-    assert "Qué se ha definido" in workshop and "Guardado en" in workshop
-    assert "Definición actual" in workshop and 'class="defs"' in workshop
+    # Una sola «Definición» —criterios y decisiones juntos— en todas las fichas, resueltas incluidas.
+    assert "Qué se ha definido" not in workshop and "Definición actual" not in workshop
+    assert 'fold("Definición", t.nota, cuerpo, "field definicion " + t.tono)' in workshop
+    assert "Guardado en" in workshop and 'class="defs"' in workshop
     assert 'className = "guia"' not in workshop
     assert 'radio.classList.add("siguiente")' in workshop
     assert 'setAttribute("aria-current", "step")' in workshop
@@ -313,14 +317,14 @@ def test_harness_lab_map_is_a_valid_full_snapshot():
     assert 'entrega resultados verificados' in workshop
     assert 'function bloqueCapacidad' not in workshop
     assert 'function bloquePendientes' not in workshop
-    assert 'function matrizCriterios' in workshop
-    assert 'Definición punto por punto' in workshop
+    assert 'function seccionDefinicion' in workshop
+    assert 'function listaCriterios' in workshop
+    assert 'Punto por punto' in workshop
     assert 'class="criteria-list"' in workshop
     assert 'Falta concretar' in workshop and 'Sin definir' in workshop
-    assert 'pendientes ? "field pending" : "field"' in workshop
-    assert 'details.fold.pending > summary' in workshop
+    assert 'details.fold.definicion.t-done > summary' in workshop
     assert 'function resumenActividad' in workshop
-    assert 'class="activity-summary"' in workshop
+    assert '\'<section class="activity-summary\'' in workshop
     assert 'campo("Resumen"' not in workshop
     # El centro ofrece la actividad concreta, nunca un comando que resuelva varias de golpe.
     assert '"/lote"' not in workshop and "/lote" not in workshop
@@ -359,11 +363,43 @@ def test_harness_lab_map_is_a_valid_full_snapshot():
 def test_init_creates_the_workspace_and_declares_it_active(tmp_path):
     root=tmp_path; pointer=root/".harness-maker.json"; workspace=root/"mi-harness"
     written=init_workspace(root,pointer,workspace,root)
-    assert written==[workspace/"diagnostico.json",pointer]
+    assert written==[workspace/"diagnostico.json",workspace/"cobertura.json",pointer]
     declared=json.loads(pointer.read_text(encoding="utf-8"))
     assert declared["estado"]=="mi-harness/estado.json"
     assert validate_diagnostic(json.loads((workspace/"diagnostico.json").read_text(encoding="utf-8")))==[]
     assert resolve_state_path(root,pointer)==(workspace/"estado.json").resolve()
+
+
+def test_the_coverage_nobody_created_is_born_with_the_route(tmp_path):
+    """Una fuente que dos sitios leen y ningún comando escribe no existe en la práctica.
+
+    `cobertura.json` la consumen `/incoherencias` y el diagrama, y hasta el 2026-08-12
+    solo la tenía quien la escribió a mano: el autor. Cualquier copia estrenada empezaba
+    sin la segunda red del cierre, la que evalúa criterio por criterio, y se quedaba con
+    los tres criterios genéricos, que los cumple cualquier párrafo escrito con cabeza.
+
+    Nace vacía a propósito. Un esqueleto lleno de `definido` sería la misma mentira.
+    """
+    root=tmp_path; workspace=root/"mi-harness"
+    init_workspace(root,root/".harness-maker.json",workspace,root)
+    cobertura=json.loads((workspace/"cobertura.json").read_text(encoding="utf-8"))
+    anatomy=load_anatomy()
+    assert set(cobertura["piezas"])=={pieza["id"] for pieza in anatomy["piezas"]}
+    total=sum(len(pieza["que_montar"]) for pieza in anatomy["piezas"])
+    escritos=[c for p in cobertura["piezas"].values() for c in p["criterios"]]
+    assert len(escritos)==total, f"faltan criterios: {len(escritos)} de {total}"
+    assert {c["estado"] for c in escritos}=={"no_definido"}, (
+        "la cobertura recién creada no puede declarar nada definido: nadie lo ha evaluado"
+    )
+    for pieza in anatomy["piezas"]:
+        assert [c["criterio"] for c in cobertura["piezas"][pieza["id"]]["criterios"]]==pieza["que_montar"]
+
+    # Y no pisa lo evaluado: una copia que ya la traiga conserva su trabajo, igual que el
+    # diagnóstico. Perder cobertura escrita a mano sería peor que no crearla nunca.
+    otra=tmp_path/"otra"; suyo=otra/"mi-harness"; suyo.mkdir(parents=True)
+    (suyo/"cobertura.json").write_text(json.dumps({"mio":True}),encoding="utf-8")
+    init_workspace(otra,otra/".harness-maker.json",suyo,otra)
+    assert json.loads((suyo/"cobertura.json").read_text(encoding="utf-8"))=={"mio":True}
 
 
 def test_init_refuses_to_overwrite_a_started_workspace(tmp_path):
@@ -407,6 +443,371 @@ def test_the_final_audit_separates_the_three_lives_and_commits_to_a_verdict():
                     "no se toca como efecto lateral","Perfil de interacción"):
         assert exigido in prompt, f"la auditoría dejó de exigir: {exigido!r}"
     assert "completadas sin verificar" in skill and "tres vidas del proyecto" in skill
+
+
+def test_the_start_does_not_send_a_plain_terminal_to_a_slash_command(monkeypatch):
+    """`/diagnostico` en PowerShell no es un error: es un taller que no hace nada.
+
+    El arranque termina mandando a la siguiente actividad con una barra delante, y la
+    barra es un comando de Claude Code. Quien clone y ejecute `python arrancar.py` desde
+    un terminal suelto —el camino que documenta el propio README— se queda ahí sin que
+    nada le diga que le falta una herramienta.
+    """
+    from harness_lab import arranque
+
+    monkeypatch.delenv("CLAUDECODE", raising=False)
+    assert not arranque.en_claude_code()
+    monkeypatch.setenv("CLAUDECODE", "1")
+    assert arranque.en_claude_code()
+
+    # El aviso tiene que nombrar la herramienta y el comando; decir solo «abre Claude Code»
+    # deja a medias a quien no sabe qué escribir después.
+    fuente=Path("src/harness_lab/arranque.py").read_text(encoding="utf-8")
+    assert "en_claude_code()" in fuente and "Se sigue desde Claude Code" in fuente
+
+    # Y el README tiene que declarar las tres herramientas, no dos y media: sin Git no se
+    # clona y sin Claude Code no se recorre, por mucho que el arranque en sí funcione.
+    readme=Path("README.md").read_text(encoding="utf-8")
+    for exigido in ("Git","Claude Code no es opcional","git --version","python --version"):
+        assert exigido in readme, f"el README dejó de declarar: {exigido!r}"
+
+
+def test_the_map_does_not_call_ready_what_nobody_evaluated():
+    """Verificada con cero criterios evaluados no es «lista y verificada».
+
+    El incidente 21 arregló que la vista **inventara** la cobertura, y para eso dejó de
+    contar `sin_registrar` como pendiente. Correcto, pero abrió la otra mitad: como
+    `sin_registrar` no es `parcial` ni `no_definido`, `coberturaPendiente` daba false y
+    una pieza sin un solo criterio evaluado entraba en el recuento de listas, en verde.
+
+    Encontrado el 2026-08-12 recorriendo el taller sobre un proyecto real: la pieza que
+    concentraba cinco de los siete hallazgos altos de la lectura estaba `completada` +
+    `verificada`, y sus tres criterios genéricos de cierre no habrían detectado ninguno.
+
+    Es la mitad blanda de exigir cobertura: `validate` no cambia y nada se invalida, pero
+    el diagrama deja de afirmar lo que no le consta.
+    """
+    vista=Path("diagramas/diagrama_taller.html").read_text(encoding="utf-8")
+    assert "function coberturaSinRegistrar" in vista
+    # `lista()` es la que decide el verde. Tiene que consultar las dos cosas.
+    lista=re.search(r"function lista\(st, id\) \{(.*?)\n  \}", vista, re.S)
+    assert lista, "no se encuentra lista(); si se renombró, esta prueba hay que actualizarla"
+    assert "coberturaSinRegistrar" in lista.group(1), (
+        "lista() vuelve a dar por buena una pieza sin criterios evaluados"
+    )
+    assert "Sin criterios evaluados" in vista, "hay que decir por qué no está lista, no solo negarlo"
+    # Y sigue sin contarse como deuda: no se debe nada, simplemente nadie lo ha mirado.
+    sin_reg=re.search(r"function coberturaSinRegistrar\(id, st\) \{(.*?)\n  \}", vista, re.S)
+    assert "every" in sin_reg.group(1), "solo aplica si NINGÚN criterio está evaluado"
+
+
+def test_the_example_that_travels_has_its_criteria_evaluated():
+    """El recorrido modelo tiene que cumplir la norma que enseña.
+
+    Al exigir criterios evaluados para contar como lista, el ejemplo —que no tenía
+    `cobertura.json`— pasaba de 16 listas a 0 de 18. Es lo que abre quien acaba de llegar
+    para ver cómo se ve un recorrido terminado, así que enseñarle un modelo que no cumple
+    la norma enseña que la norma es opcional.
+
+    Se evaluaron sus 99 criterios contra sus propias decisiones. La cobertura tiene que
+    existir, cuadrar con la anatomía y no contradecir el estado del ejemplo.
+    """
+    anatomy=load_anatomy()
+    estado=json.loads(Path("taller/ejemplo/estado.json").read_text(encoding="utf-8"))
+    cobertura=json.loads(Path("taller/ejemplo/cobertura.json").read_text(encoding="utf-8"))
+    assert set(cobertura["piezas"])=={pieza["id"] for pieza in anatomy["piezas"]}
+    for pieza in anatomy["piezas"]:
+        pid=pieza["id"]; audit=cobertura["piezas"][pid]; st=estado["piezas"][pid]
+        assert [c["criterio"] for c in audit["criterios"]]==pieza["que_montar"], (
+            f"{pid}: los criterios no son los de la anatomía, o cambiaron de orden"
+        )
+        assert audit["resultado"]==st["estado"], f"{pid}: la cobertura y el estado no dicen lo mismo"
+        estados={c["estado"] for c in audit["criterios"]}
+        # La misma regla de cierre que se aplica a cualquier recorrido, sin excepción por
+        # ser el ejemplo: es justo el sitio donde una excepción haría más daño.
+        if st["estado"]=="completada":
+            assert estados <= {"definido","no_aplica"}, f"{pid}: cerrada con criterios sin definir: {estados}"
+        elif st["estado"]=="descartada":
+            assert estados=={"no_aplica"}, f"{pid}: descartada pero sus criterios no dicen no_aplica"
+        elif st["estado"]=="deuda_aceptada":
+            assert estados & {"parcial","no_definido"}, f"{pid}: deuda aceptada sin nada pendiente"
+
+    # Y tiene que llegar al diagrama: escrita pero sin cargar no sirve de nada.
+    vista=Path("diagramas/diagrama_taller.html").read_text(encoding="utf-8")
+    assert "taller/ejemplo/cobertura.js" in vista
+    assert "window.EJEMPLO_COBERTURA" in vista
+    assert Path("taller/ejemplo/cobertura.js").exists(), "falta el envoltorio; ejecuta `harness-lab generate`"
+
+
+def test_the_title_says_which_project_you_are_looking_at():
+    """El título decía el nombre de la herramienta, no el del proyecto de quien mira.
+
+    `diagrama_base.html` ya lo hacía bien —`<h1></h1>` vacío que rellena su script—; el
+    taller se quedó con el literal. El nombre del proyecto estaba, pero abajo y dentro de
+    un botón.
+
+    Con dos condiciones que no son negociables: mirando el ejemplo el título dice el
+    ejemplo, porque seguir poniendo el tuyo mientras enseña otro sería mentir; y sin
+    nombre todavía vuelve a `Harness-Maker`, nunca a un título vacío ni a «Proyecto».
+    """
+    vista=Path("diagramas/diagrama_taller.html").read_text(encoding="utf-8")
+    assert '<h1 id="titulo-mapa">Harness-Maker</h1>' in vista, (
+        "el literal se conserva como suelo por si el script no llega a correr"
+    )
+    cuerpo=re.search(r"function tituloDelMapa\(est\) \{(.*?)\n  \}", vista, re.S)
+    assert cuerpo, "no existe tituloDelMapa"
+    # Del estado que se pasa, que en la llamada es el activo: así el ejemplo cambia el título.
+    assert "est.diagnostico.proyecto" in cuerpo.group(1)
+    assert '"Harness-Maker"' in cuerpo.group(1), "sin nombre hay que volver a la herramienta"
+    assert "NOMBRE_SIN_ELEGIR" in cuerpo.group(1), (
+        "«por decidir» es el hueco que escribe init, no un título; tiene que caer al fallback"
+    )
+    assert "tituloDelMapa(est)" in vista, "se calcula pero no se pinta"
+
+    # Una sola ruta de refresco: donde ya se actualizan los otros dos nombres.
+    refresco=re.search(r"function actualizarPestanas\(\) \{(.*?)\n  \}", vista, re.S)
+    assert refresco and "tituloDelMapa(est)" in refresco.group(1), (
+        "el título se refresca por su cuenta; dos rutas para el mismo dato acaban discrepando"
+    )
+    # El botón del interruptor conserva el nombre propio: es el que dice a dónde vuelves.
+    assert 'id="nombre-proyecto-propio"' in vista
+    assert "nombrePropio.textContent = nombreProyecto(ESTADO.propio)" in vista
+
+    # Y el base no se toca: la capa de recorrido no existe allí.
+    base=Path("diagramas/diagrama_base.html").read_text(encoding="utf-8")
+    assert "titulo-mapa" not in base and "tituloDelMapa" not in base
+
+
+def test_a_started_activity_does_not_look_like_an_untouched_one():
+    """`en_curso` compartía color y atenuado con `pendiente`, y eso hace mentir al mapa.
+
+    Caso real de agosto de 2026: con 12 piezas `completada` el mapa salía casi todo verde y
+    parecía terminado; al meter la lectura real del proyecto, 15 pasaron a `en_curso` y salió
+    casi todo apagado, así que parecía no empezado. La verdad estaba en medio —68 deudas y 12
+    verificaciones fallidas— y es justo lo que no sabía enseñar.
+
+    El mapa ya distinguía `Con deuda` y `Por verificar`. Faltaba el tercer estado intermedio,
+    que es el más común mientras se trabaja.
+    """
+    vista=Path("diagramas/diagrama_taller.html").read_text(encoding="utf-8")
+
+    # Token propio, no reutilizado: `--c1` es color de categoría y `--c3`/`--verify` ya
+    # significan otra cosa en este mismo mapa.
+    assert "--curso:" in vista and "--curso-bg:" in vista and "--curso-fg:" in vista
+    assert 'en_curso:       { c: "curso"' in vista, "en_curso volvió a compartir clase con pendiente"
+    assert '"pendiente",   t: "Sin empezar"' in vista, "sin empezar sí debe seguir apagada"
+    assert 'et.c === "curso" ? "curso"' in vista, "la etiqueta tiene color propio pero nadie lo resuelve"
+
+    # El nodo deja de caer en `apagada`, que es lo que lo igualaba con lo no empezado.
+    assert '.node.encurso.in' in vista
+    rama=re.search(r"else if \(!resuelta\(st\)\) \{(.*?)\n      \}", vista, re.S)
+    assert rama and 'e === "en_curso" ? "encurso"' in rama.group(1), (
+        "una pieza empezada vuelve a pintarse como una que nadie ha tocado"
+    )
+    assert '"siguiente" :' in rama.group(1), "el halo de siguiente tiene que seguir ganando"
+
+    # Y el recuento las separa, aunque el KPI del anillo siga enseñando un solo número.
+    assert "en_curso: 0, sin_empezar: 0" in vista, "metricasEstado no separa las dos mitades"
+    assert "m.abiertas++; if (e === \"en_curso\") m.en_curso++; else m.sin_empezar++;" in vista
+    assert "function desgloseAbiertas" in vista and "sin empezar" in vista
+
+
+def test_the_map_says_how_old_the_photo_is():
+    """Un recorrido de hace seis días se pinta igual que uno de esta mañana.
+
+    En un proyecto real, entre la última fecha del estado y el día que se abrió el mapa
+    hubo un cambio de modelo en producción y un go-live. El diagrama lo enseñaba idéntico,
+    en verde y sin una señal de que la foto tenía seis días.
+    """
+    vista=Path("diagramas/diagrama_taller.html").read_text(encoding="utf-8")
+    assert "function antiguedadDe" in vista and "function ultimaFechaDe" in vista
+    assert "Última actualización del recorrido" in vista
+    assert "DIAS_RANCIO" in vista, "el umbral se declara con nombre, no se esconde en un número suelto"
+    assert "h += antiguedadDe(est);" in vista, "la fecha se calcula pero no se pinta"
+    assert "/incoherencias" in re.search(r"function antiguedadDe\(est\) \{(.*?)\n  \}", vista, re.S).group(1), (
+        "avisar de que la foto está vieja sin decir qué hacer con eso no sirve de nada"
+    )
+
+
+def test_the_map_tells_decided_apart_from_built():
+    """Un nodo verde llamado «Herramientas e integraciones» se lee como «las tiene».
+
+    En un proyecto real la decisión fue la contraria —no darle herramientas al modelo— y
+    era una decisión buena, que la auditoría de seguridad llamó excelente contención. Pero
+    el dato para distinguirlo no existía: `descarte` era `null` porque no fue un descarte,
+    fue una pieza cerrada por ausencia deliberada.
+
+    El campo `cierre` es opcional, así que ningún recorrido existente se invalida por no
+    declararlo; simplemente no recibe la marca.
+    """
+    esquema=json.loads(Path("schema/estado_taller.schema.json").read_text(encoding="utf-8"))
+    pieza=esquema["$defs"]["estado_pieza"]
+    assert "cierre" in pieza["properties"], "sin campo no hay nada que pintar"
+    assert "cierre" not in pieza["required"], (
+        "obligarlo invalidaría todos los recorridos ya escritos y forzaría una migración"
+    )
+    assert set(pieza["properties"]["cierre"]["enum"])=={"implementado","decision_de_no_hacer","no_aplica",None}
+
+    vista=Path("diagramas/diagrama_taller.html").read_text(encoding="utf-8")
+    assert "function cerradaPorDecisionDeNoHacer" in vista
+    assert "Decidido: no se hace" in vista, "la etiqueta del nodo tiene que decirlo"
+    assert "Cerrada por decisión de no hacerlo" in vista, "y la ficha explicarlo antes del resumen"
+
+
+def test_a_pointer_does_not_promise_a_state_file_that_is_not_there(tmp_path, monkeypatch):
+    """Declarar una ruta no es lo mismo que tener el archivo.
+
+    Encontrado el 2026-08-12 simulando a un tester: entre estrenar el recorrido y terminar
+    `/diagnostico` no existe todavía `mi-harness/estado.json`. Quien arrancaba, lo dejaba a
+    medias y volvía al día siguiente leía en verde «Recorrido activo: ya declarado en
+    mi-harness/estado.json», sobre un archivo que no está, y dos líneas más abajo del mismo
+    informe «sin ruta calculada todavía». El informe se contradecía solo.
+    """
+    from harness_lab import arranque
+
+    monkeypatch.setattr(arranque,"ROOT",tmp_path)
+    puntero=tmp_path/".harness-maker.json"
+    monkeypatch.setattr(arranque,"POINTER_PATH",puntero)
+    puntero.write_text(json.dumps({"schema_version":"1.0.0","estado":"mi-harness/estado.json",
+                                   "diagnostico":"mi-harness/diagnostico.json"}),encoding="utf-8")
+
+    # Sin el estado escrito todavía: se dice que falta y por dónde se sigue.
+    paso=arranque._puntero(reparar=True)
+    assert paso.ok, "no tener estado todavía no es un fallo: es el punto de partida normal"
+    assert "todavía no existe" in paso.detalle and "/diagnostico" in paso.detalle, paso.detalle
+
+    # Con el estado escrito: el mensaje de siempre.
+    (tmp_path/"mi-harness").mkdir()
+    (tmp_path/"mi-harness"/"estado.json").write_text("{}",encoding="utf-8")
+    assert arranque._puntero(reparar=True).detalle=="ya declarado en mi-harness/estado.json"
+
+
+def test_the_diagnosis_starts_with_the_person_not_with_a_folder(tmp_path):
+    """Quien no tiene proyecto es el caso normal, no el raro.
+
+    Decidido por Javo el 2026-08-12, al preparar el traspaso a los primeros testers:
+    ninguno tendra un repositorio propio. Hasta entonces el camino por defecto —arrancar
+    dentro del clon sin `--repo`— escaneaba el propio taller, registraba «codigo propio»
+    como hecho, bautizaba el proyecto como «Harness-Maker» y abria preguntando por una
+    carpeta que nunca fue de esa persona.
+
+    «Persona» ya era la primera capa de Contexto en la doctrina; el diagnostico era lo
+    unico que empezaba por el sistema de archivos.
+    """
+    from harness_lab.diagnose import NOMBRE_SIN_DECIDIR, diagnostic_skeleton
+
+    # Sin proyecto: se mira el taller y el diagnostico no finge saber nada del trabajo de nadie.
+    propio=diagnostic_skeleton(ROOT.resolve())
+    assert validate_diagnostic(propio)==[]
+    assert propio["proyecto"]["nombre"]==NOMBRE_SIN_DECIDIR, (
+        "el nombre del proyecto no puede heredarse del nombre del clon: seria «Harness-Maker» "
+        "para todo el mundo"
+    )
+    assert propio["ejes"]["forma_codigo"]=="desconocido"
+    campos={h["campo"] for h in propio["observacion"]["hechos"]}
+    assert "ejes.forma_codigo" not in campos, (
+        "escanear el taller no es evidencia sobre el proyecto de nadie: no puede entrar como hecho"
+    )
+    assert "carpeta_observada" in campos, "hay que decir que lo mirado fue el taller, no callarlo"
+    assert campos=={"carpeta_observada"}, (
+        "bajo «hechos observados» solo puede haber cosas del trabajo de la persona. Los "
+        f"manifiestos y el recuento de archivos del propio taller sobran: {campos}"
+    )
+
+    # Con proyecto: lo observable se sigue observando y el nombre sale de su carpeta.
+    ajeno=tmp_path/"facturacion"; ajeno.mkdir(); (ajeno/"app.py").write_text("x=1",encoding="utf-8")
+    fuera=diagnostic_skeleton(ajeno)
+    assert validate_diagnostic(fuera)==[]
+    assert fuera["proyecto"]["nombre"]=="facturacion"
+    assert fuera["ejes"]["forma_codigo"]=="codigo_propio"
+
+    # En los dos casos se pregunta primero por la persona, y el puesto es un desconocido
+    # declarado: si no estuviera en la lista, nadie lo preguntaria. Es el incidente 17.
+    for diagnostico in (propio,fuera):
+        assert diagnostico["persona"]=={"puesto":None}
+        assert "puesto" in diagnostico["observacion"]["desconocidos"]
+        primera=diagnostico["observacion"]["preguntas_pendientes"][0]
+        assert "te dedicas" in primera, f"la primera pregunta no es por la persona: {primera!r}"
+
+    # Y el prompt tiene que pedir las dos cosas que la persona decide: su puesto y el nombre.
+    prompt=Path("taller/prompts/00_diagnostico.md").read_text(encoding="utf-8")
+    for exigido in ("Empieza por la persona","persona.puesto","sin_codigo_propio",
+                    "El nombre del proyecto lo elige ella",NOMBRE_SIN_DECIDIR):
+        assert exigido in prompt, f"el diagnostico dejo de exigir: {exigido!r}"
+
+
+@solo_con_fase3
+def test_the_route_does_not_cite_files_that_are_no_longer_there():
+    """Un archivo retirado deja de estar en `artefactos` el mismo día, no siete después.
+
+    Incidente 23: el reparto del 2026-08-04 retiró 62 archivos y el recorrido siguió
+    citando 20 rutas suyas 44 veces, repartidas por 13 de las 18 actividades. `eval`
+    afirmaba tener cinco fichas de un banco borrado. Siete días con `validate --all`
+    correcto, porque el validador comprueba la forma del estado y no que lo que nombra
+    exista. Lo destapó una pregunta de Javo, no una comprobación.
+
+    `artefactos` afirma tener; una ruta muerta ahí es una mentira. `evidencias` puede
+    nombrar algo que existió, porque el recorrido es también un registro histórico, pero
+    entonces tiene que decirlo: se exige la marca `(retirad…)` en la misma referencia.
+    """
+    state=json.loads(Path("proyectos/harness-lab/estado.json").read_text(encoding="utf-8"))
+    coverage=json.loads(Path("proyectos/harness-lab/cobertura.json").read_text(encoding="utf-8"))
+
+    def parece_ruta(texto):
+        return ("/" in texto and " " not in texto and "::" not in texto
+                and "*" not in texto and not texto.startswith("http"))
+
+    def falta(texto):
+        return parece_ruta(texto) and not Path(texto.rstrip("/")).exists()
+
+    for pid,piece in state["piezas"].items():
+        for artefacto in piece["artefactos"]:
+            assert not falta(artefacto), (
+                f"{pid}: artefactos dice tener {artefacto!r} y no está. Si se retiró, sale de "
+                "la lista; el hecho de que existió se conserva en evidencias con su fecha"
+            )
+        for evidencia in piece["evidencias"]:
+            referencia=evidencia["referencia"]
+            if "(retirad" in referencia: continue
+            muertas=[t.strip() for t in re.split(r"\s+y\s+|,\s*",referencia) if falta(t.strip())]
+            assert not muertas, (
+                f"{pid}: la evidencia {muertas[0]!r} no existe y no dice que se retirara. "
+                "Anótalo con su fecha y su commit en vez de dejar la referencia colgando"
+            )
+    for pid,audit in coverage["piezas"].items():
+        for criterio in audit["criterios"]:
+            for evidencia in criterio["evidencias"]:
+                assert not falta(evidencia), (
+                    f"{pid}: el criterio {criterio['criterio']!r} se apoya en {evidencia!r}, "
+                    "que ya no existe"
+                )
+
+
+@solo_con_fase3
+def test_the_markdown_can_still_recover_the_piece_it_promises_to_recover():
+    """El último bloque `estado-pieza` es la copia de seguridad, y estaba caducada.
+
+    Cada `piezas/*.md` dice en su cabecera que su bloque final permite recuperar la pieza
+    si se pierde el JSON, y `recover_from_markdown` lee justamente ese último bloque. El
+    2026-08-11 seis de los dieciocho estaban atrás: la recuperación habría devuelto
+    decisiones viejas y habría perdido dos, `guardrails-sin-red` y `tools-sin-red`, que ya
+    solo vivían en el estado. Una copia de seguridad que nadie compara no es una copia de
+    seguridad; es la creencia de tener una.
+
+    Los bloques anteriores no se tocan: son registro solo-añadir y cada uno fue cierto en
+    su ronda. Lo que se exige es que el **último** coincida.
+    """
+    state=json.loads(Path("proyectos/harness-lab/estado.json").read_text(encoding="utf-8"))
+    for pid,piece in state["piezas"].items():
+        fuente=piece.get("markdown_fuente")
+        if not fuente: continue
+        bloques=re.findall(r"```estado-pieza\n(.*?)\n```",
+                           Path(fuente).read_text(encoding="utf-8"),re.S)
+        assert bloques, f"{pid}: {fuente} no tiene ningún bloque estado-pieza que recuperar"
+        assert json.loads(bloques[-1])==piece, (
+            f"{pid}: el último bloque de {fuente} no coincide con el estado. Añade una ronda "
+            "nueva con el bloque vigente; no reescribas las anteriores, que son solo-añadir"
+        )
 
 
 @solo_con_fase3
@@ -712,9 +1113,17 @@ def test_the_retired_case_bank_left_no_dangling_promise():
             f"{retirado} se retiró el 2026-08-04: no vuelve sin una decisión escrita"
         )
     descartes=Path("proyectos/harness-lab/DESCARTES.md").read_text(encoding="utf-8")
-    assert "taller/casos" not in descartes, (
-        "las verificaciones pendientes no pueden seguir apuntando al banco retirado"
-    )
+    # Prohibir la ruta en todo el archivo era demasiado: impedía escribir la retirada en el
+    # único índice que existe para escribirla, y el 2026-08-11 el descarte del banco seguía
+    # sin anotar por eso. Lo que no puede aparecer es una promesa; nombrarlo para decir que
+    # se fue, sí. Se exige en la misma línea para que la coletilla no viva tres párrafos más
+    # abajo, donde nadie la leería junto a la mención.
+    for numero,linea in enumerate(descartes.splitlines(),1):
+        if "taller/casos" in linea:
+            assert "retir" in linea, (
+                f"DESCARTES.md:{numero} nombra el banco sin decir que se retiró: "
+                "las verificaciones pendientes no pueden apuntar a un instrumento que ya no existe"
+            )
     assert "usuarios reales" in descartes, (
         "hay que decir con qué se verifica ahora, no solo quitar el instrumento anterior"
     )
@@ -1047,11 +1456,57 @@ def test_restarting_says_the_route_is_new_and_names_the_next_step(tmp_path, monk
     comun=["init","--repo",str(proyecto),"--workspace",str(espacio)]
     cli.main(comun)
     assert "/diagnostico" in capsys.readouterr().out
-    cli.main(comun+["--reiniciar"])
+    # `--sin-preguntar` desde el 2026-08-12: reiniciar aparta trabajo y ahora se confirma.
+    cli.main(comun+["--reiniciar","--sin-preguntar"])
     salida=capsys.readouterr().out
     assert "Recorrido existente reactivado" not in salida
     assert "/diagnostico" in salida
     assert len(list(tmp_path.glob("mi-harness-anterior-*")))==1
+
+
+def test_restarting_says_what_it_is_about_to_set_aside_and_can_be_undone(tmp_path, monkeypatch, capsys):
+    """Apartar trabajo a ciegas, y sin vuelta atrás, era la única operación que podía perderlo.
+
+    El 7-ago `init --reiniciar` apartó un recorrido con 12 piezas cerradas y 38 deudas sin
+    decir qué apartaba. El diagrama salió vacío cinco días después y nadie relacionó una
+    cosa con la otra. Ningún subcomando lo devolvía: restaurarlo fue mover carpetas a mano.
+
+    Dos garantías: se enseña lo que hay dentro antes de moverlo, y existe la vuelta.
+    """
+    from harness_lab import cli, workspace
+
+    proyecto=tmp_path/"proyecto"; proyecto.mkdir()
+    espacio=tmp_path/"mi-harness"
+    monkeypatch.setattr(cli,"ROOT",tmp_path)
+    monkeypatch.setattr(cli,"POINTER_PATH",tmp_path/".harness-maker.json")
+    comun=["init","--repo",str(proyecto),"--workspace",str(espacio)]
+    cli.main(comun); capsys.readouterr()
+
+    # Un recorrido con trabajo dentro se describe por lo que tiene, no por su nombre.
+    (espacio/"estado.json").write_text(json.dumps({
+        "piezas":{"a":{"estado":"completada","decisiones":[{"x":1}],"deuda":{"d":1}},
+                  "b":{"estado":"en_curso","decisiones":[]}},
+        "deuda":[],"riesgos_aceptados":[{"r":1}]}),encoding="utf-8")
+    resumen=workspace.describe_workspace(espacio)
+    assert "1 pieza(s) cerrada(s)" in resumen and "1 deuda(s)" in resumen, resumen
+
+    # Sin terminal con quien confirmar, no se aparta nada: se explica la salida.
+    monkeypatch.setattr(sys.stdin,"isatty",lambda: False)
+    with pytest.raises(SystemExit):
+        cli.main(comun+["--reiniciar"])
+    capturado=capsys.readouterr()
+    assert "--sin-preguntar" in capturado.err
+    assert "Vas a apartar" in capturado.out
+    assert (espacio/"estado.json").exists(), "se paró antes de tocar nada, que es el punto"
+
+    # Y lo apartado vuelve, apartando a su vez lo que hubiera activo.
+    cli.main(comun+["--reiniciar","--sin-preguntar"]); capsys.readouterr()
+    apartado=next(iter(tmp_path.glob("mi-harness-anterior-*")))
+    assert not (espacio/"estado.json").exists()
+    cli.main(["init","--workspace",str(espacio),"--restaurar",str(apartado)])
+    assert (espacio/"estado.json").exists(), "restaurar tiene que devolver el trabajo, no solo la carpeta"
+    assert json.loads((tmp_path/".harness-maker.json").read_text(encoding="utf-8"))["estado"]=="mi-harness/estado.json"
+    assert "1 pieza(s) cerrada(s)" in capsys.readouterr().out
 
 
 def test_start_does_not_send_the_person_to_a_file_that_did_not_travel():
@@ -1158,20 +1613,179 @@ def test_a_closed_activity_leads_with_what_was_decided():
 
     Con «5/5 definidos» y cinco líneas «Definido» por delante, la ficha afirmaba que todo estaba
     resuelto y no decía nada de qué se resolvió, que es lo único que sirve dentro de tres meses.
-    La lista punto por punto se queda donde sí informa: mientras falta algo por definir.
+    Lo que se viene a leer va arriba y abierto: eso lo hace ahora la tarjeta «En una mirada». El
+    recuento pasa detrás de un clic —pero no desaparece, que fue el pasarse de frenada de antes:
+    esconderlo entero dejaba una actividad cerrada sin forma de ver qué se definió.
     """
     workshop=Path("diagramas/diagrama_taller.html").read_text(encoding="utf-8")
-    assert "if (!resuelta(st)) h += matrizCriterios(p, st);" in workshop
-    # Y lo que se viene a leer no puede estar detrás de un clic.
-    assert 'campoAbierto("Qué se ha definido"' in workshop
-    assert "function campoAbierto" in workshop and "(abierto ? ' open' : '')" in workshop
+    # Nada del cuerpo de la ficha depende ya de si la actividad está resuelta: un solo esqueleto.
+    assert "if (!resuelta(st)) h += matrizCriterios(p, st);" not in workshop
+    assert "function matrizCriterios" not in workshop
+    assert "h += seccionDefinicion(p, st);" in workshop
+    # Lo que se viene a leer sigue sin estar detrás de un clic: la tarjeta va arriba y sin plegar.
+    assert "return nota + tarjetaMirada(miradaCuerpo(texto), \"\");" in workshop
+    assert "function campoAbierto" not in workshop and "(abierto ? ' open' : '')" in workshop
     # La comprobación se conserva —separa «decidido» de «comprobado»— pero plegada y en una palabra.
-    assert 'fold(titulo, nombre, parrafo(st.verificacion.detalle), "field")' in workshop
+    assert 'fold(TITULO_COMPROBACION, nombre, parrafo(st.verificacion.detalle), "field")' in workshop
     # «Relación con el resto» repetía lo que el mapa ya dibuja. Los impactos registrados no se
     # pierden: siguen saliendo en las decisiones de fondo del centro.
     assert "function relacionesDe" not in workshop
     assert 'fold("Relación con el resto"' not in workshop
     assert '"Decisiones de fondo"' in workshop
+
+
+def _cuerpo_funcion(texto: str, nombre: str) -> str:
+    """El cuerpo de una función del diagrama, hasta la siguiente declarada a su mismo nivel."""
+    resto=texto[texto.index(f"function {nombre}(")::]
+    return resto[:resto.index("\n  function ",1)]
+
+
+def test_the_definition_is_one_section_present_in_every_activity():
+    """Una sola «Definición», y también en las cerradas: era dos secciones y las dos se escondían.
+
+    «Definición punto por punto» traía los criterios de `cobertura.json` y «Definición actual» las
+    decisiones de `estado.json`. Quien lee no tiene por qué saber que eso vive en dos ficheros:
+    viene a ver la definición. Y las dos desaparecían al resolverse la actividad, así que una ficha
+    cerrada —justo la que se consulta meses después— se quedaba sin forma de ver qué se definió.
+    Se esconde el detalle, no el hecho: plegada, pero con el color y el recuento a la vista.
+    """
+    workshop=Path("diagramas/diagrama_taller.html").read_text(encoding="utf-8")
+    cuerpo=_cuerpo_funcion(workshop,"cuerpoProyPieza")
+    assert "resuelta(st)" not in cuerpo, "la definición vuelve a depender de si está cerrada"
+    assert "h += seccionDefinicion(p, st);" in cuerpo
+    # Plegada: `fold` solo abre con su quinto parámetro, y aquí no se le pasa.
+    assert 'fold("Definición", t.nota, cuerpo, "field definicion " + t.tono)' in workshop
+    # El color sale de la cobertura, no del estado de la actividad: una pieza puede estar cerrada y
+    # verificada con los criterios sin evaluar, y eso es lo que hay que ver sin abrir nada.
+    for tono in ("t-done","t-c3","t-verify","t-curso"):
+        assert f'details.fold.definicion.{tono} > summary' in workshop, f"falta el color {tono}"
+        assert f'tono: "{tono}"' in workshop, f"nadie asigna nunca {tono}"
+    # Y dentro va todo: los criterios y las decisiones.
+    assert 'bloqueDef("Lo decidido", definiciones(decisiones))' in workshop
+    assert 'bloqueDef("Punto por punto"' in workshop
+
+
+def test_the_verification_section_is_titled_with_the_question_it_answers():
+    """«Comprobación y cierre» no decía lo que es, y es de las cosas que más se miran.
+
+    La sección responde a una sola pregunta —¿esto solo está decidido, o además está comprobado?—
+    y el título no la transmitía. El estado sigue en el encabezado, sin abrir nada.
+    """
+    workshop=Path("diagramas/diagrama_taller.html").read_text(encoding="utf-8")
+    assert 'var TITULO_COMPROBACION = "¿Está comprobado?";' in workshop
+    assert '"Comprobación y cierre"' not in workshop and 'detalleVerificacion(st, "' not in workshop
+    for estado in ("Verificada","Fallida","Pendiente"):
+        assert f'"{estado}"' in workshop
+
+
+def test_a_replanned_route_stops_justifying_the_plan():
+    """«Paso 3 de 18» vale mientras se construye; en una ruta rehecha es ruido con aire de dato.
+
+    La justificación del planificador responde a «por qué me toca esta actividad y no otra», que es
+    la pregunta de quien empieza. Cuando la ruta se ha replanificado y media docena de actividades
+    están abiertas por la realidad y no por el plan, esa posición ya no describe nada.
+    """
+    workshop=Path("diagramas/diagrama_taller.html").read_text(encoding="utf-8")
+    assert 'r.motivo === "replanificacion" || (r.replanificaciones || []).length > 0' in workshop
+    assert "if (!paso || rutaReplanificada(est)) return \"\";" in workshop
+    # Y los dos campos del estado que decide esto existen de verdad en el esquema.
+    esquema=json.loads(Path("schema/estado_taller.schema.json").read_text(encoding="utf-8"))
+    ruta=esquema["properties"]["ruta"]
+    assert "replanificacion" in ruta["properties"]["motivo"]["enum"]
+    assert "replanificaciones" in ruta["properties"]
+
+
+def test_the_glance_card_accepts_the_shape_that_can_be_read_at_a_glance():
+    """La tarjeta metía el resumen en un solo `<p>`, así que daba igual cómo se escribiera.
+
+    Salía siempre como bloque corrido, y eso empuja a redactar el párrafo técnico denso que cuesta
+    leer de un vistazo —justo para lo que existe la tarjeta—. Lo que sí se lee es una frase de
+    entrada, las viñetas de qué contiene y una línea final con el porqué. Sin inventar un marcado:
+    saltos de línea y líneas que empiezan por guion. Y un resumen de una sola línea, que es como
+    están escritos todos los anteriores a este cambio, tiene que seguir saliendo igual que antes.
+    """
+    workshop=Path("diagramas/diagrama_taller.html").read_text(encoding="utf-8")
+    cuerpo=_cuerpo_funcion(workshop,"miradaCuerpo")
+    assert 'if (lineas.length < 2) return \'<p>\'' in cuerpo, "un resumen de una línea ya no es un párrafo"
+    assert 'ul class="mirada-pts"' in cuerpo
+    assert "var VINETA = /^[-–—*•]\\s+/;" in workshop
+    assert ".activity-summary ul.mirada-pts li::before" in workshop
+    # Donde solo cabe una línea no se aplasta la lista entera: se usa la frase de entrada.
+    assert "function entradaResumen" in workshop
+    assert "entradaResumen(st.resumen, 145)" in workshop and "entradaResumen(st.resumen, 82)" in workshop
+
+
+def test_both_tabs_of_an_activity_share_one_skeleton():
+    """Saltar de «Proyecto» a «Información» obligaba a reorientarse, y son las dos que uno compara.
+
+    Una monta la doctrina y la otra el proyecto concreto, pero las secciones tienen que llamarse
+    igual y salir en el mismo orden. En particular el ejemplo del ayudante de correo cae donde el
+    proyecto pone su definición, porque responde a lo mismo: cómo se ve esto ya decidido.
+    """
+    workshop=Path("diagramas/diagrama_taller.html").read_text(encoding="utf-8")
+    info=_cuerpo_funcion(workshop,"cuerpoInfoPieza")
+    proyecto=_cuerpo_funcion(workshop,"cuerpoProyPieza")
+    # Las dos abren por la tarjeta y siguen por la definición.
+    assert info.index("tarjetaMirada(")<info.index('fold("Definición"')
+    assert proyecto.index("resumenActividad(st)")<proyecto.index("seccionDefinicion(p, st)")
+    # El ejemplo va dentro de la definición, no suelto por encima como antes.
+    assert info.index("ejBlock(p.ej)")>info.index("tarjetaMirada(")
+    assert "var cuerpo = ejBlock(p.ej);" in info
+    assert '<p class="desc">\' + p.desc' not in info, "la doctrina vuelve a abrir con otra estructura"
+    # Y «qué montar» y los criterios de cobertura son la misma lista, pintada igual en las dos.
+    assert "listaCriterios(criteriosCanonicos(p))" in info
+    assert "return criteriosCanonicos(p);" in workshop
+    assert "ul.tpl{" not in workshop and 'bullets(p.tpl, "tpl"' not in workshop
+    # Y los rótulos de sección se escriben igual en las dos: todos con el mismo `field`.
+    assert 'sources(p.ext, p.pro, "field")' in info
+    assert 'fold("Riesgos", st.riesgos.length, bullets(st.riesgos.map(esc)), "field")' in proyecto
+    # El interruptor «Ver el ejemplo» no cambia de esqueleto: es otro estado, el mismo render.
+    assert 'data-fuente="ejemplo"' in workshop
+    assert workshop.count("function cuerpoProyPieza")==1
+
+
+def test_what_the_activities_write_is_read_as_text_not_as_markup():
+    """Una decisión que nombraba `piezas/<pieza>.md` se comía el resto de la línea.
+
+    El navegador leía `<pieza>` como una etiqueta y la cerraba donde le vino bien. Lo que escriben
+    las actividades es texto plano y puede traer `<`, `>` o `&`: en este mismo recorrido hay siete
+    casos, entre ellos un `<h1>` y un `>=3.14`. La anatomía es lo contrario —lleva marcado a
+    propósito, escrito y validado aquí—, así que la regla no puede ser «escapar todo» ni «no
+    escapar nada»: se escapa lo que viene del estado y de la cobertura, y la doctrina se pinta tal
+    cual.
+    """
+    workshop=Path("diagramas/diagrama_taller.html").read_text(encoding="utf-8")
+    assert "function esc(txt)" in workshop
+    assert '.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")' in workshop
+    # Las puertas por donde entra el texto del estado, una por una.
+    assert 'function parrafo(txt) { return \'<p class="vacio" style="margin:0">\' + esc(txt) + \'</p>\'; }' in workshop
+    assert 'var texto = esc((d.texto || "").trim())' in workshop
+    assert "var lineas = esc(texto).split" in workshop
+    assert "esc(c.criterio)" in workshop and "esc(x)" in workshop
+    assert "bullets(st.riesgos.map(esc))" in workshop
+    for campo in ("est.deuda.map","est.decisiones_globales.map","est.riesgos_aceptados.map"):
+        bloque=workshop[workshop.index(campo):workshop.index(campo)+140]
+        assert "esc(" in bloque, f"{campo} entra sin escapar"
+    # Y la doctrina no se escapa: `descripcion_html`, `industria` y `casos` llevan etiquetas suyas.
+    assert "'<p class=\"desc\">' + CORE.desc" in workshop
+    assert "tarjetaMirada('<p>' + p.desc + '</p>', \"doctrina\")" in workshop
+
+
+def test_every_portable_prompt_says_how_to_write_the_glance_summary():
+    """El esquema describe `resumen` como una cadena y ningún prompt decía cómo redactarlo.
+
+    Sin esa instrucción, la tarjeta de cada proyecto se lee de una forma distinta según quién
+    ejecutó la actividad ese día, y la forma más frecuente era el párrafo denso. La instrucción
+    viaja en la plantilla porque no depende de la actividad: es la misma en las dieciocho.
+    """
+    anatomy=load_anatomy()
+    for i,piece in enumerate(anatomy["piezas"],1):
+        prompt=Path(f"taller/prompts/{i:02d}_{piece['id']}.md").read_text(encoding="utf-8")
+        plano=re.sub(r"\s+"," ",prompt)
+        assert "El resumen que se lee en el mapa" in prompt, f"{piece['id']}: no dice cómo escribirlo"
+        assert "es la tarjeta **En una mirada** de esta" in plano, f"{piece['id']}: no dice dónde sale"
+        assert "empezando por `- `" in plano, f"{piece['id']}: no dice cómo se marcan las partes"
+        assert "no inventes viñetas para rellenar" in plano, f"{piece['id']}: invita a rellenar"
 
 
 def test_the_rule_is_read_first_however_it_was_written():
@@ -1217,10 +1831,12 @@ def test_coverage_that_nobody_recorded_is_not_invented():
     workshop=Path("diagramas/diagrama_taller.html").read_text(encoding="utf-8")
     assert 'estado: "sin_registrar"' in workshop
     assert '"definido" : estado === "descartada"' not in workshop, "vuelve a deducirse del estado"
-    assert 'sinRegistrar ? "sin registrar"' in workshop
+    assert '{ tono: "t-verify", nota: "sin registrar" }' in workshop
     assert "no lo que está hecho" in workshop
-    # Y el recuento no puede contar como pendiente lo que nadie ha mirado.
-    assert "var pendientes = sinRegistrar ? 0 :" in workshop
+    # Y el recuento no puede contar como pendiente lo que nadie ha mirado: «sin registrar» sale
+    # antes de restar, así que no hay ninguna rama que convierta lo no mirado en un número.
+    assert 'if (criterios.every(function (c) { return c.estado === "sin_registrar"; }))' in workshop
+    assert "var pendientes = criterios.length - listos;" in workshop
 
 
 def test_a_venv_that_starts_but_has_no_pip_is_not_a_usable_venv(tmp_path):

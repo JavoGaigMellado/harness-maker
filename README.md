@@ -1,44 +1,64 @@
 # Harness-Maker
 
-Acabas de recibir un taller guiado para construir **el harness de tu proyecto**: las decisiones,
-políticas y evidencia que hacen que trabajar con IA sobre él sea repetible en vez de improvisado.
+Acabas de recibir un taller guiado para construir **tu sistema de trabajo con IA**: las decisiones,
+políticas y evidencia que hacen que trabajar con IA sea repetible en vez de improvisado.
+
+**No hace falta que tengas un proyecto de código.** Si te dedicas a analizar datos, escribir SQL,
+mantener contenidos o atender peticiones, esto se monta sobre ese trabajo. Y si tienes un
+repositorio propio, también.
 
 No implementa nada por ti y no se conecta a nada. Te hace las preguntas en el orden correcto,
-calcula qué te toca decidir según cómo sea tu proyecto, y deja escrito lo que decidas para que
-dentro de tres meses siga sirviendo. Recorre 18 áreas; ninguna se salta, pero muchas se cierran con
-un «no aplica» razonado, que también es una decisión.
+calcula qué te toca decidir según cómo trabajes, y deja escrito lo que decidas para que dentro de
+tres meses siga sirviendo. Recorre 18 áreas; ninguna se salta, pero muchas se cierran con un «no
+aplica» razonado, que también es una decisión.
 
-Requiere Python 3.12 o posterior y, para la experiencia completa, **Claude Code**.
+## Antes de empezar necesitas tres cosas
+
+| | Para qué | Cómo comprobarlo |
+|---|---|---|
+| **Git** | Traerte esta copia | `git --version` |
+| **Python 3.12 o posterior** | Es lo que ejecuta el taller | `python --version` |
+| **Claude Code** | Recorrer las 18 áreas | Ábrelo y que responda |
+
+Las tres son obligatorias. **Claude Code no es opcional**: el recorrido son comandos suyos y sin él
+solo llegas a ver el mapa. VS Code por sí solo no sirve; lo que hace falta es Claude Code, que
+también funciona como extensión dentro de VS Code.
+
+Python 3.12 se eligió como suelo porque suele estar ya instalada sin pedir permisos, y está
+comprobada ejecutando toda la batería en 3.12.4. Bajarla más exige repetir esa comprobación y
+registrar el resultado, no basta con suponerlo.
 
 ## Empieza aquí
 
-Un comando, desde el clon recién hecho y en cualquier sistema operativo:
+**Paso 1.** Trae la copia y monta el entorno. Un comando, en cualquier sistema operativo:
 
 ```bash
 python arrancar.py
 ```
 
-En Claude Code, el equivalente es **`/start`**.
-
 La primera vez crea el entorno, instala el paquete, **estrena tu recorrido** en `mi-harness/`, activa
-el guardián de generados, valida, pasa las pruebas y te abre el mapa en el navegador. Termina
-diciéndote cuál es tu siguiente paso, que será `/diagnostico`.
+el guardián de generados, valida, pasa las pruebas y te abre el mapa en el navegador.
 
 Es idempotente: sirve igual la primera vez que la número treinta y cuatro. Si el entorno ya está
 listo, no vuelve a instalar; comprueba, te dice en qué estado está tu copia y abre la vista.
 
-Si tu proyecto vive en otra carpeta, dilo y el diagnóstico mirará ahí:
+**Paso 2.** Abre esta carpeta **en Claude Code**. Ahí es donde se recorre el taller.
+
+**Paso 3.** Escribe **`/diagnostico`**.
+
+Esa es la primera actividad y empieza preguntándote quién eres y a qué te dedicas. Con eso calcula
+tu recorrido: qué áreas te tocan, en qué orden y por qué. No tienes que inventarte un repositorio ni
+responder que no a nada.
+
+A partir de ahí, cada actividad te dice cuál es la siguiente. Si te pierdes, `/start` dentro de
+Claude Code te vuelve a situar.
+
+Si ya tienes un proyecto propio y quieres montarlo sobre él, dilo al arrancar y el diagnóstico
+mirará ahí:
 
 ```bash
 python arrancar.py --repo <ruta-de-tu-proyecto>
 ```
-
-Y si no tienes proyecto de código propio, arranca sin más y responde «no» cuando el diagnóstico te
-pregunte si la carpeta que ha mirado es la tuya.
-
-Requiere Python 3.12 o posterior. Se eligió ese suelo porque es la versión que suele estar ya
-instalada sin pedir permisos; está comprobada ejecutando toda la batería en 3.12.4. Bajarla más
-exige repetir esa comprobación y registrar el resultado, no basta con suponerlo.
 
 Los pasos sueltos, si prefieres hacerlo a mano. En Linux o macOS:
 

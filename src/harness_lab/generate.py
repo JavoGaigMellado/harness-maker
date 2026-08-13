@@ -10,6 +10,8 @@ from .paths import (
     ANATOMY_JS_PATH,
     ANATOMY_PATH,
     CLAUDE_SKILLS_DIR,
+    EXAMPLE_COVERAGE_JS_PATH,
+    EXAMPLE_COVERAGE_PATH,
     EXAMPLE_STATE_JS_PATH,
     EXAMPLE_STATE_PATH,
     HARNESS_LAB_COVERAGE_JS_PATH,
@@ -85,6 +87,35 @@ justo lo que había que proteger, y un `.gitignore` no saca de la historia lo qu
 
 Si encuentras un secreto que ya está en la historia, dilo con esas palabras: un `.gitignore` no lo
 saca. Limpiarlo es decisión de la persona y no se hace de paso.
+"""
+
+# El esquema describe `resumen` como una cadena y nada más, así que cada ejecución lo escribía a su
+# manera: el mapa acababa enseñando dieciocho tarjetas con dieciocho formas distintas, y la más
+# frecuente era el párrafo técnico denso, que es justo lo que cuesta leer de un vistazo. La
+# instrucción viaja en la plantilla porque la forma no depende de la actividad ni de quién la
+# ejecutó ese día.
+RESUMEN_DE_UN_VISTAZO = """## El resumen que se lee en el mapa
+
+`resumen` es lo único que el mapa enseña sin abrir nada: es la tarjeta **En una mirada** de esta
+actividad. Escríbelo para que se entienda en cinco segundos, con las palabras del proyecto y no con
+las del esquema, y con esta forma:
+
+1. Una frase de entrada que diga qué es esto aquí, terminada en dos puntos.
+2. Una línea por cada parte, empezando por `- `. Nombra la parte y sigue con lo concreto.
+3. Una última línea con el porqué: qué se gana con haberlo decidido así.
+
+El mapa respeta los saltos de línea y las líneas que empiezan por guion; un párrafo corrido sale
+como un bloque denso. La forma es esta:
+
+```
+Lo que el asistente tiene delante en cada turno:
+- Lo que no cambia: quién es, cómo habla, lo que sabe, sus reglas
+- Lo que cambia: en qué punto va la tarea de hoy
+Ese orden no es estético: es lo que hace que la parte cara del prompt se cobre una vez.
+```
+
+El contenido sale de este proyecto, no de ese molde. Si la actividad se resolvió con una sola
+decisión y no hay partes que enumerar, una frase basta: no inventes viñetas para rellenar.
 """
 
 
@@ -282,6 +313,7 @@ No marques `completada` por haber contestado: debe quedar una decisión, políti
 evidencia. `descartada` requiere motivo. `deuda_aceptada` requiere responsable y condición de
 revisión.
 
+{RESUMEN_DE_UN_VISTAZO}
 ## Persistencia y replanificación
 
 Lee y fusiona el estado entero sin destruir claves ajenas. Escribe Markdown acumulativo en
@@ -302,9 +334,34 @@ def render_diagnostic_prompt(data: dict) -> str:
     areas = "\n".join(f"- **{a['id']}**: {a['preguntas'][0]}" for a in data["areas_globales"])
     return HEADER + f"""# Paso 0 · Diagnóstico multidimensional
 
-Eres un asistente de desarrollo portable. Diagnostica ESTE repositorio antes de conversar: revisa
-`git status`, README, manifiestos, estructura, llamadas a modelos, herramientas, datos, tests,
-despliegue e instrucciones existentes. Registra rutas y comandos como evidencia.
+Eres un asistente de desarrollo portable. **Empieza por la persona, no por el repositorio.**
+
+## Primero: quién es y a qué se dedica
+
+La primera pregunta es quién es y en qué consiste su día a día, con sus palabras. No la des por
+respondida mirando archivos: mucha gente que necesita un harness no tiene proyecto de código, y
+para ella la carpeta que hayas escaneado no es suya. Guarda su puesto en `persona.puesto` tal como
+lo diga.
+
+Con el puesto en la mano, **dile para qué le sirve esto**, en una frase y en su lenguaje: el taller
+le va a montar un sistema de trabajo con IA para ese día a día concreto. Según el puesto, se
+parecerá más a depurar y revisar código, a analizar datos y escribir SQL, a mantener contenidos o
+a atender peticiones. No recites las cuatro: nombra la suya.
+
+Solo entonces pregunta si tiene una carpeta de proyecto propia. Si la tiene, diagnostica ESE
+repositorio: revisa `git status`, README, manifiestos, estructura, llamadas a modelos, herramientas,
+datos, tests, despliegue e instrucciones existentes, y registra rutas y comandos como evidencia. Si
+no la tiene, **no inventes una**: `forma_codigo` es `sin_codigo_propio` y el trabajo diario es el
+objeto del harness.
+
+## El nombre del proyecto lo elige ella
+
+Si `proyecto.nombre` es `por decidir`, no lo dejes así y no lo rellenes tú solo. **Propón tres o
+cuatro nombres concretos** derivados de su puesto y de lo que acaba de contarte, cortos y en su
+idioma, y que elija uno o escriba el suyo. Un nombre heredado del nombre de una carpeta no es una
+decisión de nadie.
+
+## Después, el resto del diagnóstico
 
 Clasifica por separado hechos observados, inferencias y desconocidos. Pregunta únicamente lo que no
 pueda descubrirse y reúne todos esos datos en la misma ejecución, usando tantos bloques como sean
@@ -665,6 +722,12 @@ cobertura, documentos, derivados y comportamiento real.
 - actividades `pendiente`, `en_curso` o `deuda_aceptada`;
 - actividades `completada` cuya verificación no sea `verificada`;
 - criterios `parcial` o `no_definido` en `cobertura.json`;
+- **decisiones caducadas**: las que declaren `condicion_revision` y esa condición ya se haya
+  cumplido, y las que la lleven escrita dentro de `texto` —«hasta que», «hasta después de», «por
+  ahora», «de momento», «mientras no»— sin declararla en su campo. Una decisión archivada como
+  permanente cuando su premisa ya cambió produce un verde que no significa lo que parece. Al
+  encontrarla: proponer declarar `condicion_revision`, comprobar con la persona si se cumplió y
+  marcar `condicion_cumplida`. Una decisión con la condición cumplida **reabre su actividad**;
 - una actividad, deuda o riesgo cuyo estado contradiga su cobertura, su Markdown o la evidencia;
 - deuda global que no coincida con la deuda de su actividad;
 - wrappers, auditoría legible o derivados desfasados;
@@ -729,6 +792,9 @@ disable-model-invocation: true
    `Listas y verificadas | Abiertas | Con deuda | Por verificar | Descartadas | Incoherencias`.
    Separar por causa: `Con deuda` requiere normas, criterios o decisiones; `Por verificar` requiere
    pruebas o evidencia sobre una definición ya completa.
+   Revisar además **las decisiones caducadas**: una decisión no puede caducar sola, así que hay que
+   buscarlas. Las que declaren `condicion_revision` cumplida y las que lleven la caducidad escrita
+   dentro del texto sin declararla. Preguntar por cada una si su premisa sigue en pie.
 4. Añadir una tabla `Actividad | Qué falla | Qué falta | Cómo se resuelve` y un plan por rondas de
    dependencias. No llamar incoherencia a un descarte válido, pero tampoco contarlo como capacidad.
 5. Resolver sin preguntar lo observable. Contar todas las decisiones humanas restantes y anunciar
@@ -1092,6 +1158,13 @@ def expected_outputs() -> dict[Path, str]:
     outputs[ROOT / "datos" / "indice_piezas.json"] = json.dumps(index, ensure_ascii=False, indent=2) + "\n"
     if EXAMPLE_STATE_PATH.exists():
         outputs[EXAMPLE_STATE_JS_PATH] = render_example_js(json.loads(EXAMPLE_STATE_PATH.read_text(encoding="utf-8")))
+    if EXAMPLE_COVERAGE_PATH.exists():
+        outputs[EXAMPLE_COVERAGE_JS_PATH] = render_state_js(
+            json.loads(EXAMPLE_COVERAGE_PATH.read_text(encoding="utf-8")),
+            EXAMPLE_COVERAGE_PATH,
+            "EJEMPLO_COBERTURA",
+            "Permite ver los criterios evaluados del ejemplo sin servidor.",
+        )
     if HARNESS_LAB_STATE_PATH.exists():
         outputs[HARNESS_LAB_STATE_JS_PATH] = render_state_js(
             json.loads(HARNESS_LAB_STATE_PATH.read_text(encoding="utf-8")),

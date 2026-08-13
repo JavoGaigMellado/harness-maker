@@ -7,6 +7,13 @@
   "required": ["schema_version", "proyecto", "ejes", "observacion"],
   "properties": {
     "schema_version": {"const": "1.0.0"},
+    "persona": {
+      "type": "object", "additionalProperties": false,
+      "required": ["puesto"],
+      "properties": {
+        "puesto": {"type": ["string", "null"]}
+      }
+    },
     "proyecto": {
       "type": "object", "additionalProperties": false,
       "required": ["nombre", "proposito", "usuarios", "propietario", "criterio_exito"],

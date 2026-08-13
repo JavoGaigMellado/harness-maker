@@ -12,3 +12,7 @@ __pycache__/
 # copia. La doctrina y los comandos son iguales para todos; el trabajo, no.
 /mi-harness/
 /mi-harness-anterior-*/
+# Abrir el mapa deja un `debug.log` de Chromium en la raíz: lo escribe el navegador,
+# no el taller. Sin esta línea, mirar el diagrama ensucia el árbol de cualquiera y
+# `publicar.py` se planta antes de publicar, que es donde apareció el 2026-08-11.
+/debug.log

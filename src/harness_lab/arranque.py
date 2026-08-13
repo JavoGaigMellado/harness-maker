@@ -12,6 +12,7 @@ un clon recién hecho sin dependencias. Aquí se supone que el paquete ya es imp
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import webbrowser
@@ -83,7 +84,18 @@ def _puntero(reparar: bool, recorrido_nuevo: bool = False, repo: Path | None = N
                 "solo quieres estrenar tu recorrido en esta copia, ejecuta "
                 "`harness-lab init --reiniciar`, que aparta el anterior con su fecha."
             )
-        return paso.bien(f"ya declarado en {declarado.get('estado', 'sin estado')}")
+        estado_declarado = str(declarado.get("estado", "")) or "sin estado"
+        # El puntero declara una ruta; que el archivo exista es otra cosa. Entre estrenar el
+        # recorrido y terminar `/diagnostico` no hay estado todavía, así que quien arranca,
+        # lo deja a medias y vuelve al día siguiente leía «ya declarado en
+        # mi-harness/estado.json» sobre un archivo que no está —y en verde—, contradiciendo
+        # dos líneas más abajo a su propio informe, que decía «sin ruta calculada todavía».
+        if estado_declarado != "sin estado" and not (ROOT / estado_declarado).exists():
+            return paso.bien(
+                f"declarado en {estado_declarado}, que todavía no existe porque el "
+                "diagnóstico no se ha terminado; sigue por /diagnostico"
+            )
+        return paso.bien(f"ya declarado en {estado_declarado}")
     if not reparar:
         return paso.mal("no existe `.harness-maker.json`; las actividades se detendrán")
     if adoptar and (HARNESS_LAB_DIR / "diagnostico.json").exists():
@@ -254,6 +266,21 @@ def _fotografia() -> tuple[Paso, str | None]:
     return paso.bien(reparto), siguiente
 
 
+def en_claude_code() -> bool:
+    """¿Se está ejecutando dentro de Claude Code, o en un terminal suelto?
+
+    Importa porque el último mensaje del arranque manda a `/diagnostico`, y una barra es
+    un comando de Claude Code: en PowerShell no existe. Quien arranca desde un terminal
+    suelto no ve un error, ve un taller que no hace nada, y eso no se parece a «te falta
+    una herramienta».
+
+    Se mira `CLAUDECODE`, que Claude Code exporta al proceso hijo. Si algún día dejara de
+    hacerlo, el fallo cae del lado bueno: se enseña la explicación larga a quien no la
+    necesita, en vez de callarla a quien sí.
+    """
+    return bool(os.environ.get("CLAUDECODE"))
+
+
 def _mapa() -> Path:
     """La vista que corresponde al recorrido activo, no una fija.
 
@@ -312,7 +339,17 @@ def start(
         return 1
 
     if siguiente:
-        print(f"Siguiente trabajo: la actividad `{siguiente}`. Ábrela con /{siguiente}.")
+        if en_claude_code():
+            print(f"Siguiente trabajo: la actividad `{siguiente}`. Ábrela con /{siguiente}.")
+        else:
+            # Decir «/diagnostico» a quien está en PowerShell es mandarlo a un comando que
+            # ahí no existe, y el atasco no se parece a un fallo: se parece a que el taller
+            # no hace nada. Quien arranca desde un terminal suelto necesita saber primero
+            # dónde se sigue.
+            print(f"Siguiente trabajo: la actividad `{siguiente}`.")
+            print("")
+            print("Se sigue desde Claude Code, no desde este terminal: `/` es un comando suyo.")
+            print(f"Abre esta carpeta en Claude Code y escribe /{siguiente} ahí.")
     else:
         print("No queda actividad abierta ni verificación pendiente en el recorrido activo.")
     return 0

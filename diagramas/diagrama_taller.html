@@ -17,6 +17,12 @@
     --c4:#a9a297;  --c4-bg:#f1efec;  --c4-fg:#6e675e;   /* descartado     */
     --done:#78ad75; --done-bg:#edf8eb; --done-fg:#356b39; --done-line:#b9dcb5;
     --verify:#6f8fb3; --verify-bg:#edf3f9; --verify-fg:#3d648a; --verify-line:#c8d9ea;
+    /* «En curso» necesitaba tono propio: lo compartía con «sin empezar» y una pieza con siete
+       decisiones y doce riesgos se pintaba igual que una que nadie ha tocado. Ciruela apagada
+       porque es el hueco que quedaba en la rueda —lejos del ámbar de deuda (22°), del azul de
+       verificar (213°) y del verde de hecha (117°)— y porque no hay rojo en esta paleta: un tono
+       de alarma diría «va mal», y estar en curso es lo normal mientras se trabaja. */
+    --curso:#a9738f; --curso-bg:#f7eef3; --curso-fg:#7d4560; --curso-line:#e0c7d5;
     /* el ejemplo: única nota fría de la paleta, para que se distinga siempre */
     --ej:#5d7d8a; --ej-bg:#eef3f5; --ej-line:#d6e2e7; --ej-ink:#3f5964;
     --ext:#7c6a4d; --pro:#8a6a9a;
@@ -228,6 +234,29 @@
     border-radius:8px;background:#fff6f4;color:#965448}
   details.fold.pending > summary .chev,details.fold.pending > summary .cnt{color:#965448}
   details.fold.pending[open] > summary{color:#965448}
+  /* «Definición» está en todas las fichas, resueltas incluidas, y va plegada. Por eso su
+     encabezado tiene que decir solo, sin abrirlo, si la definición está bien o le falta algo:
+     de ahí el cuerpo más marcado y el color, que sale del estado de la cobertura. */
+  details.fold.definicion > summary{margin:3px -7px;padding:10px 9px;border:1px solid var(--line);
+    border-radius:8px;background:var(--bg);font-size:11.5px;font-weight:850;letter-spacing:.09em;
+    color:var(--ink2)}
+  details.fold.definicion > summary .cnt{font-weight:700;letter-spacing:0;text-transform:none}
+  details.fold.definicion.t-done > summary{border-color:var(--done-line);background:var(--done-bg)}
+  details.fold.definicion.t-done > summary,details.fold.definicion.t-done > summary .chev,
+  details.fold.definicion.t-done > summary .cnt{color:var(--done-fg)}
+  details.fold.definicion.t-c3 > summary{border-color:#e4c8b8;background:var(--c3-bg)}
+  details.fold.definicion.t-c3 > summary,details.fold.definicion.t-c3 > summary .chev,
+  details.fold.definicion.t-c3 > summary .cnt{color:var(--c3-fg)}
+  details.fold.definicion.t-verify > summary{border-color:var(--verify-line);background:var(--verify-bg)}
+  details.fold.definicion.t-verify > summary,details.fold.definicion.t-verify > summary .chev,
+  details.fold.definicion.t-verify > summary .cnt{color:var(--verify-fg)}
+  details.fold.definicion.t-curso > summary{border-color:var(--curso-line);background:var(--curso-bg)}
+  details.fold.definicion.t-curso > summary,details.fold.definicion.t-curso > summary .chev,
+  details.fold.definicion.t-curso > summary .cnt{color:var(--curso-fg)}
+  .defbloque{margin-top:15px}
+  .defbloque:first-child,.foldbody > .ej:first-child{margin-top:0}
+  .subcampo{margin:0 0 7px;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:800}
 
   ul.pts{list-style:none;margin:0;padding:0}
   ul.pts li{position:relative;padding-left:18px;margin-bottom:11px;font-size:14px;line-height:1.55;
@@ -236,14 +265,8 @@
   ul.pts li::before{content:"";position:absolute;left:1px;top:8px;width:6px;height:6px;
                     border-radius:50%;background:var(--accent);opacity:.5}
   ul.pts li b{color:var(--ink)}
-  ul.tpl{list-style:none;margin:0;padding:0}
-  ul.tpl li{position:relative;padding-left:18px;margin-bottom:9px;font-size:13.5px;color:var(--ink2);
-            line-height:1.5;text-align:justify;hyphens:auto}
-  ul.tpl li:last-child{margin-bottom:0}
-  ul.tpl li::before{content:"";position:absolute;left:2px;top:7px;width:6px;height:6px;
-                    border-radius:2px;background:var(--accent);opacity:.55}
-  ul.tpl li.tpl-key{color:var(--c1-fg)}
-  ul.tpl li.tpl-key::before{opacity:1;border-radius:50%;box-shadow:0 0 0 2.5px var(--c1-bg)}
+  /* `ul.tpl` se retiró con el esqueleto compartido: «qué montar» y los criterios de cobertura son
+     la misma lista, y ahora se pintan igual en las dos pestañas con `.criteria-list`. */
 
   .chips{display:flex;flex-direction:column;gap:7px;margin:16px 0 0}
   .chip{display:flex;align-items:center;gap:10px;width:100%;text-align:left;font-family:inherit;
@@ -369,6 +392,24 @@
   .activity-summary .asl{display:block;font-size:9px;line-height:1.2;letter-spacing:.13em;
     text-transform:uppercase;color:var(--accent);font-weight:800;margin:0 0 4px}
   .activity-summary p{font-size:13px;line-height:1.45;color:var(--ink2);margin:0}
+  .activity-summary p + p,.activity-summary ul.mirada-pts + p{margin-top:8px}
+  /* La tarjeta admite estructura: entrada, viñetas y línea de cierre. Era un solo párrafo, así que
+     daba igual cómo se escribiera el resumen —siempre salía como bloque corrido—, y eso empuja a
+     redactar el párrafo denso que la tarjeta existe justo para evitar. */
+  .activity-summary ul.mirada-pts{list-style:none;margin:8px 0 0;padding:0;
+    display:flex;flex-direction:column;gap:5px}
+  .activity-summary ul.mirada-pts li{position:relative;padding-left:14px;font-size:13px;
+    line-height:1.45;color:var(--ink2)}
+  .activity-summary ul.mirada-pts li::before{content:"";position:absolute;left:2px;top:7px;
+    width:5px;height:5px;border-radius:50%;background:var(--accent);opacity:.6}
+  .activity-summary ul.mirada-pts li b{color:var(--ink)}
+  /* La misma tarjeta para la doctrina, un punto más de cuerpo: es el texto principal de esa
+     pestaña, y el esqueleto solo sirve si las dos vistas se abren por el mismo sitio. */
+  .activity-summary.doctrina{border-left-color:var(--ej)}
+  .activity-summary.doctrina .asl{color:var(--ej)}
+  .activity-summary.doctrina p{font-size:14.5px;line-height:1.55;color:var(--ink);
+    text-align:justify;hyphens:auto}
+  .activity-summary.doctrina p b{font-weight:700}
   .activity-summary + details.fold{margin-top:0}
   .criterion{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:8px;align-items:start;
     border:1px solid var(--line);border-radius:8px;padding:8px 9px;background:var(--bg)}
@@ -411,6 +452,11 @@
   .project-kpi.is-debt strong,.project-kpi.is-debt span{color:var(--c3-fg)}
   .project-kpi.is-verify{border-color:var(--verify-line);background:var(--verify-bg)}
   .project-kpi.is-verify strong,.project-kpi.is-verify span{color:var(--verify-fg)}
+  .foto-edad{margin:-6px 0 12px;font-size:11.5px;color:var(--muted);line-height:1.5}
+  .foto-edad.is-rancio{border-left:3px solid var(--c3-fg);background:var(--c3-bg);color:var(--c3-fg);
+    padding:8px 10px;border-radius:0 7px 7px 0;margin:-4px 0 12px}
+  .cierre-nota{margin:0 0 10px;padding:8px 10px;border-radius:7px;background:var(--done-bg);
+    border:1px solid var(--done-line);color:var(--done-fg);font-size:12px;line-height:1.5}
   .route-now{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;align-items:center;
     border:1px solid #e6d6bc;border-left:3px solid var(--accent);border-radius:9px;
     background:var(--accent-soft);padding:9px 11px;margin:0 0 14px}
@@ -491,6 +537,21 @@
     transition:stroke-dasharray .7s cubic-bezier(.2,.8,.3,1)}
 
   @media print{ .pane{position:static;max-height:none} details.fold{display:none} }
+
+  /* ── Capa aditiva: «en curso» ───────────────────────────────────────────────────────────
+     Va al final y no toca nada de arriba, para que trasladar entre el base y el taller siga
+     siendo mecánico. El base no tiene capa de recorrido, así que esto no se porta.
+     Lo apagado se reserva para lo que nadie ha empezado. Una pieza en curso está viva: no se
+     atenúa, lleva su color y su marca. No compite con «siguiente», que sigue siendo el halo. */
+  .node.encurso.in:not(.dim){opacity:1;border-color:var(--curso-line);background:var(--curso-bg)}
+  .node.encurso.in .nic{filter:none;opacity:1}
+  .node.encurso.in .nt{color:var(--curso-fg)}
+  .node .pin.curso{background:var(--curso);color:#fff}
+  .rings .spoke.encurso:not(.lit){stroke:var(--curso);opacity:.75;stroke-dasharray:none;stroke-width:.15}
+  .project-kpi.is-curso{border-color:var(--curso-line);background:var(--curso-bg)}
+  .project-kpi.is-curso strong,.project-kpi.is-curso span{color:var(--curso-fg)}
+  .desglose{margin:-6px 0 10px;font-size:11.5px;color:var(--muted);line-height:1.5}
+  .desglose .dg-curso{color:var(--curso-fg);font-weight:600}
 </style>
 </head>
 <body>
@@ -498,7 +559,10 @@
 
   <header class="hdr">
     <div class="hdr-txt">
-      <h1>Harness-Maker</h1>
+      <!-- El literal se queda como suelo: si el script no llega a correr, el título sigue diciendo
+           algo cierto en vez de quedarse en blanco. El base lo deja vacío porque allí siempre hay
+           anatomía que cargar; aquí puede no haber recorrido todavía. -->
+      <h1 id="titulo-mapa">Harness-Maker</h1>
       <p class="project-capability"><span class="cap-label">Capacidad actual <b id="project-capability-progress">0/18</b></span>
         <span id="project-capability-text">Diagnostica el proyecto para empezar a construir tu harness.</span>
         <span class="cap-action">Háblale para afinarlo.</span></p>
@@ -571,6 +635,7 @@
 
 <script src="../datos/anatomia.js"></script>
 <script src="../taller/ejemplo/estado.js"></script>
+<script src="../taller/ejemplo/cobertura.js"></script>
 <!-- El recorrido propio, si esa persona ya lo tiene. Si no existe, el archivo falta y no pasa nada. -->
 <script src="../mi-harness/estado.js"></script>
 <script src="../mi-harness/cobertura.js"></script>
@@ -703,12 +768,10 @@ A.anillos.forEach(function (r) {
            (count ? '<span class="cnt">' + count + '</span>' : '') +
            '</summary><div class="foldbody">' + inner + '</div></details>';
   }
-  function bullets(list, cls, keyIdx) {
-    var h = '<ul class="' + (cls || "pts") + '">';
-    list.forEach(function (x, i) {
-      h += '<li' + (keyIdx === i ? ' class="tpl-key"' : '') + '>' + x + '</li>';
-    });
-    return h + '</ul>';
+  function bullets(list, cls) {
+    return '<ul class="' + (cls || "pts") + '">' + list.map(function (x) {
+      return '<li>' + x + '</li>';
+    }).join("") + '</ul>';
   }
   function ejBlock(txt) {
     return '<div class="ej"><span class="ej-lbl">En el ejemplo del correo</span><p>' + txt + '</p></div>';
@@ -722,10 +785,14 @@ A.anillos.forEach(function (r) {
     });
     return h + '</div>';
   }
-  function sources(ext, pro) {
+  // `kind` existe para la ficha de una actividad, donde esta sección ocupa el mismo sitio que
+  // «Recorrido y prioridad» en la otra pestaña y tiene que llevar su mismo rótulo. En el centro,
+  // que no comparte esqueleto con nada, se queda como estaba.
+  function sources(ext, pro, kind) {
     return fold("De dónde sale esto", "",
       '<div class="srcblock ext"><div class="sh"><span class="dot"></span>Lo que dice la industria</div>' + ext + '</div>' +
-      '<div class="srcblock pro"><div class="sh"><span class="dot"></span>Casos reales, en anónimo</div>' + pro + '</div>');
+      '<div class="srcblock pro"><div class="sh"><span class="dot"></span>Casos reales, en anónimo</div>' + pro + '</div>',
+      kind);
   }
 
   function clearOn() {
@@ -758,13 +825,21 @@ A.anillos.forEach(function (r) {
       fold("Los puntos clave", R.pts.length, bullets(R.pts)) + chips(r);
   }
 
+  /* El mismo esqueleto que la ficha de proyecto, en el mismo orden: «En una mirada», «Definición»,
+     «Riesgos» y, al final, de dónde viene esto. Saltar de una pestaña a otra obligaba a
+     reorientarse cada vez, y son justo las dos vistas que uno compara. El ejemplo del ayudante de
+     correo cae en el hueco donde el proyecto pone su definición porque responde a lo mismo: cómo
+     se ve esta actividad cuando ya está decidida. Las secciones que aquí no tienen equivalente
+     —dónde se guarda, si está comprobado— no se inventan: faltan, y las demás no se mueven. */
   function cuerpoInfoPieza(p) {
-    var html = '<p class="desc">' + p.desc + '</p>' + ejBlock(p.ej);
-    if (p.risk) html += '<div class="risk"><span class="arw">⚠</span><span>' + p.risk + '</span></div>';
-    html += fold("Los puntos clave", p.pts.length, bullets(p.pts));
-    if (p.tpl && p.tpl.length) html += fold("Qué montar, en concreto", p.tpl.length,
-      bullets(p.tpl, "tpl", typeof p.tplKey === "number" ? p.tplKey : -1));
-    return html + sources(p.ext, p.pro);
+    var h = tarjetaMirada('<p>' + p.desc + '</p>', "doctrina");
+    var cuerpo = ejBlock(p.ej);
+    if (p.pts && p.pts.length) cuerpo += bloqueDef("Los puntos clave", bullets(p.pts));
+    if (p.tpl && p.tpl.length)
+      cuerpo += bloqueDef("Punto por punto", listaCriterios(criteriosCanonicos(p)));
+    h += fold("Definición", "lo que pide la doctrina", cuerpo, "field definicion");
+    if (p.risk) h += '<div class="risk"><span class="arw">⚠</span><span>' + p.risk + '</span></div>';
+    return h + sources(p.ext, p.pro, "field");
   }
 
   /* ── Cabeceras ── */
@@ -866,14 +941,14 @@ A.anillos.forEach(function (r) {
   };
   var COBERTURA = {
     propio: coberturaFija || window.MI_HARNESS_COBERTURA || null,
-    ejemplo: null
+    ejemplo: window.EJEMPLO_COBERTURA || null
   };
 
   var ETIQUETA = {
     completada:     { c: "hecha",       t: "Resuelta" },
     descartada:     { c: "descartada",  t: "Descartada" },
     deuda_aceptada: { c: "deuda",       t: "Con deuda" },
-    en_curso:       { c: "pendiente",   t: "En curso" },
+    en_curso:       { c: "curso",       t: "En curso" },
     pendiente:      { c: "pendiente",   t: "Sin empezar" }
   };
 
@@ -882,6 +957,19 @@ A.anillos.forEach(function (r) {
   function nombreProyecto(est) {
     return est && est.diagnostico && est.diagnostico.proyecto && est.diagnostico.proyecto.nombre
       ? est.diagnostico.proyecto.nombre : "Proyecto";
+  }
+  /* El nombre que escribe `init` mientras nadie ha elegido uno. Desde el 2026-08-12 el diagnóstico
+     ya no hereda el nombre de la carpeta: lo propone y lo elige la persona, y hasta entonces vale
+     este hueco. Como hueco que es, no puede acabar de título. */
+  var NOMBRE_SIN_ELEGIR = "por decidir";
+  /* Título del mapa: el proyecto que se está mirando, no la herramienta. Mirando el ejemplo tiene
+     que decir el ejemplo; un título que siguiera poniendo tu proyecto mientras enseña otro estaría
+     mintiendo. Y si no hay nombre todavía —copia recién clonada, o recorrido estrenado sin pasar
+     por /diagnostico— vuelve a la herramienta: «Proyecto» a secas no es un título. */
+  function tituloDelMapa(est) {
+    var nombre = est && est.diagnostico && est.diagnostico.proyecto
+      ? est.diagnostico.proyecto.nombre : null;
+    return !nombre || nombre === NOMBRE_SIN_ELEGIR ? "Harness-Maker" : nombre;
   }
   function actualizarNucleo() {
     var est = estadoActivo(), pr = est && est.diagnostico ? est.diagnostico.proyecto : null;
@@ -918,9 +1006,26 @@ A.anillos.forEach(function (r) {
     var p = byKey[id], criterios = p ? criteriosDe(p, st) : [];
     return criterios.some(function (c) { return c.estado === "parcial" || c.estado === "no_definido"; });
   }
+  /* Nadie ha evaluado un solo criterio de esta pieza. No es deuda —no se debe nada, simplemente
+     no se ha mirado— pero tampoco puede contar como lista y verificada, que es lo que pasaba:
+     `sin_registrar` no es `parcial` ni `no_definido`, así que `coberturaPendiente` daba false y
+     una pieza con cero criterios evaluados se pintaba en verde de «lista». Encontrado el
+     2026-08-12 recorriendo el taller sobre un proyecto real: los tres criterios genéricos de
+     cierre daban por buena una pieza donde luego aparecieron cinco de los siete hallazgos altos. */
+  function coberturaSinRegistrar(id, st) {
+    var p = byKey[id], criterios = p ? criteriosDe(p, st) : [];
+    return criterios.length > 0 && criterios.every(function (c) { return c.estado === "sin_registrar"; });
+  }
+  /* Cerrada porque se decidió no construirla, no porque esté construida. Un nodo verde llamado
+     «Herramientas e integraciones» se lee como «las tiene», y en un proyecto real la decisión
+     había sido justo la contraria —no dárselas al modelo— y era una decisión buena. */
+  function cerradaPorDecisionDeNoHacer(st) {
+    return !!st && st.estado === "completada" && st.cierre === "decision_de_no_hacer";
+  }
   function lista(st, id) {
     return !!st && st.estado === "completada" && !!st.verificacion &&
-      st.verificacion.estado === "verificada" && !coberturaPendiente(id, st);
+      st.verificacion.estado === "verificada" && !coberturaPendiente(id, st) &&
+      !coberturaSinRegistrar(id, st);
   }
   function requiereAtencion(st, id) {
     if (!st || st.estado === "pendiente" || st.estado === "en_curso" || st.estado === "deuda_aceptada")
@@ -935,7 +1040,12 @@ A.anillos.forEach(function (r) {
     });
   }
   function metricasEstado(est) {
-    var m = { total: 0, listas: 0, abiertas: 0, deudas: 0, verificar: 0, descartadas: 0 };
+    /* `abiertas` sigue siendo la suma, porque el KPI del anillo enseña un solo número y no se
+       toca. Debajo van las dos mitades: empezada y sin empezar no son lo mismo, y contarlas
+       juntas es lo que hacía que un recorrido con quince piezas trabajadas se leyera igual que
+       uno recién estrenado. */
+    var m = { total: 0, listas: 0, abiertas: 0, en_curso: 0, sin_empezar: 0,
+              deudas: 0, verificar: 0, descartadas: 0 };
     var pasos = est && est.ruta ? est.ruta.pasos : [];
     m.total = pasos.length || P.length;
     pasos.forEach(function (paso) {
@@ -944,20 +1054,27 @@ A.anillos.forEach(function (r) {
       else if (e === "deuda_aceptada") m.deudas++;
       else if (e === "descartada") m.descartadas++;
       else if (e === "completada" && coberturaPendiente(id, st)) m.deudas++;
+      /* Verificada sin un solo criterio evaluado cuenta con las que faltan por verificar, no con
+         las listas. Es la mitad blanda de exigir cobertura: el diagrama deja de afirmarlo aunque
+         `validate` todavía lo admita. */
       else if (e === "completada") m.verificar++;
-      else m.abiertas++;
+      else { m.abiertas++; if (e === "en_curso") m.en_curso++; else m.sin_empezar++; }
     });
     return m;
   }
   function etiquetaDe(st, id) {
     var e = st ? st.estado : "pendiente";
     if (e === "completada" && coberturaPendiente(id, st)) return { c: "deuda", t: "Con deuda" };
+    if (e === "completada" && coberturaSinRegistrar(id, st))
+      return { c: "verificar", t: "Sin criterios evaluados" };
     if (e === "completada" && !lista(st, id)) return { c: "verificar", t: "Por verificar" };
+    if (cerradaPorDecisionDeNoHacer(st)) return { c: "hecha", t: "Decidido: no se hace" };
     return ETIQUETA[e] || ETIQUETA.pendiente;
   }
   function colorEtiqueta(et) {
     return et.c === "hecha" ? "done" : et.c === "descartada" ? "c4" :
-      et.c === "deuda" ? "c3" : et.c === "verificar" ? "verify" : "c1";
+      et.c === "deuda" ? "c3" : et.c === "verificar" ? "verify" :
+      et.c === "curso" ? "curso" : "c1";
   }
   function siguienteDe(est) {
     var pasos = est && est.ruta ? est.ruta.pasos : [];
@@ -998,17 +1115,26 @@ A.anillos.forEach(function (r) {
   function campo(lbl, inner) {
     return fold(lbl, "", inner, "field");
   }
-  // Lo que se viene a leer no puede estar detrás de un clic. Todo lo demás de la ficha empieza
-  // plegado a propósito; el contenido de la actividad, no.
-  function campoAbierto(lbl, inner) {
-    return fold(lbl, "", inner, "field", true);
+  /* `campoAbierto` se retiró con «Definición»: existía para que el contenido de una actividad
+     cerrada no quedara detrás de un clic, y eso lo resuelve ahora la tarjeta «En una mirada», que
+     va abierta y arriba. `fold` conserva el quinto parámetro para quien lo necesite. */
+  /* Lo que escriben las actividades es texto plano y puede traer `<` o `>`. Una decisión que
+     nombraba `piezas/<pieza>.md` se comía el resto de la línea, porque el navegador leía `<pieza>`
+     como una etiqueta y la cerraba donde le vino bien; en este mismo recorrido hay siete casos así,
+     entre ellos un `<h1>` y un `>=3.14`. La anatomía es otra cosa: lleva marcado a propósito,
+     escrito y validado aquí. De ahí la regla, que es la única que hay que recordar: se escapa lo
+     que viene del estado y de la cobertura; la doctrina se pinta tal cual. */
+  function esc(txt) {
+    return String(txt === null || txt === undefined ? "" : txt)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
   }
   function rutas(lista) {
     return '<div class="rutas">' + lista.map(function (x) {
-      return '<span class="ruta">' + x + '</span>';
+      return '<span class="ruta">' + esc(x) + '</span>';
     }).join("") + '</div>';
   }
-  function parrafo(txt) { return '<p class="vacio" style="margin:0">' + txt + '</p>'; }
+  function parrafo(txt) { return '<p class="vacio" style="margin:0">' + esc(txt) + '</p>'; }
   function acortar(txt, max) {
     var limpio = String(txt || "").replace(/\s+/g, " ").trim();
     return limpio.length > max ? limpio.slice(0, max - 1).replace(/\s+\S*$/, "") + "…" : limpio;
@@ -1027,7 +1153,9 @@ A.anillos.forEach(function (r) {
     // en la pantalla que existe para leerla. Exigir el formato no arregla lo ya escrito; saber
     // leer las dos formas, sí.
     var filas = (lista || []).map(function (d) {
-      var texto = (d.texto || "").trim(), corte = texto.indexOf(" — ");
+      // Se escapa antes de partir: escapar no crea ni destruye los separadores que se buscan
+      // —guion largo, dos puntos, punto— así que el corte cae exactamente donde caía.
+      var texto = esc((d.texto || "").trim()), corte = texto.indexOf(" — ");
       if (corte > 0) return { clave: texto.slice(0, corte), valor: texto.slice(corte + 3), tipo: "def" };
       // Sin guion, la norma acaba donde acabe antes: en los dos puntos que abren la explicación
       // o en el punto de la primera frase. Cortar siempre por los dos puntos hacía que la norma
@@ -1110,45 +1238,164 @@ A.anillos.forEach(function (r) {
     // nadie había puesto. `cobertura.json` no lo crea el programa —solo lo escriben las
     // actividades—, así que la copia de cualquiera empieza sin él y ese era el caso normal, no
     // el raro. Se enseña lo que la actividad pide, sin estado.
+    return criteriosCanonicos(p);
+  }
+  // Lo que la actividad pide, sin estado: la misma lista que la pestaña de doctrina enseña como
+  // «punto por punto», para que las dos vistas coincidan cuando nadie ha registrado cobertura.
+  function criteriosCanonicos(p) {
     return (p.tpl || []).map(function (criterio) {
       return { criterio: criterio, estado: "sin_registrar", evidencias: [] };
     });
   }
-  function matrizCriterios(p, st) {
-    var criterios = criteriosDe(p, st);
-    if (!criterios.length) return "";
-    var etiqueta = {
-      definido: { icono: "✓", texto: "Definido" },
-      parcial: { icono: "!", texto: "Falta concretar" },
-      no_definido: { icono: "·", texto: "Sin definir" },
-      no_aplica: { icono: "—", texto: "No aplica" },
-      sin_registrar: { icono: "·", texto: "" }
-    };
-    var sinRegistrar = criterios.every(function (c) { return c.estado === "sin_registrar"; });
+
+  var ETIQUETA_CRITERIO = {
+    definido: { icono: "✓", texto: "Definido" },
+    parcial: { icono: "!", texto: "Falta concretar" },
+    no_definido: { icono: "·", texto: "Sin definir" },
+    no_aplica: { icono: "—", texto: "No aplica" },
+    sin_registrar: { icono: "·", texto: "" }
+  };
+  function listaCriterios(criterios) {
+    return '<ul class="criteria-list">' + criterios.map(function (c) {
+      var e = ETIQUETA_CRITERIO[c.estado] || ETIQUETA_CRITERIO.no_definido;
+      return '<li class="criterion ' + c.estado + '"><span class="ci">' + e.icono +
+        '</span><span class="ct">' + esc(c.criterio) + '</span>' +
+        (e.texto ? '<span class="cs">' + e.texto + '</span>' : '') + '</li>';
+    }).join("") + '</ul>';
+  }
+  function bloqueDef(titulo, inner) {
+    return '<div class="defbloque"><p class="subcampo">' + titulo + '</p>' + inner + '</div>';
+  }
+
+  /* El color del encabezado, que es lo único que se ve con la sección plegada. Sale del estado de
+     la cobertura y no del estado de la actividad: una pieza puede estar cerrada y verificada con
+     tres criterios sin evaluar, y eso es justo lo que hay que poder ver sin abrir nada. */
+  function tonoDefinicion(criterios, decisiones) {
+    if (!criterios.length)
+      return decisiones.length
+        ? { tono: "t-curso",
+            nota: decisiones.length + (decisiones.length === 1 ? " decisión" : " decisiones") }
+        : { tono: "t-verify", nota: "sin definir" };
+    if (criterios.every(function (c) { return c.estado === "sin_registrar"; }))
+      return { tono: "t-verify", nota: "sin registrar" };
     var listos = criterios.filter(function (c) {
       return c.estado === "definido" || c.estado === "no_aplica";
     }).length;
-    var pendientes = sinRegistrar ? 0 : criterios.length - listos;
-    var filas = criterios.map(function (c) {
-      var e = etiqueta[c.estado] || etiqueta.no_definido;
-      return '<li class="criterion ' + c.estado + '"><span class="ci">' + e.icono +
-        '</span><span class="ct">' + c.criterio + '</span>' +
-        (e.texto ? '<span class="cs">' + e.texto + '</span>' : '') + '</li>';
-    }).join("");
-    var nota = sinRegistrar
-      ? '<p class="vacio" style="margin:0 0 8px">Nadie ha registrado punto por punto cómo va esto: ' +
-        'lo de abajo es lo que la actividad pide, no lo que está hecho.</p>' : '';
-    return fold("Definición punto por punto",
-      sinRegistrar ? "sin registrar" :
-        pendientes ? pendientes + " por definir" : listos + "/" + criterios.length + " definidos",
-      nota + '<ul class="criteria-list">' + filas + '</ul>', pendientes ? "field pending" : "field");
+    var pendientes = criterios.length - listos;
+    if (pendientes) return { tono: "t-c3", nota: pendientes + " por definir" };
+    return { tono: "t-done", nota: listos + "/" + criterios.length + " definidos" };
+  }
+
+  /* Una sola «Definición», y en todas las actividades. Eran dos secciones para lo mismo —los
+     criterios canónicos de `cobertura.json` y las decisiones de `estado.json`—, y las dos
+     desaparecían al resolverse la actividad, así que una ficha cerrada se quedaba sin forma de ver
+     qué se definió. Quien lee no tiene por qué saber que eso vive en dos ficheros: viene a ver la
+     definición. Se esconde el detalle, no el hecho: plegada, pero con el color y el recuento
+     visibles siempre. */
+  function seccionDefinicion(p, st) {
+    var criterios = criteriosDe(p, st);
+    var decisiones = st && st.decisiones ? st.decisiones : [];
+    var t = tonoDefinicion(criterios, decisiones);
+    var cuerpo = decisiones.length ? bloqueDef("Lo decidido", definiciones(decisiones)) : "";
+    if (criterios.length) {
+      var nota = criterios.every(function (c) { return c.estado === "sin_registrar"; })
+        ? '<p class="vacio" style="margin:0 0 8px">Nadie ha registrado punto por punto cómo va ' +
+          'esto: lo de abajo es lo que la actividad pide, no lo que está hecho.</p>' : "";
+      cuerpo += bloqueDef("Punto por punto", nota + listaCriterios(criterios));
+    }
+    if (!cuerpo) cuerpo = parrafo("Todavía no hay nada definido en esta actividad.");
+    return fold("Definición", t.nota, cuerpo, "field definicion " + t.tono);
+  }
+
+  /* Capa aditiva: las dos mitades de «abiertas». El KPI enseña un número y no se toca; debajo se
+     dice de qué está hecho, porque «quince empezadas» y «quince sin tocar» son dos proyectos
+     distintos y hasta ahora se leían igual. Si no hay ninguna abierta no se escribe nada: una
+     línea que siempre dice cero es ruido. */
+  function desgloseAbiertas(m) {
+    if (!m.abiertas) return "";
+    var partes = [];
+    if (m.en_curso) partes.push('<b class="dg-curso">' + m.en_curso + ' en curso</b>');
+    if (m.sin_empezar) partes.push(m.sin_empezar + " sin empezar");
+    return '<p class="desglose">De las ' + m.abiertas + " abiertas: " + partes.join(" · ") + ".</p>";
+  }
+
+  /* De cuándo es la foto. El diagrama pinta un estado sin decir su edad, y un recorrido de hace
+     seis días se ve idéntico a uno de esta mañana. En un proyecto real, entre la última fecha del
+     estado y el día que se miró el mapa hubo un cambio de modelo en producción y un go-live: el
+     mapa seguía enseñando lo de antes, en verde y sin una señal. A partir de DIAS_RANCIO se avisa;
+     el número es deliberadamente conservador, porque avisar de más solo cuesta una línea gris. */
+  var DIAS_RANCIO = 14;
+  function ultimaFechaDe(est) {
+    var piezas = est && est.piezas ? est.piezas : {}, mejor = null;
+    Object.keys(piezas).forEach(function (id) {
+      var f = piezas[id].fechas || {}, cand = f.actualizada || f.cerrada || f.iniciada;
+      if (cand && (!mejor || cand > mejor)) mejor = cand;
+    });
+    return mejor;
+  }
+  function antiguedadDe(est) {
+    var iso = ultimaFechaDe(est);
+    if (!iso) return "";
+    var cuando = new Date(iso);
+    if (isNaN(cuando)) return "";
+    var dias = Math.floor((Date.now() - cuando.getTime()) / 86400000);
+    var fecha = cuando.toISOString().slice(0, 10);
+    if (dias < DIAS_RANCIO)
+      return '<p class="foto-edad">Última actualización del recorrido: <b>' + fecha + '</b>.</p>';
+    return '<p class="foto-edad is-rancio">Última actualización del recorrido: <b>' + fecha +
+      '</b>, hace ' + dias + ' días. Lo que ves puede haber dejado de ser cierto: si el proyecto ' +
+      'ha cambiado desde entonces, pasa <code>/incoherencias</code> antes de fiarte del mapa.</p>';
+  }
+
+  function tarjetaMirada(inner, variante) {
+    return '<section class="activity-summary' + (variante ? ' ' + variante : '') +
+      '"><span class="asl">En una mirada</span>' + inner + '</section>';
+  }
+
+  /* El resumen entraba en un solo `<p>`: daba igual cómo se escribiera, siempre salía como bloque
+     corrido, y eso empuja a redactarlo como el párrafo técnico denso que cuesta leer de un vistazo
+     —justo para lo que existe la tarjeta—. Lo que sí se lee es una frase de entrada, las viñetas
+     de qué contiene y una línea final con el porqué. No hace falta inventar un marcado: bastan los
+     saltos de línea y las líneas que empiezan por un guion. Un resumen de una sola línea, que es
+     como están escritos todos los anteriores a este cambio, sale exactamente igual que antes. */
+  var VINETA = /^[-–—*•]\s+/;
+  function miradaCuerpo(texto) {
+    // Escapado antes de partir: no toca ni los saltos de línea ni el guion que abre una viñeta.
+    var lineas = esc(texto).split("\n").map(function (l) { return l.trim(); })
+      .filter(function (l) { return l.length; });
+    if (lineas.length < 2) return '<p>' + (lineas[0] || "") + '</p>';
+    var h = "", puntos = [];
+    function volcar() {
+      if (!puntos.length) return;
+      h += '<ul class="mirada-pts"><li>' + puntos.join('</li><li>') + '</li></ul>';
+      puntos = [];
+    }
+    lineas.forEach(function (linea) {
+      if (VINETA.test(linea)) return puntos.push(linea.replace(VINETA, ""));
+      volcar();
+      h += '<p>' + linea + '</p>';
+    });
+    volcar();
+    return h;
+  }
+  // La entrada de un resumen con viñetas, para donde solo cabe una línea. Termina en dos puntos
+  // porque abre la lista; suelta, sin la lista detrás, esos dos puntos sobran.
+  function entradaResumen(texto, max) {
+    var t = String(texto || ""), corte = t.indexOf("\n");
+    // Se recorta antes de escapar: si no, un `&` de la frase gastaría cinco caracteres del límite.
+    return esc(acortar((corte < 0 ? t : t.slice(0, corte)).replace(/:\s*$/, ""), max));
   }
 
   function resumenActividad(st) {
     var texto = st && st.resumen
       ? st.resumen : "Esta actividad todavía no tiene una definición registrada.";
-    return '<section class="activity-summary"><span class="asl">En una mirada</span><p>' +
-      texto + '</p></section>';
+    /* Cerrada por decidir que no se hace: se dice antes del resumen, porque es lo que cambia
+       cómo se lee todo lo de abajo. Sin esta línea, «Resuelta» y una lista de decisiones se
+       leen como «está construido», que es justo lo contrario de lo que se decidió. */
+    var nota = cerradaPorDecisionDeNoHacer(st)
+      ? '<p class="cierre-nota"><b>Cerrada por decisión de no hacerlo.</b> No está construida, y ' +
+        'eso es lo que se decidió: la ausencia es deliberada y está razonada abajo.</p>' : "";
+    return nota + tarjetaMirada(miradaCuerpo(texto), "");
   }
 
   // «Relación con el resto» se retiró el 2026-08-06: repetía en cada ficha las dependencias que
@@ -1178,8 +1425,17 @@ A.anillos.forEach(function (r) {
     return lista.filter(function (x, i, todas) { return x && todas.indexOf(x) === i; });
   }
 
+  /* Un recorrido replanificado ya no se lee por el plan. «Motivo», «Paso 3 de 18» y la regla
+     aplicada valen mucho mientras se construye el harness desde cero —responden a por qué toca
+     esta actividad y no otra—, pero cuando la ruta se ha rehecho y media docena de actividades
+     están abiertas por la realidad y no por el plan, «Paso 3 de 18» es ruido con aire de dato. */
+  function rutaReplanificada(est) {
+    var r = est && est.ruta ? est.ruta : null;
+    return !!r && (r.motivo === "replanificacion" || (r.replanificaciones || []).length > 0);
+  }
+
   function detalleRecorrido(p, paso, est) {
-    if (!paso) return "";
+    if (!paso || rutaReplanificada(est)) return "";
     return fold("Recorrido y prioridad", "", definiciones([
       { texto: "Motivo — " + paso.porque },
       { texto: "Posición — Paso " + paso.orden + " de " + est.ruta.pasos.length },
@@ -1188,54 +1444,42 @@ A.anillos.forEach(function (r) {
     ]), "field");
   }
 
-  function detalleVerificacion(st, titulo) {
+  // El título es la pregunta que responde. «Comprobación y cierre» no transmitía la única cosa que
+  // esta sección aclara, que es de las que más se miran: si esto solo está decidido o además está
+  // comprobado. El estado se queda en el encabezado, plegado, como estaba.
+  var TITULO_COMPROBACION = "¿Está comprobado?";
+  function detalleVerificacion(st) {
     if (!st || !st.verificacion || !st.verificacion.detalle || st.verificacion.estado === "no_aplica")
       return "";
     var nombre = st.verificacion.estado === "verificada" ? "Verificada" :
       st.verificacion.estado === "fallida" ? "Fallida" : "Pendiente";
-    // Plegada, con el estado en el encabezado. Distinguir «lo decidí» de «lo comprobé» cabe en
-    // una palabra; el detalle es para quien lo pregunte, y quitarlo entero dejaría igual una
-    // actividad verificada y una que nadie ha probado.
-    return fold(titulo, nombre, parrafo(st.verificacion.detalle), "field");
+    return fold(TITULO_COMPROBACION, nombre, parrafo(st.verificacion.detalle), "field");
   }
 
+  /* Un solo esqueleto, esté la actividad abierta o cerrada: mirada, definición, dónde se guarda,
+     si está comprobado, riesgos y de dónde viene. Antes eran dos ramas con secciones distintas y
+     nombres distintos para lo mismo, así que abrir dos fichas seguidas en estados distintos
+     obligaba a reorientarse. */
   function cuerpoProyPieza(p) {
     var est = estadoActivo();
     if (!est) return sinEstado(p);
     var paso = pasoDe(est, p.k), st = piezaDe(est, p.k);
     var e = st ? st.estado : "pendiente";
-    // La lista punto por punto solo se enseña mientras dice algo, que es qué falta por definir.
-    // En una actividad cerrada, «5/5 definidos» ocupa el sitio de lo único que se viene a leer.
     var h = resumenActividad(st);
-    if (!resuelta(st)) h += matrizCriterios(p, st);
+    h += seccionDefinicion(p, st);
     if (p.k === "prompts") h += inventarioPrompts();
-
-    if (!resuelta(st)) {
-      if (st && st.decisiones && st.decisiones.length)
-        h += campo("Definición actual", definiciones(st.decisiones));
-      h += campo("Guardado en", rutas(ubicacionesDe(st)));
-      h += detalleVerificacion(st, "Comprobación y cierre");
-      if (st && st.riesgos && st.riesgos.length)
-        h += fold("Riesgos abiertos", st.riesgos.length, bullets(st.riesgos));
-      h += detalleRecorrido(p, paso, est);
-      return h;
-    }
-
-    if (st.decisiones && st.decisiones.length)
-      h += campoAbierto("Qué se ha definido", definiciones(st.decisiones));
-    else h += campoAbierto("Qué se ha definido", parrafo(st.resumen));
     if (e === "descartada" && st.descarte)
       h += campo("Decisión", parrafo(st.descarte.motivo));
     h += campo("Guardado en", rutas(ubicacionesDe(st)));
-    h += detalleVerificacion(st, "Comprobación");
-    if (st.deuda)
+    h += detalleVerificacion(st);
+    if (st && st.deuda)
       h += campo("Deuda aceptada", definiciones([
         { texto: "Qué queda — " + st.deuda.descripcion },
         { texto: "Responsable — " + st.deuda.responsable },
         { texto: "Cuándo revisar — " + st.deuda.condicion_revision }
       ]));
-    if (st.riesgos && st.riesgos.length)
-      h += fold("Riesgos", st.riesgos.length, bullets(st.riesgos));
+    if (st && st.riesgos && st.riesgos.length)
+      h += fold("Riesgos", st.riesgos.length, bullets(st.riesgos.map(esc)), "field");
     h += detalleRecorrido(p, paso, est);
     return h;
   }
@@ -1260,6 +1504,8 @@ A.anillos.forEach(function (r) {
       '</strong><span>con deuda</span></div><div class="project-kpi is-verify"><strong>' + m.verificar +
       '</strong><span>por verificar</span></div><div class="project-kpi"><strong>' + m.descartadas +
       '</strong><span>descartadas</span></div></div>';
+    h += desgloseAbiertas(m);
+    h += antiguedadDe(est);
     h += '<div class="route-now"><span class="rl">Ahora</span><strong>' +
       (sig ? byKey[sig].t : revisar.length ? '<code>/incoherencias</code> · ' + revisar.length +
         ' actividades por revisar' : "Recorrido listo") + '</strong><small>' +
@@ -1277,13 +1523,13 @@ A.anillos.forEach(function (r) {
 
     h += campo("Estado guardado en", rutas([origenEstadoActivo()]));
     if (est.deuda && est.deuda.length)
-      h += campo("Frentes abiertos", bullets(est.deuda.map(function (d) { return d.descripcion; })));
+      h += campo("Frentes abiertos", bullets(est.deuda.map(function (d) { return esc(d.descripcion); })));
     if (est.decisiones_globales && est.decisiones_globales.length)
       h += fold("Decisiones de fondo", est.decisiones_globales.length,
-        bullets(est.decisiones_globales.map(function (d) { return d.texto; })));
+        bullets(est.decisiones_globales.map(function (d) { return esc(d.texto); })));
     if (est.riesgos_aceptados && est.riesgos_aceptados.length)
       h += fold("Riesgos aceptados", est.riesgos_aceptados.length,
-        bullets(est.riesgos_aceptados.map(function (r) { return r.descripcion; })));
+        bullets(est.riesgos_aceptados.map(function (r) { return esc(r.descripcion); })));
     return h;
   }
 
@@ -1294,11 +1540,13 @@ A.anillos.forEach(function (r) {
     var ok = pz.filter(function (p) { return lista(piezaDe(est, p.k), p.k); }).length;
     var claves = pz.map(function (p) {
       var st = piezaDe(est, p.k);
-      return st && st.resumen ? '<li><b>' + p.t + ':</b> ' + acortar(st.resumen, 145) + '</li>' : null;
+      // Solo la entrada del resumen: donde cabe una línea, un resumen con viñetas aplanado deja
+      // «... en cada turno: - lo que no cambia ... - lo que cambia ...», que no se lee.
+      return st && st.resumen ? '<li><b>' + p.t + ':</b> ' + entradaResumen(st.resumen, 145) + '</li>' : null;
     }).filter(Boolean);
     var resumenes = pz.map(function (p) {
       var st = piezaDe(est, p.k);
-      return st && st.resumen ? acortar(st.resumen, 82) : null;
+      return st && st.resumen ? entradaResumen(st.resumen, 82) : null;
     }).filter(Boolean);
     var lectura = resumenes.length
       ? resumenes.slice(0, 2).join(" · ") +
@@ -1327,6 +1575,12 @@ A.anillos.forEach(function (r) {
     var nombreActivo = document.getElementById("nombre-proyecto-activo");
     if (nombrePropio) nombrePropio.textContent = nombreProyecto(ESTADO.propio);
     if (nombreActivo) nombreActivo.textContent = nombreProyecto(est);
+    /* En el mismo sitio que los otros dos nombres, a propósito: dos rutas de refresco para el
+       mismo dato acaban discrepando. El botón del interruptor conserva el nombre propio aunque
+       se repita con el título mientras miras lo tuyo, porque es un control y no un rótulo: en
+       cuanto pasas al ejemplo, es lo único que dice a dónde vuelves. */
+    var titulo = document.getElementById("titulo-mapa");
+    if (titulo) titulo.textContent = tituloDelMapa(est);
     document.querySelectorAll("#tabs .tab").forEach(function (b) {
       b.classList.toggle("on", b.getAttribute("data-vista") === vista);
     });
@@ -1400,7 +1654,14 @@ A.anillos.forEach(function (r) {
         nodo.classList.add("verificar");
         if (nodoMovil) nodoMovil.classList.add("verificar");
       }
-      else if (!resuelta(st)) nodo.classList.add(p.k === sig ? "siguiente" : "apagada");
+      /* Apagado es para lo que nadie ha tocado. Una pieza en curso tiene trabajo dentro y se
+         pinta encendida con su color; «siguiente» sigue ganando, porque es la recomendación. */
+      else if (!resuelta(st)) {
+        var claseAbierta = p.k === sig ? "siguiente" : e === "en_curso" ? "encurso" : "apagada";
+        nodo.classList.add(claseAbierta);
+        if (nodoMovil) nodoMovil.classList.add(claseAbierta);
+        if (radio && e === "en_curso") radio.classList.add("encurso");
+      }
 
       if (p.k === sig) {
         nodo.setAttribute("aria-current", "step");
@@ -1422,6 +1683,7 @@ A.anillos.forEach(function (r) {
       if (listo) { insignia("pin hecha", "✓"); if (radio) radio.classList.add("hecha"); }
       else if (e === "deuda_aceptada" || et.c === "deuda") insignia("pin deuda", "!");
       else if (e === "completada") insignia("pin verificar", "↻");
+      else if (e === "en_curso") insignia("pin curso", "·");
 
     });
 

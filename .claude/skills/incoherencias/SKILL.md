@@ -15,6 +15,9 @@ disable-model-invocation: true
    `Listas y verificadas | Abiertas | Con deuda | Por verificar | Descartadas | Incoherencias`.
    Separar por causa: `Con deuda` requiere normas, criterios o decisiones; `Por verificar` requiere
    pruebas o evidencia sobre una definición ya completa.
+   Revisar además **las decisiones caducadas**: una decisión no puede caducar sola, así que hay que
+   buscarlas. Las que declaren `condicion_revision` cumplida y las que lleven la caducidad escrita
+   dentro del texto sin declararla. Preguntar por cada una si su premisa sigue en pie.
 4. Añadir una tabla `Actividad | Qué falla | Qué falta | Cómo se resuelve` y un plan por rondas de
    dependencias. No llamar incoherencia a un descarte válido, pero tampoco contarlo como capacidad.
 5. Resolver sin preguntar lo observable. Contar todas las decisiones humanas restantes y anunciar

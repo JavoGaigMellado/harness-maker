@@ -9,6 +9,11 @@ CLAUDE_SKILLS_DIR = ROOT / ".claude" / "skills"
 EXAMPLE_DIR = ROOT / "taller" / "ejemplo"
 EXAMPLE_STATE_PATH = EXAMPLE_DIR / "estado.json"
 EXAMPLE_STATE_JS_PATH = EXAMPLE_DIR / "estado.js"
+# El ejemplo también lleva su cobertura desde el 2026-08-12. Sin ella, sus dieciséis piezas
+# verificadas dejaban de contar como listas en cuanto el diagrama empezó a exigir criterios
+# evaluados, y el recorrido modelo —lo que abre quien acaba de llegar— salía en 0 de 18.
+EXAMPLE_COVERAGE_PATH = EXAMPLE_DIR / "cobertura.json"
+EXAMPLE_COVERAGE_JS_PATH = EXAMPLE_DIR / "cobertura.js"
 HARNESS_LAB_DIR = ROOT / "proyectos" / "harness-lab"
 HARNESS_LAB_STATE_PATH = HARNESS_LAB_DIR / "estado.json"
 HARNESS_LAB_STATE_JS_PATH = HARNESS_LAB_DIR / "estado.js"

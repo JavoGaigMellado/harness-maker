@@ -12,7 +12,7 @@ from .migrate import migrate_state, needs_migration, parse_renames, plan_migrati
 from .paths import MI_HARNESS_DIR, POINTER_PATH, ROOT
 from .planner import initial_state, replan
 from .recover import recover_from_markdown
-from .workspace import archive_state, enable_git_hooks, init_workspace, resolve_state_path
+from .workspace import archive_state, describe_workspace, enable_git_hooks, init_workspace, resolve_state_path, restore_workspace
 from .validate import ValidationFailure, load_json, raise_if, validate_anatomy, validate_diagnostic, validate_generated, validate_state
 
 
@@ -23,7 +23,7 @@ def write_json(path: Path, data: dict) -> None:
 def parser() -> argparse.ArgumentParser:
     p=argparse.ArgumentParser(prog="harness-lab",description="CLI única del taller")
     sub=p.add_subparsers(dest="cmd",required=True)
-    ini=sub.add_parser("init",help="crea tu recorrido y lo declara activo"); ini.add_argument("--repo",type=Path,default=Path.cwd()); ini.add_argument("--workspace",type=Path,default=MI_HARNESS_DIR); ini.add_argument("--reiniciar",action="store_true",help="empieza de cero apartando el recorrido anterior con su fecha")
+    ini=sub.add_parser("init",help="crea tu recorrido y lo declara activo"); ini.add_argument("--repo",type=Path,default=Path.cwd()); ini.add_argument("--workspace",type=Path,default=MI_HARNESS_DIR); ini.add_argument("--reiniciar",action="store_true",help="empieza de cero apartando el recorrido anterior con su fecha"); ini.add_argument("--restaurar",type=Path,metavar="CARPETA",help="devuelve a su sitio un recorrido apartado, apartando antes el activo"); ini.add_argument("--sin-preguntar",action="store_true",help="no pide confirmación al reiniciar; para scripts, no para uso normal")
     sub.add_parser("generate",help="regenera wrapper, índice y prompts")
     v=sub.add_parser("validate",help="valida contratos, referencias, rutas y sincronía")
     v.add_argument("--anatomy",action="store_true"); v.add_argument("--diagnostic",type=Path); v.add_argument("--state",type=Path); v.add_argument("--generated",action="store_true"); v.add_argument("--all",action="store_true")
@@ -38,7 +38,28 @@ def parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None=None) -> None:
     args=parser().parse_args(argv)
     try:
-        if args.cmd=="init":
+        if args.cmd=="init" and args.restaurar is not None:
+            devueltos=restore_workspace(ROOT,POINTER_PATH,args.workspace,args.restaurar)
+            for path in devueltos:
+                verb="Apartado" if path.name.startswith(f"{args.workspace.name}-anterior-") else "Restaurado"
+                print(f"{verb} {path.resolve().relative_to(ROOT.resolve())}")
+            print(f"Recorrido activo: {describe_workspace(args.workspace)}")
+        elif args.cmd=="init":
+            # Apartar es reversible desde el 2026-08-12 —`--restaurar`— pero seguía siendo silencioso.
+            # Se enseña qué hay dentro antes de moverlo: el 7-ago este comando se llevó un recorrido
+            # con 12 piezas cerradas y 38 deudas, y nadie se enteró hasta abrir el diagrama vacío
+            # cinco días después. Aceptar la pérdida es de la persona; tomarla a ciegas, no.
+            if args.reiniciar and not args.sin_preguntar and (args.workspace / "diagnostico.json").exists():
+                print(f"Vas a apartar {describe_workspace(args.workspace)}.")
+                print(f"Se guarda con su fecha al lado de {args.workspace.name}; no se borra, y `init --restaurar` lo devuelve.")
+                if not sys.stdin.isatty():
+                    raise ValidationFailure(
+                        "No hay con quién confirmar —la entrada no es un terminal— y esto aparta "
+                        "trabajo. Repite con `--sin-preguntar` si de verdad es lo que quieres."
+                    )
+                if input("Escribe SI para continuar: ").strip().upper() != "SI":
+                    print("No se ha tocado nada.")
+                    return
             # `--reiniciar` aparta el recorrido anterior, así que el que queda es nuevo aunque hubiera
             # uno antes. Sin este `and not`, el reinicio decía «recorrido existente reactivado» y se
             # callaba la línea que nombra el siguiente paso, que es justo la que hace falta al empezar.

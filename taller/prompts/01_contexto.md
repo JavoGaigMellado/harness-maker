@@ -133,6 +133,29 @@ No marques `completada` por haber contestado: debe quedar una decisión, políti
 evidencia. `descartada` requiere motivo. `deuda_aceptada` requiere responsable y condición de
 revisión.
 
+## El resumen que se lee en el mapa
+
+`resumen` es lo único que el mapa enseña sin abrir nada: es la tarjeta **En una mirada** de esta
+actividad. Escríbelo para que se entienda en cinco segundos, con las palabras del proyecto y no con
+las del esquema, y con esta forma:
+
+1. Una frase de entrada que diga qué es esto aquí, terminada en dos puntos.
+2. Una línea por cada parte, empezando por `- `. Nombra la parte y sigue con lo concreto.
+3. Una última línea con el porqué: qué se gana con haberlo decidido así.
+
+El mapa respeta los saltos de línea y las líneas que empiezan por guion; un párrafo corrido sale
+como un bloque denso. La forma es esta:
+
+```
+Lo que el asistente tiene delante en cada turno:
+- Lo que no cambia: quién es, cómo habla, lo que sabe, sus reglas
+- Lo que cambia: en qué punto va la tarea de hoy
+Ese orden no es estético: es lo que hace que la parte cara del prompt se cobre una vez.
+```
+
+El contenido sale de este proyecto, no de ese molde. Si la actividad se resolvió con una sola
+decisión y no hay partes que enumerar, una frase basta: no inventes viñetas para rellenar.
+
 ## Persistencia y replanificación
 
 Lee y fusiona el estado entero sin destruir claves ajenas. Escribe Markdown acumulativo en

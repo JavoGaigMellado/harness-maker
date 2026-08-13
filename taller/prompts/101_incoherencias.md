@@ -10,6 +10,12 @@ cobertura, documentos, derivados y comportamiento real.
 - actividades `pendiente`, `en_curso` o `deuda_aceptada`;
 - actividades `completada` cuya verificación no sea `verificada`;
 - criterios `parcial` o `no_definido` en `cobertura.json`;
+- **decisiones caducadas**: las que declaren `condicion_revision` y esa condición ya se haya
+  cumplido, y las que la lleven escrita dentro de `texto` —«hasta que», «hasta después de», «por
+  ahora», «de momento», «mientras no»— sin declararla en su campo. Una decisión archivada como
+  permanente cuando su premisa ya cambió produce un verde que no significa lo que parece. Al
+  encontrarla: proponer declarar `condicion_revision`, comprobar con la persona si se cumplió y
+  marcar `condicion_cumplida`. Una decisión con la condición cumplida **reabre su actividad**;
 - una actividad, deuda o riesgo cuyo estado contradiga su cobertura, su Markdown o la evidencia;
 - deuda global que no coincida con la deuda de su actividad;
 - wrappers, auditoría legible o derivados desfasados;
